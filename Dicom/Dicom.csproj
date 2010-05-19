@@ -1,0 +1,222 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1EFC91C4-EEF8-4AE4-B512-24C00CA46D59}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dicom</RootNamespace>
+    <AssemblyName>Dicom</AssemblyName>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Dicom.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;OPENSSL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;DOTNET35 OPENSSL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Dicom.XML</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\3rd Party\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Codec\DcmCodecHelper.cs" />
+    <Compile Include="Codec\DicomCodecException.cs" />
+    <Compile Include="Codec\DcmCodecParameters.cs" />
+    <Compile Include="Codec\DicomCodec.cs" />
+    <Compile Include="Codec\DcmRleCodec.cs" />
+    <Compile Include="Data\DcmEncoding.cs" />
+    <Compile Include="Data\DicomFileScanner.cs" />
+    <Compile Include="Data\DicomMatch.cs" />
+    <Compile Include="Data\DicomTransform.cs" />
+    <Compile Include="HL7\HL7v2Server.cs" />
+    <Compile Include="HL7\HL7v2.cs" />
+    <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
+    <Compile Include="Imaging\DicomImagingException.cs" />
+    <Compile Include="Imaging\ColorTable.cs" />
+    <Compile Include="Imaging\LUT\PrecalculatedLUT.cs" />
+    <Compile Include="Imaging\LUT\CompositeLUT.cs" />
+    <Compile Include="Imaging\LUT\ILUT.cs" />
+    <Compile Include="Imaging\LUT\InvertLUT.cs" />
+    <Compile Include="Imaging\LUT\RescaleLUT.cs" />
+    <Compile Include="Imaging\LUT\OutputLUT.cs" />
+    <Compile Include="Imaging\LUT\PaddingLUT.cs" />
+    <Compile Include="Imaging\LUT\VOILinearLUT.cs" />
+    <Compile Include="Imaging\PhotometricInterpretation.cs" />
+    <Compile Include="Imaging\Process\GenericGrayscalePipeline.cs" />
+    <Compile Include="Imaging\Process\IPipeline.cs" />
+    <Compile Include="Imaging\Render\CompositeGraphic.cs" />
+    <Compile Include="Imaging\Render\IGraphic.cs" />
+    <Compile Include="Imaging\Render\ImageGraphic.cs" />
+    <Compile Include="Imaging\Render\OverlayGraphic.cs" />
+    <Compile Include="Imaging\Render\PixelData.cs" />
+    <Compile Include="Imaging\SpatialTransform.cs" />
+    <Compile Include="Imaging\WindowLevel.cs" />
+    <Compile Include="IO\SegmentStream.cs" />
+    <Compile Include="Network\Client\CStoreClient.cs" />
+    <Compile Include="Network\DcmCommand.cs" />
+    <Compile Include="Data\DicomDataException.cs" />
+    <Compile Include="Data\DcmDataset.cs" />
+    <Compile Include="Data\DcmDateRange.cs" />
+    <Compile Include="Data\DcmDictionary.cs" />
+    <Compile Include="Data\DcmElement.cs" />
+    <Compile Include="Data\DcmFileMetaInfo.cs" />
+    <Compile Include="Data\DcmFragmentSequence.cs" />
+    <Compile Include="Data\DcmItem.cs" />
+    <Compile Include="Data\DcmItemSequence.cs" />
+    <Compile Include="Data\DcmOverlayData.cs" />
+    <Compile Include="Data\DcmPixelData.cs" />
+    <Compile Include="Data\DicomTemplateAdapter.cs" />
+    <Compile Include="Network\DcmNetworkBase.cs" />
+    <Compile Include="Network\DcmQueryRetrieveLevel.cs" />
+    <Compile Include="Network\HookStream.cs" />
+    <Compile Include="Network\NetworkErrorStream.cs" />
+    <Compile Include="Network\OpenSSL.cs" />
+    <Compile Include="Network\ThrottleStream.cs" />
+    <Compile Include="HL7\MLLP.cs" />
+    <Compile Include="IO\FileSegment.cs" />
+    <Compile Include="Network\Client\CEchoClient.cs" />
+    <Compile Include="Network\Client\CFindClient.cs" />
+    <Compile Include="Network\Client\CMoveClient.cs" />
+    <Compile Include="Network\Client\DcmClientBase.cs" />
+    <Compile Include="Network\DcmAssociateProfile.cs" />
+    <Compile Include="Network\DcmSocket.cs" />
+    <Compile Include="Network\DcmStatus.cs" />
+    <Compile Include="Data\DicomTag.cs" />
+    <Compile Include="Data\DicomTransferSyntax.cs" />
+    <Compile Include="Data\DicomUID.cs" />
+    <Compile Include="Data\DicomVR.cs" />
+    <Compile Include="Data\DicomFieldAttribute.cs" />
+    <Compile Include="Data\DicomFileFormat.cs" />
+    <Compile Include="Debug.cs" />
+    <Compile Include="Flags.cs" />
+    <Compile Include="Implementation.cs" />
+    <Compile Include="IO\ByteBuffer.cs" />
+    <Compile Include="IO\ChunkStream.cs" />
+    <Compile Include="IO\DicomParseException.cs" />
+    <Compile Include="IO\DicomStreamReader.cs" />
+    <Compile Include="IO\DicomStreamWriter.cs" />
+    <Compile Include="IO\Endian.cs" />
+    <Compile Include="IO\VoidStream.cs" />
+    <Compile Include="Network\DcmAssociate.cs" />
+    <Compile Include="Network\DicomNetworkException.cs" />
+    <Compile Include="Network\Server\CEchoService.cs" />
+    <Compile Include="Network\Server\CStoreService.cs" />
+    <Compile Include="Network\Server\DcmServer.cs" />
+    <Compile Include="Network\Server\DcmServiceBase.cs" />
+    <Compile Include="Network\TlsStream.cs" />
+    <Compile Include="Network\ConnectionStats.cs" />
+    <Compile Include="Network\PDataTFStream.cs" />
+    <Compile Include="Network\PDU.cs" />
+    <Compile Include="Utility\ActiveSchedule.cs" />
+    <Compile Include="Utility\Cache.cs" />
+    <Compile Include="Utility\PreloadQueue.cs" />
+    <Compile Include="Utility\LogWriter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\PinnedArray.cs" />
+    <Compile Include="Utility\SerializableDictionary.cs" />
+    <Compile Include="Utility\Format.cs" />
+    <Compile Include="Utility\SyslogTarget.cs" />
+    <Compile Include="Utility\MultiThread.cs" />
+    <Compile Include="Utility\Utility.cs" />
+    <Compile Include="Utility\Wildcard.cs" />
+    <Compile Include="Utility\WorkQueue.cs" />
+    <Compile Include="Utility\XmlSerializable.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="dicom.dic">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="dicom.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Dicom.snk" />
+    <None Include="private.dic">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lgpl-2.1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="license.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
