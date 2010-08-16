@@ -1,15 +1,17 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dicom", "Dicom\Dicom.csproj", "{1EFC91C4-EEF8-4AE4-B512-24C00CA46D59}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dicom.Linq", "Dicom.Linq\Dicom.Linq.csproj", "{0EFE29C7-68C1-4865-8CD2-9FB1286D66EC}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JPEG", "JPEG", "{43ABD81D-D2B8-4752-ACFC-88117A71C6EC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JPEG 2000", "JPEG 2000", "{336B6AF9-410D-4EC5-8FF6-BF7309DB3514}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Codec", "Codec", "{F5BBA4E7-6B22-47B1-AD16-92015D5F1644}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JPEG-LS", "JPEG-LS", "{0491F1CB-5DC0-49AD-8BDC-23081EC9D69E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dicom", "Dicom\Dicom.csproj", "{1EFC91C4-EEF8-4AE4-B512-24C00CA46D59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dicom.Linq", "Dicom.Linq\Dicom.Linq.csproj", "{0EFE29C7-68C1-4865-8CD2-9FB1286D66EC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dicom.Dump", "Dicom.Dump\Dicom.Dump.csproj", "{4F37DE0C-23C3-4418-9A23-F84766CBB781}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -21,41 +23,29 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dicom.Dump", "Dicom.Dump\Di
 		{5142D5A3-3053-454A-A737-97A0CB3F7F98} = {5142D5A3-3053-454A-A737-97A0CB3F7F98}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg16.x64", "Dicom.Codec.Jpeg\x64\libijg16.x64.vcproj", "{DD846D57-B93B-46C8-BFFF-AE4C11E408B3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg16.x64", "Dicom.Codec.Jpeg\x64\libijg16.x64.vcxproj", "{DD846D57-B93B-46C8-BFFF-AE4C11E408B3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg12.x64", "Dicom.Codec.Jpeg\x64\libijg12.x64.vcproj", "{1B3557D4-1146-428A-AEC9-12CADF994527}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg12.x64", "Dicom.Codec.Jpeg\x64\libijg12.x64.vcxproj", "{1B3557D4-1146-428A-AEC9-12CADF994527}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg8.x64", "Dicom.Codec.Jpeg\x64\libijg8.x64.vcproj", "{808528F3-15DC-4CC6-A15A-0F91CBDB54E6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg8.x64", "Dicom.Codec.Jpeg\x64\libijg8.x64.vcxproj", "{808528F3-15DC-4CC6-A15A-0F91CBDB54E6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.Jpeg.x64", "Dicom.Codec.Jpeg\x64\Dicom.Codec.Jpeg.x64.vcproj", "{32E16839-E6EB-4336-91D6-27114F9C809F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DD846D57-B93B-46C8-BFFF-AE4C11E408B3} = {DD846D57-B93B-46C8-BFFF-AE4C11E408B3}
-		{1B3557D4-1146-428A-AEC9-12CADF994527} = {1B3557D4-1146-428A-AEC9-12CADF994527}
-		{808528F3-15DC-4CC6-A15A-0F91CBDB54E6} = {808528F3-15DC-4CC6-A15A-0F91CBDB54E6}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.Jpeg.x64", "Dicom.Codec.Jpeg\x64\Dicom.Codec.Jpeg.x64.vcxproj", "{32E16839-E6EB-4336-91D6-27114F9C809F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg16.x86", "Dicom.Codec.Jpeg\x86\libijg16.x86.vcproj", "{42273F26-DF8D-4C81-BD66-BA4617D3EEED}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg16.x86", "Dicom.Codec.Jpeg\x86\libijg16.x86.vcxproj", "{42273F26-DF8D-4C81-BD66-BA4617D3EEED}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg12.x86", "Dicom.Codec.Jpeg\x86\libijg12.x86.vcproj", "{8C2A5942-BE6B-4667-9849-A402CD71CD77}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg12.x86", "Dicom.Codec.Jpeg\x86\libijg12.x86.vcxproj", "{8C2A5942-BE6B-4667-9849-A402CD71CD77}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg8.x86", "Dicom.Codec.Jpeg\x86\libijg8.x86.vcproj", "{EE84732B-EB26-4D43-BB55-B55421EE16C2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libijg8.x86", "Dicom.Codec.Jpeg\x86\libijg8.x86.vcxproj", "{EE84732B-EB26-4D43-BB55-B55421EE16C2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.Jpeg.x86", "Dicom.Codec.Jpeg\x86\Dicom.Codec.Jpeg.x86.vcproj", "{54238EA2-B49F-473C-99A2-0DD0C417005F}"
-	ProjectSection(ProjectDependencies) = postProject
-		{42273F26-DF8D-4C81-BD66-BA4617D3EEED} = {42273F26-DF8D-4C81-BD66-BA4617D3EEED}
-		{EE84732B-EB26-4D43-BB55-B55421EE16C2} = {EE84732B-EB26-4D43-BB55-B55421EE16C2}
-		{8C2A5942-BE6B-4667-9849-A402CD71CD77} = {8C2A5942-BE6B-4667-9849-A402CD71CD77}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.Jpeg.x86", "Dicom.Codec.Jpeg\x86\Dicom.Codec.Jpeg.x86.vcxproj", "{54238EA2-B49F-473C-99A2-0DD0C417005F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.Jpeg2000.x64", "Dicom.Codec.Jpeg2000\x64\Dicom.Codec.Jpeg2000.x64.vcproj", "{49A12C92-B003-4AA8-BCE1-14CA49A77D4A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.Jpeg2000.x64", "Dicom.Codec.Jpeg2000\x64\Dicom.Codec.Jpeg2000.x64.vcxproj", "{49A12C92-B003-4AA8-BCE1-14CA49A77D4A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.Jpeg2000.x86", "Dicom.Codec.Jpeg2000\x86\Dicom.Codec.Jpeg2000.x86.vcproj", "{74455B97-3FFD-40AF-BEC2-3CE26939C1C8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.Jpeg2000.x86", "Dicom.Codec.Jpeg2000\x86\Dicom.Codec.Jpeg2000.x86.vcxproj", "{74455B97-3FFD-40AF-BEC2-3CE26939C1C8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JPEG-LS", "JPEG-LS", "{0491F1CB-5DC0-49AD-8BDC-23081EC9D69E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.JpegLs.x86", "Dicom.Codec.JpegLs\x86\Dicom.Codec.JpegLs.x86.vcxproj", "{CAF61199-23C1-4B66-9C17-7E9743396D0C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.JpegLs.x86", "Dicom.Codec.JpegLs\x86\Dicom.Codec.JpegLs.x86.vcproj", "{CAF61199-23C1-4B66-9C17-7E9743396D0C}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.JpegLs.x64", "Dicom.Codec.JpegLs\x64\Dicom.Codec.JpegLs.x64.vcproj", "{5142D5A3-3053-454A-A737-97A0CB3F7F98}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dicom.Codec.JpegLs.x64", "Dicom.Codec.JpegLs\x64\Dicom.Codec.JpegLs.x64.vcxproj", "{5142D5A3-3053-454A-A737-97A0CB3F7F98}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dicom.Scu", "Dicom.Scu\Dicom.Scu.csproj", "{D08C440B-4FE7-407F-8024-2CAB3F009DBE}"
 EndProject

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -16,6 +16,10 @@
     <StartupObject>Dicom.Dump.Program</StartupObject>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <AssemblyOriginatorKeyFile>Dicom.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -105,6 +109,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="TransferSyntaxForm.cs">
       <SubType>Form</SubType>
@@ -114,29 +119,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\check.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Folder.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FolderClosed.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Leaf.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\minus.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\plus.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\uncheck.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Dicom.snk" />
-    <None Include="Resources\unknown.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dicom\Dicom.csproj">
@@ -147,7 +130,7 @@
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
-      <ProductName>.NET Framework Client Profile</ProductName>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
@@ -170,6 +153,16 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\check.bmp" />
+    <Content Include="Resources\Folder.bmp" />
+    <Content Include="Resources\FolderClosed.bmp" />
+    <Content Include="Resources\Leaf.bmp" />
+    <Content Include="Resources\minus.bmp" />
+    <Content Include="Resources\plus.bmp" />
+    <Content Include="Resources\uncheck.bmp" />
+    <Content Include="Resources\unknown.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
