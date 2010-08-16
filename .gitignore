@@ -1,0 +1,8 @@
+*.suo
+*.sdf
+*.opensdf
+*.user
+obj/
+bin/
+Debug/
+Release/
