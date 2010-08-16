@@ -173,11 +173,6 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>xcopy $(SolutionDir)\Dicom.Codec.Jpeg\x86\$(ConfigurationName)\Dicom.Codec.Jpeg.x86.dll $(TargetDir) /Y
-xcopy $(SolutionDir)\Dicom.Codec.Jpeg\x64\$(ConfigurationName)\Dicom.Codec.Jpeg.x64.dll $(TargetDir) /Y
-xcopy $(SolutionDir)\Dicom.Codec.Jpeg2000\x86\$(ConfigurationName)\Dicom.Codec.Jpeg2000.x86.dll $(TargetDir) /Y
-xcopy $(SolutionDir)\Dicom.Codec.Jpeg2000\x64\$(ConfigurationName)\Dicom.Codec.Jpeg2000.x64.dll $(TargetDir) /Y
-xcopy $(SolutionDir)\Dicom.Codec.JpegLs\x86\$(ConfigurationName)\Dicom.Codec.JpegLs.x86.dll $(TargetDir) /Y
-xcopy $(SolutionDir)\Dicom.Codec.JpegLs\x64\$(ConfigurationName)\Dicom.Codec.JpegLs.x64.dll $(TargetDir) /Y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(SolutionDir)$(ConfigurationName)\Dicom.Codec.*.dll" "$(TargetDir)" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>
