@@ -852,8 +852,6 @@ namespace Dicom.Data {
 			foreach (DicomTag tag in tagsToModify) {
 				DcmItem modifiedItem = GetItem(tag);
 				if (modifiedItem == null)
-					modified.Dataset.AddElement(tag);
-				else
 					modified.Dataset.AddItem(modifiedItem.Clone());
 			}
 
