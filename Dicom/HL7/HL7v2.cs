@@ -29,8 +29,8 @@ namespace Dicom.HL7 {
 				try {
 					Segment = tag.Substring(0, 3).ToUpper();
 
-					if (tag[4] == '[') {
-						string sn = tag.Substring(5, tag.IndexOf(']') - 5);
+					if (tag[3] == '[') {
+						string sn = tag.Substring(4, tag.IndexOf(']') - 4);
 						SegmentNumber = Int32.Parse(sn);
 					} else {
 						SegmentNumber = 1;
