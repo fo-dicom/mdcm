@@ -243,8 +243,10 @@ namespace Dicom.IO {
 				return (InternalBuffer != null);
 			}
 			set {
-				if (value && (InternalBuffer == null)) {
-					InternalBuffer = new byte[8];
+				if (value) {
+					if (InternalBuffer == null) {
+						InternalBuffer = new byte[8];
+					}
 				} else {
 					InternalBuffer = null;
 				}
