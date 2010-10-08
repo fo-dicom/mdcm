@@ -193,6 +193,9 @@ namespace Dicom.Data {
 		/// <param name="file">Filename</param>
 		/// <param name="options">DICOM write options</param>
 		public void Save(String file, DicomWriteOptions options) {
+			// expand to full path
+			file = Path.GetFullPath(file);
+
 			string dir = Path.GetDirectoryName(file);
 			if (!Directory.Exists(dir))
 				Directory.CreateDirectory(dir);
