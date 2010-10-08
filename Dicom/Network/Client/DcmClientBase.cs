@@ -95,18 +95,21 @@ namespace Dicom.Network.Client {
 		#endregion
 
 		#region Public Methods
+		public bool Release(int timeout) {
+			SendReleaseRequest();
+			if (!Wait(timeout)) {
+				ForceClose();
+				return false;
+			}
+			return true;
+		}
+
 		public void ForceClose() {
 			_closedOnError = true;
 			if (Socket != null)
 				Socket.Close();
 		}
 
-		public void Close(bool release) {
-			if (release)
-				SendReleaseRequest();
-			else
-				Close();
-		}
 		public void Close() {
 			InternalClose(true);
 		}
@@ -122,6 +125,12 @@ namespace Dicom.Network.Client {
 		public bool Wait() {
 			if (_closedEvent != null)
 				_closedEvent.WaitOne();
+			return !_closedOnError;
+		}
+
+		public bool Wait(int timeout) {
+			if (_closedEvent != null)
+				_closedEvent.WaitOne(timeout);
 			return !_closedOnError;
 		}
 		#endregion
