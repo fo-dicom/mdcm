@@ -176,6 +176,9 @@ namespace Dicom.Data {
 
 		public static DicomTag Parse(string tag) {
 			try {
+				// clean extra characters
+				tag = tag.Trim().Trim('(', ')');
+
 				string[] parts = tag.Split(',');
 
 				if (parts.Length != 2) {
