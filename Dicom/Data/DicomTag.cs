@@ -124,7 +124,13 @@ namespace Dicom.Data {
 			return false;
 		}
 		public static bool operator >(DicomTag t1, DicomTag t2) {
-			return !(t1 < t2);
+			if ((object)t1 == null || (object)t2 == null)
+				return false;
+			if (t1.Group == t2.Group && t1.Element > t2.Element)
+				return true;
+			if (t1.Group > t2.Group)
+				return true;
+			return false;
 		}
 		public static bool operator <=(DicomTag t1, DicomTag t2) {
 			if ((object)t1 == null || (object)t2 == null)
