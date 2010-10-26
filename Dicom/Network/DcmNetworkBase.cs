@@ -784,7 +784,7 @@ namespace Dicom.Network {
 			DicomUID affectedClass = Associate.GetAbstractSyntax(presentationID);
 			DcmCommand command = CreateRequest(messageID, DcmCommandField.CMoveRequest, affectedClass, priority, true);
 			command.MoveDestinationAE = destinationAE;
-			Log.Info("{0} -> C-Move request [pc: {1}; id: {2}; lvl: {3}]", LogID, presentationID, messageID, level);
+			Log.Info("{0} -> C-Move request [pc: {1}; id: {2}; lvl: {3}; dest: {4}]", LogID, presentationID, messageID, level, destinationAE);
 			SendDimse(presentationID, command, dataset);
 		}
 
@@ -1507,8 +1507,8 @@ namespace Dicom.Network {
 				DcmPriority priority = _dimse.Command.Priority;
 				string destAE = _dimse.Command.MoveDestinationAE;
 				String level = _dimse.Dataset.GetString(DicomTags.QueryRetrieveLevel, "UNKNOWN");
-				Log.Info("{0} <- C-Move request [pc: {1}; id: {2}; lvl: {3}]", 
-					LogID, presentationID, messageID, level);
+				Log.Info("{0} <- C-Move request [pc: {1}; id: {2}; lvl: {3}; dest: {4}]", 
+					LogID, presentationID, messageID, level, destAE);
 				OnReceiveCMoveRequest(presentationID, messageID, destAE, priority, _dimse.Dataset);
 				return true;
 			}
