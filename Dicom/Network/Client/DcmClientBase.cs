@@ -95,13 +95,9 @@ namespace Dicom.Network.Client {
 		#endregion
 
 		#region Public Methods
-		public bool Release(int timeout) {
-			SendReleaseRequest();
-			if (!Wait(timeout)) {
-				ForceClose();
-				return false;
-			}
-			return true;
+		public void Release() {
+			if (!IsClosed)
+				SendReleaseRequest();
 		}
 
 		public void ForceClose() {
@@ -129,8 +125,10 @@ namespace Dicom.Network.Client {
 		}
 
 		public bool Wait(int timeout) {
-			if (_closedEvent != null)
-				_closedEvent.WaitOne(timeout);
+			if (_closedEvent != null) {
+				if (!_closedEvent.WaitOne(timeout))
+					ForceClose(); 
+			}
 			return !_closedOnError;
 		}
 		#endregion
