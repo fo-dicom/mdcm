@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Dicom")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("mDCM")]
+[assembly: AssemblyDescription("C# DICOM Library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Dicom")]
-[assembly: AssemblyCopyright("Copyright © Colby Dillion 2008")]
+[assembly: AssemblyProduct("mDCM")]
+[assembly: AssemblyCopyright("Copyright © Colby Dillion 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -23,4 +23,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("9f048635-f464-4da1-8d65-1dc67296d0ff")]
 
 
-[assembly: AssemblyVersion("0.9.5.0")]
+[assembly: AssemblyVersion("0.9.6.0")]
