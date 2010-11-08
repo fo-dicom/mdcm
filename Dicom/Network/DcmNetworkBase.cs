@@ -161,7 +161,7 @@ namespace Dicom.Network {
 			_throttle = 0;
 			_isRunning = false;
 			_useFileBuffer = true;
-			_enableStreamParse = true;
+			_enableStreamParse = false;
 			_log = Dicom.Debug.Log;
 			_logid = "SCx";
 		}

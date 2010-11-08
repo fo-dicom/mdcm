@@ -592,6 +592,9 @@ namespace Dicom.IO {
 					DcmDataset ds = null;
 					DicomReadStatus status = ParseSequenceItemDataset(TransferSyntax, _len, out ds, options);
 
+					if (status == DicomReadStatus.NeedMoreData)
+						return DicomReadStatus.NeedMoreData;
+
 					if (status != DicomReadStatus.Success) {
 						Dicom.Debug.Log.Warn("Unknown error while attempting to read sequence item.  Trying again with alternate encodings.");
 
