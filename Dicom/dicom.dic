@@ -2624,21 +2624,21 @@
 50xx	2006	UL	1	Number of Samples	RETIRED	
 50xx	2008	UL	1	Sample Rate	RETIRED	
 50xx	200a	UL	1	Total Time	RETIRED	
-50xx	200c	OB/OW	1	Audio Sample Data	RETIRED	
+50xx	200c	OW/OB	1	Audio Sample Data	RETIRED	
 50xx	200e	LT	1	Audio Comments	RETIRED	
 50xx	2500	LO	1	Curve Label	RETIRED	
 50xx	2600	SQ	1	Curve Referenced Overlay Sequence	RETIRED	
 50xx	2610	US	1	Curve Referenced Overlay Group	RETIRED	
-50xx	3000	OB/OW	1	Curve Data	RETIRED	
+50xx	3000	OW/OB	1	Curve Data	RETIRED	
 5200	9229	SQ	1	Shared Functional Groups Sequence		
 5200	9230	SQ	1	Per-frame Functional Groups Sequence		
 5400	0100	SQ	1	Waveform Sequence		
-5400	0110	OB/OW	1	Channel Minimum Value		
-5400	0112	OB/OW	1	Channel Maximum Value		
+5400	0110	OW/OB	1	Channel Minimum Value		
+5400	0112	OW/OB	1	Channel Maximum Value		
 5400	1004	US	1	Waveform Bits Allocated		
 5400	1006	CS	1	Waveform Sample Interpretation		
-5400	100a	OB/OW	1	Waveform Padding Value		
-5400	1010	OB/OW	1	Waveform Data		
+5400	100a	OW/OB	1	Waveform Padding Value		
+5400	1010	OW/OB	1	Waveform Data		
 5600	0010	OF	1	First Order Phase Correction Angle		
 5600	0020	OF	1	Spectroscopy Data		
 60xx	0010	US	1	Overlay Rows		
@@ -2679,13 +2679,13 @@
 60xx	1302	DS	1	ROI Mean		
 60xx	1303	DS	1	ROI Standard Deviation		
 60xx	1500	LO	1	Overlay Label		
-60xx	3000	OB/OW	1	Overlay Data		
+60xx	3000	OW/OB	1	Overlay Data		
 60xx	4000	LT	1	Overlay Comments	RETIRED	
-7fe0	0010	OB/OW	1	Pixel Data		
+7fe0	0010	OW/OB	1	Pixel Data		
 7fe0	0020	OW	1	Coefficients SDVN	RETIRED	
 7fe0	0030	OW	1	Coefficients SDHN	RETIRED	
 7fe0	0040	OW	1	Coefficients SDDN	RETIRED	
-7fxx	0010	OB/OW	1	Variable Pixel Data	RETIRED	
+7fxx	0010	OW/OB	1	Variable Pixel Data	RETIRED	
 7fxx	0011	US	1	Variable Next Data Group	RETIRED	
 7fxx	0020	OW	1	Variable Coefficients SDVN	RETIRED	
 7fxx	0030	OW	1	Variable Coefficients SDHN	RETIRED	

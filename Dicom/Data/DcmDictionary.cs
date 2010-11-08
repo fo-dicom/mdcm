@@ -241,7 +241,7 @@ namespace Dicom.Data {
 				DicomVR[] NONEa = new DicomVR[] { DicomVR.NONE };
 				DicomVR[] USaSSa = new DicomVR[] { DicomVR.US, DicomVR.SS };
 				DicomVR[] USaSSaOWa = new DicomVR[] { DicomVR.US, DicomVR.SS, DicomVR.OW };
-				DicomVR[] OBaOWa = new DicomVR[] { DicomVR.OB, DicomVR.OW };
+				DicomVR[] OWaOBa = new DicomVR[] { DicomVR.OW, DicomVR.OB };
 				#endregion
 
 				Clear();
@@ -2874,21 +2874,21 @@ namespace Dicom.Data {
 				Entries.Add(new DcmDictionaryEntry("50xx", "2006", "Number of Samples", String.Empty, ULa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("50xx", "2008", "Sample Rate", String.Empty, ULa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("50xx", "200a", "Total Time", String.Empty, ULa, "1", true));
-				Entries.Add(new DcmDictionaryEntry("50xx", "200c", "Audio Sample Data", String.Empty, OBaOWa, "1", true));
+				Entries.Add(new DcmDictionaryEntry("50xx", "200c", "Audio Sample Data", String.Empty, OWaOBa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("50xx", "200e", "Audio Comments", String.Empty, LTa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("50xx", "2500", "Curve Label", String.Empty, LOa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("50xx", "2600", "Curve Referenced Overlay Sequence", String.Empty, SQa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("50xx", "2610", "Curve Referenced Overlay Group", String.Empty, USa, "1", true));
-				Entries.Add(new DcmDictionaryEntry("50xx", "3000", "Curve Data", String.Empty, OBaOWa, "1", true));
+				Entries.Add(new DcmDictionaryEntry("50xx", "3000", "Curve Data", String.Empty, OWaOBa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("5200", "9229", "Shared Functional Groups Sequence", String.Empty, SQa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("5200", "9230", "Per-frame Functional Groups Sequence", String.Empty, SQa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("5400", "0100", "Waveform Sequence", String.Empty, SQa, "1", false));
-				Entries.Add(new DcmDictionaryEntry("5400", "0110", "Channel Minimum Value", String.Empty, OBaOWa, "1", false));
-				Entries.Add(new DcmDictionaryEntry("5400", "0112", "Channel Maximum Value", String.Empty, OBaOWa, "1", false));
+				Entries.Add(new DcmDictionaryEntry("5400", "0110", "Channel Minimum Value", String.Empty, OWaOBa, "1", false));
+				Entries.Add(new DcmDictionaryEntry("5400", "0112", "Channel Maximum Value", String.Empty, OWaOBa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("5400", "1004", "Waveform Bits Allocated", String.Empty, USa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("5400", "1006", "Waveform Sample Interpretation", String.Empty, CSa, "1", false));
-				Entries.Add(new DcmDictionaryEntry("5400", "100a", "Waveform Padding Value", String.Empty, OBaOWa, "1", false));
-				Entries.Add(new DcmDictionaryEntry("5400", "1010", "Waveform Data", String.Empty, OBaOWa, "1", false));
+				Entries.Add(new DcmDictionaryEntry("5400", "100a", "Waveform Padding Value", String.Empty, OWaOBa, "1", false));
+				Entries.Add(new DcmDictionaryEntry("5400", "1010", "Waveform Data", String.Empty, OWaOBa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("5600", "0010", "First Order Phase Correction Angle", String.Empty, OFa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("5600", "0020", "Spectroscopy Data", String.Empty, OFa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("60xx", "0010", "Overlay Rows", String.Empty, USa, "1", false));
@@ -2929,13 +2929,13 @@ namespace Dicom.Data {
 				Entries.Add(new DcmDictionaryEntry("60xx", "1302", "ROI Mean", String.Empty, DSa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("60xx", "1303", "ROI Standard Deviation", String.Empty, DSa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("60xx", "1500", "Overlay Label", String.Empty, LOa, "1", false));
-				Entries.Add(new DcmDictionaryEntry("60xx", "3000", "Overlay Data", String.Empty, OBaOWa, "1", false));
+				Entries.Add(new DcmDictionaryEntry("60xx", "3000", "Overlay Data", String.Empty, OWaOBa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("60xx", "4000", "Overlay Comments", String.Empty, LTa, "1", true));
-				Entries.Add(new DcmDictionaryEntry("7fe0", "0010", "Pixel Data", String.Empty, OBaOWa, "1", false));
+				Entries.Add(new DcmDictionaryEntry("7fe0", "0010", "Pixel Data", String.Empty, OWaOBa, "1", false));
 				Entries.Add(new DcmDictionaryEntry("7fe0", "0020", "Coefficients SDVN", String.Empty, OWa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("7fe0", "0030", "Coefficients SDHN", String.Empty, OWa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("7fe0", "0040", "Coefficients SDDN", String.Empty, OWa, "1", true));
-				Entries.Add(new DcmDictionaryEntry("7fxx", "0010", "Variable Pixel Data", String.Empty, OBaOWa, "1", true));
+				Entries.Add(new DcmDictionaryEntry("7fxx", "0010", "Variable Pixel Data", String.Empty, OWaOBa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("7fxx", "0011", "Variable Next Data Group", String.Empty, USa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("7fxx", "0020", "Variable Coefficients SDVN", String.Empty, OWa, "1", true));
 				Entries.Add(new DcmDictionaryEntry("7fxx", "0030", "Variable Coefficients SDHN", String.Empty, OWa, "1", true));
