@@ -334,6 +334,10 @@ namespace Dicom.Data {
 			return GetValueString().TrimEnd(' ', '\0').Split('\\');
 		}
 
+		public List<string> GetValueList() {
+			return new List<string>(GetValues());
+		}
+
 		public void SetValue(string value) {
 			ByteBuffer.SetString(value, VR.Padding);
 		}
@@ -341,6 +345,20 @@ namespace Dicom.Data {
 		public void SetValues(string[] values) {
 			ByteBuffer.SetString(string.Join("\\", values), VR.Padding);
 		}
+
+		public void SetValues(IEnumerable<string> values) {
+			StringBuilder sb = new StringBuilder();
+			var valueEnum = values.GetEnumerator();
+			if(valueEnum.MoveNext()) {
+				sb.Append(valueEnum.Current);
+				while(valueEnum.MoveNext()) {
+					sb.Append("\\");
+					sb.Append(valueEnum.Current);
+				}
+			}
+			ByteBuffer.SetString(sb.ToString(), VR.Padding);
+		}
+
 		#endregion
 	}
 
@@ -412,6 +430,10 @@ namespace Dicom.Data {
 			return GetValueString().TrimEnd(' ', '\0').Split('\\');
 		}
 
+		public List<string> GetValueList() {
+			return new List<string>(GetValues());
+		}
+
 		public void SetValue(string value) {
 			ByteBuffer.SetString(value, VR.Padding);
 		}
@@ -419,6 +441,20 @@ namespace Dicom.Data {
 		public void SetValues(string[] values) {
 			ByteBuffer.SetString(string.Join("\\", values), VR.Padding);
 		}
+
+		public void SetValues(IEnumerable<string> values) {
+			StringBuilder sb = new StringBuilder();
+			var valueEnum = values.GetEnumerator();
+			if (valueEnum.MoveNext()) {
+				sb.Append(valueEnum.Current);
+				while (valueEnum.MoveNext()) {
+					sb.Append("\\");
+					sb.Append(valueEnum.Current);
+				}
+			}
+			ByteBuffer.SetString(sb.ToString(), VR.Padding);
+		}
+
 		#endregion
 	}
 
@@ -525,6 +561,10 @@ namespace Dicom.Data {
 			return values;
 		}
 
+		public List<DateTime> GetDateTimeList() {
+			return new List<DateTime>(GetDateTimes());
+		}
+
 		public DcmDateRange GetDateTimeRange() {
 			return new DcmDateRange(ParseDateRange(GetValue(0)));
 		}
@@ -545,6 +585,10 @@ namespace Dicom.Data {
 					strings[i] = values[i].ToString();
 			}
 			SetValues(strings);
+		}
+
+		public void SetDateTimes(IEnumerable<DateTime> values) {
+			SetDateTimes(new List<DateTime>(values).ToArray());
 		}
 
 		public void SetDateTimeRange(DcmDateRange range) {
@@ -700,6 +744,10 @@ namespace Dicom.Data {
 			return vals;
 		}
 
+		public List<T> GetValueList() {
+			return new List<T>(GetValues());
+		}
+
 		public void SetValue(T value) {
 			T[] vals = new T[1];
 			vals[0] = value;
@@ -712,6 +760,11 @@ namespace Dicom.Data {
 			Buffer.BlockCopy(vals, 0, bytes, 0, bytes.Length);
 			ByteBuffer.FromBytes(bytes);
 		}
+
+		public void SetValues(IEnumerable<T> vals) {
+			SetValues(new List<T>(vals).ToArray());
+		}
+
 		#endregion
 	}
 	#endregion
@@ -846,6 +899,10 @@ namespace Dicom.Data {
 			return tags;
 		}
 
+		public List<DicomTag> GetValueList() {
+			return new List<DicomTag>(GetValues());
+		}
+
 		public void SetValue(DicomTag val) {
 			Endian = Endian.LocalMachine;
 			ByteBuffer.Clear();
@@ -856,11 +913,22 @@ namespace Dicom.Data {
 		public void SetValues(DicomTag[] vals) {
 			Endian = Endian.LocalMachine;
 			ByteBuffer.Clear();
+			for (int i = 0; i < vals.Length; i++) {
+				DicomTag val = vals[i];
+				ByteBuffer.Writer.Write(val.Group);
+				ByteBuffer.Writer.Write(val.Element);
+			}
+		}
+
+		public void SetValues(IEnumerable<DicomTag> vals) {
+			Endian = Endian.LocalMachine;
+			ByteBuffer.Clear();
 			foreach (DicomTag val in vals) {
 				ByteBuffer.Writer.Write(val.Group);
 				ByteBuffer.Writer.Write(val.Element);
 			}
 		}
+
 		#endregion
 
 		#region DcmItem Methods
@@ -956,6 +1024,14 @@ namespace Dicom.Data {
 			return vals;
 		}
 
+		public List<double> GetDoubleList() {
+			List<double> vals = new List<double>(GetVM());
+			for(int i = 0; i < vals.Count; i++) {
+				vals[i] = GetDouble(i);
+			}
+			return vals;
+		}
+
 		public void SetDouble(double value) {
 			SetValue(value.ToString());
 		}
@@ -966,6 +1042,10 @@ namespace Dicom.Data {
 				strs[i] = values[i].ToString();
 			}
 			SetValues(strs);
+		}
+
+		public void SetDoubles(IEnumerable<double> values) {
+			SetDoubles(new List<double>(values).ToArray());
 		}
 
 		public decimal GetDecimal() {
@@ -985,6 +1065,14 @@ namespace Dicom.Data {
 			return vals;
 		}
 
+		public List<decimal> GetDecimalList() {
+			List<decimal> vals = new List<decimal>(GetVM());
+			for (int i = 0; i < vals.Count; i++) {
+				vals[i] = GetDecimal(i);
+			}
+			return vals;
+		}
+
 		public void SetDecimal(decimal value) {
 			SetValue(value.ToString());
 		}
@@ -996,6 +1084,11 @@ namespace Dicom.Data {
 			}
 			SetValues(strs);
 		}
+
+		public void SetDecimals(IEnumerable<decimal> values) {
+			SetDecimals(new List<decimal>(values).ToArray());
+		}
+
 		#endregion
 	}
 
@@ -1084,6 +1177,14 @@ namespace Dicom.Data {
 			return ints;
 		}
 
+		public List<int> GetInt32List() {
+			List<int> ints = new List<int>(GetVM());
+			for (int i = 0; i < ints.Count; i++) {
+				ints[i] = GetInt32(i);
+			}
+			return ints;
+		}
+
 		public void SetInt32(int value) {
 			SetValue(value.ToString());
 		}
@@ -1095,6 +1196,11 @@ namespace Dicom.Data {
 			}
 			SetValues(strs);
 		}
+
+		public void SetInt32s(IEnumerable<int> values) {
+			SetInt32s(new List<int>(values).ToArray());
+		}
+
 		#endregion
 	}
 
