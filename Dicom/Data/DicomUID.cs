@@ -39,6 +39,17 @@ namespace Dicom.Data {
 		Unknown
 	}
 
+	public enum DicomStorageCategory {
+		None,
+		Image,
+		PresentationState,
+		StructuredReport,
+		Waveform,
+		Document,
+		Raw,
+		Other
+	}
+
 	public class DicomUID {
 		public readonly string UID;
 		public readonly string Description;
@@ -464,7 +475,51 @@ namespace Dicom.Data {
 		}
 
 		public static bool IsImageStorage(DicomUID uid) {
-			return uid.Type == DicomUidType.SOPClass && uid.Description.Contains("Image");
+			return GetStorageCategory(uid) == DicomStorageCategory.Image;
+		}
+
+		public static DicomStorageCategory GetStorageCategory(DicomUID uid) {
+			if (uid.Type != DicomUidType.SOPClass || !uid.Description.Contains("Storage"))
+				return DicomStorageCategory.None;
+
+			if (uid.Description.Contains("Image Storage"))
+				return DicomStorageCategory.Image;
+
+			if (uid == DicomUID.BlendingSoftcopyPresentationStateStorageSOPClass ||
+				uid == DicomUID.ColorSoftcopyPresentationStateStorageSOPClass ||
+				uid == DicomUID.GrayscaleSoftcopyPresentationStateStorageSOPClass ||
+				uid == DicomUID.PseudoColorSoftcopyPresentationStateStorageSOPClass)
+				return DicomStorageCategory.PresentationState;
+
+			if (uid == DicomUID.AudioSRStorageTrialRETIRED ||
+				uid == DicomUID.BasicTextSRStorage ||
+				uid == DicomUID.ChestCADSRStorage ||
+				uid == DicomUID.ComprehensiveSRStorage ||
+				uid == DicomUID.ComprehensiveSRStorageTrialRETIRED ||
+				uid == DicomUID.DetailSRStorageTrialRETIRED ||
+				uid == DicomUID.EnhancedSRStorage ||
+				uid == DicomUID.MammographyCADSRStorage ||
+				uid == DicomUID.TextSRStorageTrialRETIRED ||
+				uid == DicomUID.XRayRadiationDoseSRStorage)
+				return DicomStorageCategory.StructuredReport;
+
+			if (uid == DicomUID.AmbulatoryECGWaveformStorage ||
+				uid == DicomUID.BasicVoiceAudioWaveformStorage ||
+				uid == DicomUID.CardiacElectrophysiologyWaveformStorage ||
+				uid == DicomUID.GeneralECGWaveformStorage ||
+				uid == DicomUID.HemodynamicWaveformStorage ||
+				uid == DicomUID.TwelveLeadECGWaveformStorage ||
+				uid == DicomUID.WaveformStorageTrialRETIRED)
+				return DicomStorageCategory.Waveform;
+
+			if (uid == DicomUID.EncapsulatedCDAStorage ||
+				uid == DicomUID.EncapsulatedPDFStorage)
+				return DicomStorageCategory.Document;
+
+			if (uid == DicomUID.RawDataStorage)
+				return DicomStorageCategory.Raw;
+
+			return DicomStorageCategory.Other;
 		}
 		#endregion
 
