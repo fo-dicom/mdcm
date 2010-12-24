@@ -101,6 +101,18 @@ namespace Dicom.Network {
 			_result = result;
 		}
 
+		public bool AcceptTransferSyntaxes(params DicomTransferSyntax[] acceptedTs) {
+			if (Result == DcmPresContextResult.Accept)
+				return true;
+			foreach (DicomTransferSyntax ts in acceptedTs) {
+				if (HasTransfer(ts)) {
+					SetResult(DcmPresContextResult.Accept, ts);
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public void AddTransfer(DicomTransferSyntax ts) {
 			if (!_transfers.Contains(ts))
 				_transfers.Add(ts);
