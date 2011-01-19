@@ -21,10 +21,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
 using Dicom.IO;
+using Dicom.Utility;
 
 namespace Dicom.Data {
 	public class DcmPixelData {
@@ -632,6 +634,28 @@ namespace Dicom.Data {
 			dataset.AddItem(_pixelDataItem);
 		}
 		#endregion
+
+		public string ComputeMD5() {
+			MD5 md5 = new MD5CryptoServiceProvider();
+
+			byte[] hash = null;
+			if (NumberOfFrames == 1) {
+				byte[] frame = GetFrameDataU8(0);
+				hash = md5.ComputeHash(frame);
+			} else {
+				for (int i = 0; i < NumberOfFrames; i++) {
+					byte[] frame = GetFrameDataU8(i);
+
+					if (i < (NumberOfFrames - 1))
+						md5.TransformBlock(frame, 0, frame.Length, frame, 0);
+					else
+						md5.TransformFinalBlock(frame, 0, frame.Length);
+				}
+				hash = md5.Hash;
+			}
+
+			return BitConverter.ToString(hash).Replace("-", "");
+		}
 
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();

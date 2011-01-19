@@ -901,6 +901,14 @@ namespace Dicom.Data {
 			SetInternalTransferSyntax(newTransferSyntax);
 		}
 
+		public string ComputePixelDataMD5() {
+			if (!Contains(DicomTags.PixelData))
+				throw new DicomDataException("Dataset does not contain pixel data");
+
+			DcmPixelData pixelData = new DcmPixelData(this);
+			return pixelData.ComputeMD5();
+		}
+
 		internal void SetInternalTransferSyntax(DicomTransferSyntax ts) {
 			_transferSyntax = ts;
 			foreach (DcmItem item in _items.Values) {
