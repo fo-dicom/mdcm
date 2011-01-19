@@ -103,12 +103,14 @@ namespace Dicom.Forms {
 				if (ff.Dataset.Contains(DicomTags.PixelData)) {
 					tsbViewImage.Enabled = false;
 					tsbExtractPixels.Enabled = true;
+					tsbPixelDataMD5.Enabled = true;
 				}
 				tsbSaveTS.Enabled = true;
 			} else {
 				tsbViewImage.Enabled = false;
 				tsbExtractPixels.Enabled = false;
 				tsbSaveTS.Enabled = false;
+				tsbPixelDataMD5.Enabled = false;
 			}
 
 			return success;
@@ -118,6 +120,7 @@ namespace Dicom.Forms {
 			treeDump.Model = null;
 			tsbViewImage.Enabled = false;
 			tsbExtractPixels.Enabled = false;
+			tsbPixelDataMD5.Enabled = false;
 			tsbSaveTS.Enabled = false;
 
 			GC.Collect();
@@ -427,6 +430,32 @@ namespace Dicom.Forms {
 				GC.Collect();
 			}
 			catch {
+			}
+		}
+
+		private void OnClickPixelDataMD5(object sender, EventArgs e) {
+			if (_selected == -1)
+				return;
+
+			try {
+				DicomFileFormat ff = new DicomFileFormat();
+				ff.Load(_files[_selected], DicomReadOptions.Default |
+						DicomReadOptions.KeepGroupLengths |
+						DicomReadOptions.DeferLoadingLargeElements |
+						DicomReadOptions.DeferLoadingPixelData);
+
+				DcmPixelData pixels = new DcmPixelData(ff.Dataset);
+
+				if (pixels.NumberOfFrames == 0) {
+					MessageBox.Show(this, "No pixel data", "Pixel Data MD5");
+				} else if (pixels.NumberOfFrames >= 1) {
+					MessageBox.Show(this, pixels.ComputeMD5(), String.Format("Pixel Data MD5 [{0} frames]", pixels.NumberOfFrames));
+				}
+
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				GC.Collect();
+			} catch {
 			}
 		}
 

@@ -49,6 +49,7 @@ namespace Dicom.Forms {
 			this.tsbPrev = new System.Windows.Forms.ToolStripButton();
 			this.tsbNext = new System.Windows.Forms.ToolStripButton();
 			this.lblCount = new System.Windows.Forms.ToolStripLabel();
+			this.tsbPixelDataMD5 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripContainer1.ContentPanel.SuspendLayout();
 			this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
 			this.toolStripContainer1.SuspendLayout();
@@ -121,11 +122,11 @@ namespace Dicom.Forms {
 			this.nvIcon.DataPropertyName = "Icon";
 			this.nvIcon.LeftMargin = 1;
 			this.nvIcon.ParentColumn = this.ElementColumn;
+			this.nvIcon.ScaleMode = Aga.Controls.Tree.ImageScaleMode.Clip;
 			// 
 			// ncTag
 			// 
 			this.ncTag.DataPropertyName = "ElementTag";
-			this.ncTag.EditEnabled = false;
 			this.ncTag.IncrementalSearchEnabled = true;
 			this.ncTag.LeftMargin = 3;
 			this.ncTag.ParentColumn = this.ElementColumn;
@@ -133,7 +134,6 @@ namespace Dicom.Forms {
 			// ncName
 			// 
 			this.ncName.DataPropertyName = "Name";
-			this.ncName.EditEnabled = false;
 			this.ncName.IncrementalSearchEnabled = true;
 			this.ncName.LeftMargin = 3;
 			this.ncName.ParentColumn = this.ElementColumn;
@@ -142,7 +142,6 @@ namespace Dicom.Forms {
 			// nvVR
 			// 
 			this.nvVR.DataPropertyName = "VR";
-			this.nvVR.EditEnabled = false;
 			this.nvVR.IncrementalSearchEnabled = true;
 			this.nvVR.LeftMargin = 3;
 			this.nvVR.ParentColumn = this.VrColumn;
@@ -150,7 +149,6 @@ namespace Dicom.Forms {
 			// nvLength
 			// 
 			this.nvLength.DataPropertyName = "Length";
-			this.nvLength.EditEnabled = false;
 			this.nvLength.IncrementalSearchEnabled = true;
 			this.nvLength.LeftMargin = 3;
 			this.nvLength.ParentColumn = this.LengthColumn;
@@ -159,7 +157,6 @@ namespace Dicom.Forms {
 			// nvValue
 			// 
 			this.nvValue.DataPropertyName = "Value";
-			this.nvValue.EditEnabled = false;
 			this.nvValue.IncrementalSearchEnabled = true;
 			this.nvValue.LeftMargin = 3;
 			this.nvValue.ParentColumn = this.ValueColumn;
@@ -199,7 +196,7 @@ namespace Dicom.Forms {
             this.lblCount});
 			this.toolStrip1.Location = new System.Drawing.Point(3, 0);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(540, 25);
+			this.toolStrip1.Size = new System.Drawing.Size(571, 25);
 			this.toolStrip1.TabIndex = 0;
 			// 
 			// tsbOpenFile
@@ -248,6 +245,7 @@ namespace Dicom.Forms {
 			// 
 			this.tsbAdvanced.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbExtractPixels,
+            this.tsbPixelDataMD5,
             this.tsbSaveTS});
 			this.tsbAdvanced.Image = ((System.Drawing.Image)(resources.GetObject("tsbAdvanced.Image")));
 			this.tsbAdvanced.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -303,6 +301,14 @@ namespace Dicom.Forms {
 			this.lblCount.Size = new System.Drawing.Size(24, 22);
 			this.lblCount.Text = "0/0";
 			// 
+			// tsbPixelDataMD5
+			// 
+			this.tsbPixelDataMD5.Enabled = false;
+			this.tsbPixelDataMD5.Name = "tsbPixelDataMD5";
+			this.tsbPixelDataMD5.Size = new System.Drawing.Size(198, 22);
+			this.tsbPixelDataMD5.Text = "Pixel Data MD5";
+			this.tsbPixelDataMD5.Click += new System.EventHandler(this.OnClickPixelDataMD5);
+			// 
 			// DicomDumpForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -351,6 +357,7 @@ namespace Dicom.Forms {
 		private System.Windows.Forms.ToolStripButton tsbDictionary;
 		private System.Windows.Forms.ToolStripButton tsbClose;
 		private System.Windows.Forms.ToolStripMenuItem tsbSaveTS;
+		private System.Windows.Forms.ToolStripMenuItem tsbPixelDataMD5;
 
 	}
 }
