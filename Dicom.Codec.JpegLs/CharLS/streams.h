@@ -1,9 +1,10 @@
 // 
-// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 #ifndef CHARLS_STREAMS
 #define CHARLS_STREAMS
 
+#include <memory>
 #include <vector>
 #include "util.h"
 
@@ -29,7 +30,12 @@ enum JPEGLS_ColorXForm
 	COLORXFORM_RGB_AS_YUV_LOSSY,
 	COLORXFORM_MATRIX
 };
-	
+
+
+ByteStreamInfo FromByteArray(const void* bytes, size_t count);
+ByteStreamInfo FromStream(std::basic_streambuf<char>* stream);
+void SkipBytes(ByteStreamInfo* streamInfo, size_t count);
+
 //
 // JLSOutputStream: minimal implementation to write JPEG header streams
 //
@@ -42,8 +48,9 @@ public:
 	JLSOutputStream();
 	virtual ~JLSOutputStream();
 
-	void Init(Size size, LONG cbpp, LONG ccomp);
-	void AddScan(const void* pbyteComp, const JlsParamaters* pparams);
+	void Init(Size size, LONG bitsPerSample, LONG ccomp);
+	void AddScan(ByteStreamInfo info, const JlsParameters* pparams);
+	
 	void AddLSE(const JlsCustomParameters* pcustom);
 	void AddColorTransform(int i);
 	size_t GetBytesWritten()
@@ -57,6 +64,7 @@ public:
 	void EnableCompare(bool bCompare) 
 	{ _bCompare = bCompare; }
 private:
+	
 	BYTE* GetPos() const
 		{ return _pdata + _cbyteOffset; }
 
@@ -82,8 +90,8 @@ private:
 	}
 
 
-    void Seek(size_t cbyte)
-		{ _cbyteOffset += cbyte; }
+    void Seek(size_t byteCount)
+		{ _cbyteOffset += byteCount; }
 
 	bool _bCompare;
 
@@ -91,23 +99,8 @@ private:
 	BYTE* _pdata;
 	size_t _cbyteOffset;
 	size_t _cbyteLength;
-	LONG _icompLast;
+	LONG _lastCompenentIndex;
 	std::vector<JpegSegment*> _segments;
-};
-
-
-
-struct Presets : public JlsCustomParameters
-{
-public:
-	Presets()			
-	{		
-		MAXVAL = 0;
-		T1 = 0;
-		T2 = 0;
-		T3 = 0;
-		RESET = 0;
-	}
 };
 
 
@@ -117,47 +110,48 @@ public:
 class JLSInputStream
 {
 public:
-	JLSInputStream(const BYTE* pdata, LONG cbyteLength);
-
-	size_t GetBytesRead()
-		{ return _cbyteOffset; }
-
-	const JlsParamaters& GetMetadata() const
+	JLSInputStream(ByteStreamInfo byteStreamInfo);
+	
+	const JlsParameters& GetMetadata() const
 		{ return _info; } 
 
 	const JlsCustomParameters& GetCustomPreset() const
 	{ return _info.custom; } 
 
-	void Read(void* pvoid, LONG cbyteAvailable);
+	void Read(ByteStreamInfo info);
 	void ReadHeader();
 	
 	void EnableCompare(bool bCompare)
 		{ _bCompare = bCompare;	}
 
-	void SetInfo(JlsParamaters* info) { _info = *info; }
-private:
-	void ReadPixels(void* pvoid, LONG cbyteAvailable);
-	void ReadScan(void*);	
-	void ReadStartOfScan();
-	void ReadPresetParameters();
-	void ReadComment();
-	void ReadStartOfFrame();
+	void SetInfo(JlsParameters* info) { _info = *info; }
+
+	void SetRect(JlsRect rect) { _rect = rect; }
+
+	void ReadStartOfScan(bool firstComponent);
 	BYTE ReadByte();
+
+private:
+	void ReadScan(ByteStreamInfo rawPixels);	
+	int ReadPresetParameters();
+	int ReadComment();
+	int ReadStartOfFrame();
 	int ReadWord();
 	void ReadNBytes(std::vector<char>& dst, int byteCount);
+	int ReadMarker(BYTE marker);
 
 	// JFIF
 	void ReadJfif();
 	// Color Transform Application Markers & Code Stream (HP extension)
-	void ReadColorSpace();
-	void ReadColorXForm();
+	int ReadColorSpace();
+	int ReadColorXForm();
 	
 private:
-	const BYTE* _pdata;
-	size_t _cbyteOffset;
-	size_t _cbyteLength;
+	ByteStreamInfo _byteStream;
+	BYTE* _byteStreamStart;
 	bool _bCompare;
-	JlsParamaters _info;
+	JlsParameters _info;
+	JlsRect _rect;
 };
 
 

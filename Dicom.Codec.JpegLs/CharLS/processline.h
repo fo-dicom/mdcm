@@ -1,11 +1,14 @@
 // 
-// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 #ifndef CHARLS_PROCESSLINE
 #define CHARLS_PROCESSLINE
 
 #include "colortransform.h"
-
+#include <iostream>
+#ifdef _MSC_VER 
+#pragma warning(disable: 4996)
+#endif
 //
 // This file defines the ProcessLine base class, its derivitives and helper functions.
 // During coding/decoding, CharLS process one line at a time. The different Processline implementations
@@ -19,37 +22,77 @@ class ProcessLine
 {
 public:
 	virtual ~ProcessLine() {}
-	virtual void NewLineDecoded(const void* pSrc, int pixelCount, int bytesperline) = 0;
-	virtual void NewLineRequested(void* pSrc, int pixelCount, int bytesperline) = 0;
+	virtual void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride) = 0;
+	virtual void NewLineRequested(void* pDest, int pixelCount, int destStride) = 0;
 };
 
 
 class PostProcesSingleComponent : public ProcessLine
 {
 public:
-	PostProcesSingleComponent(void* pbyteOutput, const JlsParamaters& info, int bytesPerPixel) :
-		_pbyteOutput((BYTE*)pbyteOutput), 
+	PostProcesSingleComponent(void* rawData, const JlsParameters& info, int bytesPerPixel) :
+		_rawData((BYTE*)rawData), 
 		_bytesPerPixel(bytesPerPixel),
-		_info(info)
+		_bytesPerLine(info.bytesperline)
 	{
 	}
 
-	void NewLineRequested(void* pDst, int pixelCount, int /*byteStride*/)
+	void NewLineRequested(void* dest, int pixelCount, int /*byteStride*/)
 	{
-		::memcpy(pDst, _pbyteOutput, pixelCount * _bytesPerPixel);
-		_pbyteOutput += _info.bytesperline;
+		::memcpy(dest, _rawData, pixelCount * _bytesPerPixel);
+		_rawData += _bytesPerLine;
 	}
 
-	void NewLineDecoded(const void* pSrc, int pixelCount, int /*byteStride*/)
+	void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/)
 	{
-		::memcpy(_pbyteOutput, pSrc, pixelCount * _bytesPerPixel);
-		_pbyteOutput += _info.bytesperline;
+		::memcpy(_rawData, pSrc, pixelCount * _bytesPerPixel);
+		_rawData += _bytesPerLine;		
 	}
 
 private:
-	BYTE* _pbyteOutput;
+	BYTE* _rawData;
 	int _bytesPerPixel;
-	const JlsParamaters& _info;	
+	int _bytesPerLine;
+};
+
+
+class PostProcesSingleStream : public ProcessLine
+{
+public:
+	PostProcesSingleStream(std::basic_streambuf<char>* rawData, const JlsParameters& info, int bytesPerPixel) :
+		_rawData(rawData), 
+		_bytesPerPixel(bytesPerPixel),
+		_bytesPerLine(info.bytesperline)
+	{
+	}
+
+	void NewLineRequested(void* dest, int pixelCount, int /*destStride*/)
+	{
+		int bytesToRead = pixelCount * _bytesPerPixel;
+		std::streamsize bytesRead = _rawData->sgetn((char*)dest, bytesToRead);
+		
+		if (bytesRead != bytesToRead)
+			throw new JlsException(UncompressedBufferTooSmall);
+
+		if (_bytesPerLine - bytesToRead > 0)
+		{
+			_rawData->pubseekoff(std::streamoff(_bytesPerLine - bytesToRead), std::ios_base::cur);
+		}		
+	}
+
+	void NewLineDecoded(const void* pSrc, int pixelCount, int /*sourceStride*/)
+	{
+		int bytesToWrite = pixelCount * _bytesPerPixel;
+		std::streamsize bytesWritten = _rawData->sputn((const char*)pSrc, bytesToWrite); 	
+		if (bytesWritten != bytesToWrite)
+			throw new JlsException(UncompressedBufferTooSmall);
+	}
+
+private:
+	std::basic_streambuf<char>* _rawData;
+	int _bytesPerPixel;
+	int _bytesPerLine;
+	
 };
 
 template<class TRANSFORM, class SAMPLE> 
@@ -65,6 +108,7 @@ void TransformLineToQuad(const SAMPLE* ptypeInput, LONG pixelStrideIn, Quad<SAMP
 		ptypeBuffer[x] = pixel;
 	}
 }
+
 
 template<class TRANSFORM, class SAMPLE> 
 void TransformQuadToLine(const Quad<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, TRANSFORM& transform)
@@ -95,6 +139,7 @@ void TransformRgbToBgr(SAMPLE* pDest, int samplesPerPixel, int pixelCount)
 	}
 }
 
+
 template<class TRANSFORM, class SAMPLE> 
 void TransformLine(Triplet<SAMPLE>* pDest, const Triplet<SAMPLE>* pSrc, int pixelCount, TRANSFORM& transform) 
 {	
@@ -116,6 +161,7 @@ void TransformLineToTriplet(const SAMPLE* ptypeInput, LONG pixelStrideIn, Triple
 		ptypeBuffer[x] = transform(ptypeInput[x], ptypeInput[x + pixelStrideIn], ptypeInput[x + 2*pixelStrideIn]);
 	}
 }
+
 
 template<class TRANSFORM, class SAMPLE> 
 void TransformTripletToLine(const Triplet<SAMPLE>* pbyteInput, LONG pixelStrideIn, SAMPLE* ptypeBuffer, LONG pixelStride, TRANSFORM& transform)
@@ -142,76 +188,122 @@ class ProcessTransformed : public ProcessLine
 
 	ProcessTransformed(const ProcessTransformed&) {}
 public:
-	ProcessTransformed(void* pbyteOutput, const JlsParamaters& info, TRANSFORM transform) :
-		_pbyteOutput((BYTE*)pbyteOutput),
+	ProcessTransformed(ByteStreamInfo rawStream, const JlsParameters& info, TRANSFORM transform) :
 		_info(info),
-		_templine(info.width *  info.components),
+		_templine(info.width * info.components),
+		_buffer(info.width * info.components * sizeof(SAMPLE)),
 		_transform(transform),
-		_inverseTransform(transform)
+		_inverseTransform(transform),
+		_rawPixels(rawStream)
 	{
-//		ASSERT(_info.components == sizeof(TRIPLET)/sizeof(TRIPLET::SAMPLE));
+	}
+		
+
+	void NewLineRequested(void* dest, int pixelCount, int destStride)
+	{		
+		if (_rawPixels.rawStream == NULL)
+		{
+			Transform(_rawPixels.rawData, dest, pixelCount, destStride);
+			_rawPixels.rawData += _info.bytesperline;
+			return;
+		}
+
+		Transform(_rawPixels.rawStream, dest, pixelCount, destStride);
 	}
 
-	void NewLineRequested(void* pDst, int pixelCount, int byteStride)
+	void Transform(std::basic_streambuf<char>* rawStream, void* dest, int pixelCount, int destStride)
+	{			
+		std::streamsize bytesToRead = pixelCount * _info.components * sizeof(SAMPLE);					
+		while(bytesToRead != 0)
+		{
+			std::streamsize read = rawStream->sgetn((char*)&_buffer[0], bytesToRead);
+			if (read == 0)
+				throw new JlsException(UncompressedBufferTooSmall);
+
+			bytesToRead -= read;
+		}
+		Transform(&_buffer[0], dest, pixelCount, destStride);		
+	}
+
+	void Transform(const void* source, void* dest, int pixelCount, int destStride)
 	{
-		SAMPLE* pLine = (SAMPLE*)_pbyteOutput;
 		if (_info.outputBgr)
 		{
-			pLine = &_templine[0]; 
-			memcpy(pLine, _pbyteOutput, sizeof(Triplet<SAMPLE>)*pixelCount);
-			TransformRgbToBgr(pLine, _info.components, pixelCount);
+			memcpy(&_templine[0], source, sizeof(Triplet<SAMPLE>)*pixelCount);
+			TransformRgbToBgr((SAMPLE*)&_templine[0], _info.components, pixelCount);
+			source = &_templine[0]; 			
 		}
 
 		if (_info.components == 3)
 		{
 			if (_info.ilv == ILV_SAMPLE)
 			{
-				TransformLine((Triplet<SAMPLE>*)pDst, (const Triplet<SAMPLE>*)pLine, pixelCount, _transform);
+				TransformLine((Triplet<SAMPLE>*)dest, (const Triplet<SAMPLE>*)source, pixelCount, _transform);
 			}
 			else
 			{
-				TransformTripletToLine((const Triplet<SAMPLE>*)pLine, pixelCount, (SAMPLE*)pDst, byteStride, _transform);
+				TransformTripletToLine((const Triplet<SAMPLE>*)source, pixelCount, (SAMPLE*)dest, destStride, _transform);
 			}
 		}
 		else if (_info.components == 4 && _info.ilv == ILV_LINE)
 		{
-			TransformQuadToLine((const Quad<SAMPLE>*)pLine, pixelCount, (SAMPLE*)pDst, byteStride, _transform);
+			TransformQuadToLine((const Quad<SAMPLE>*)source, pixelCount, (SAMPLE*)dest, destStride, _transform);
 		}
-		_pbyteOutput += _info.bytesperline;
 	}
 
-	void NewLineDecoded(const void* pSrc, int pixelCount, int byteStride)
+
+	void DecodeTransform(const void* pSrc, void* rawData, int pixelCount, int byteStride)
 	{
 		if (_info.components == 3)
 		{	
 			if (_info.ilv == ILV_SAMPLE)
 			{
-				TransformLine((Triplet<SAMPLE>*)_pbyteOutput, (const Triplet<SAMPLE>*)pSrc, pixelCount, _inverseTransform);
+				TransformLine((Triplet<SAMPLE>*)rawData, (const Triplet<SAMPLE>*)pSrc, pixelCount, _inverseTransform);
 			}
 			else
 			{
-				TransformLineToTriplet((const SAMPLE*)pSrc, byteStride, (Triplet<SAMPLE>*)_pbyteOutput, pixelCount, _inverseTransform);
+				TransformLineToTriplet((const SAMPLE*)pSrc, byteStride, (Triplet<SAMPLE>*)rawData, pixelCount, _inverseTransform);
 			}
-
 		}
 		else if (_info.components == 4 && _info.ilv == ILV_LINE)
 		{
-			TransformLineToQuad((const SAMPLE*)pSrc, byteStride, (Quad<SAMPLE>*)_pbyteOutput, pixelCount, _inverseTransform);
-		}			
+			TransformLineToQuad((const SAMPLE*)pSrc, byteStride, (Quad<SAMPLE>*)rawData, pixelCount, _inverseTransform);
+		}
 
 		if (_info.outputBgr)
 		{
-			TransformRgbToBgr(_pbyteOutput, _info.components, pixelCount);
+			TransformRgbToBgr((SAMPLE*)rawData, _info.components, pixelCount);
 		}
-		_pbyteOutput += _info.bytesperline;
 	}
 
+	void NewLineDecoded(const void* pSrc, int pixelCount, int sourceStride)
+	{
+		
+		if (_rawPixels.rawStream != NULL)
+		{
+			std::streamsize bytesToWrite = pixelCount * _info.components * sizeof(SAMPLE);		
+			std::vector<char> buffer(bytesToWrite);
+			DecodeTransform(pSrc, &buffer[0], pixelCount, sourceStride);
+		
+			std::streamsize bytesWritten = _rawPixels.rawStream->sputn(&buffer[0], bytesToWrite); 	
+			if (bytesWritten != bytesToWrite)
+				throw new JlsException(UncompressedBufferTooSmall);
+		}
+		else
+		{			
+			DecodeTransform(pSrc, _rawPixels.rawData, pixelCount, sourceStride);
+			_rawPixels.rawData += _info.bytesperline;		
+		}
+	}
+
+
 private:
-	BYTE* _pbyteOutput;
-	const JlsParamaters& _info;	
+	const JlsParameters& _info;	
 	std::vector<SAMPLE> _templine;
+	std::vector<BYTE> _buffer;			
 	TRANSFORM _transform;	
 	typename TRANSFORM::INVERSE _inverseTransform;
+	ByteStreamInfo _rawPixels;
 };
 
 

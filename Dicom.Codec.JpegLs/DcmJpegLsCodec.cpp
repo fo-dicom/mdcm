@@ -21,14 +21,7 @@
 
 #include "DcmJpegLsCodec.h"
 
-#include "CharLS/stdafx.h"
 #include "CharLS/interface.h"
-#include "CharLS/util.h"
-#include "CharLS/defaulttraits.h"
-#include "CharLS/losslesstraits.h"
-#include "CharLS/colortransform.h"
-#include "CharLS/streams.h"
-#include "CharLS/processline.h"
 
 using namespace System;
 using namespace System::IO;
@@ -84,7 +77,7 @@ void DcmJpegLsCodec::Encode(DcmDataset^ dataset, DcmPixelData^ oldPixelData, Dcm
 	if (jparams == nullptr)
 		jparams = (DcmJpegLsParameters^)GetDefaultParameters();
 
-	JlsParamaters params = {0};
+	JlsParameters params = {0};
 	params.width = oldPixelData->ImageWidth;
 	params.height = oldPixelData->ImageHeight;
 	params.bitspersample = oldPixelData->BitsStored;
@@ -92,7 +85,7 @@ void DcmJpegLsCodec::Encode(DcmDataset^ dataset, DcmPixelData^ oldPixelData, Dcm
 	params.components = oldPixelData->SamplesPerPixel;
 
 	params.ilv = ILV_NONE;
-	params.colorTransform = COLORXFORM_NONE;
+	params.colorTransform = 0; //COLORXFORM_NONE
 
 	if (oldPixelData->SamplesPerPixel == 3) {
 		params.ilv = (interleavemode)jparams->InterleaveMode;
@@ -109,11 +102,11 @@ void DcmJpegLsCodec::Encode(DcmDataset^ dataset, DcmPixelData^ oldPixelData, Dcm
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
 		array<unsigned char>^ frameArray = oldPixelData->GetFrameDataU8(frame);
 		pin_ptr<unsigned char> framePin = &frameArray[0];
-		unsigned char* frameData = framePin;
-		const int frameDataSize = frameArray->Length;
+		void* frameData = framePin;
+		size_t frameDataSize = frameArray->Length;
 
 		// assume compressed frame will be smaller than original
-		unsigned char* jpegData = new unsigned char[frameDataSize];
+		void* jpegData = new unsigned char[frameDataSize];
 		size_t jpegDataSize = 0;
 
 		JLS_ERROR err = JpegLsEncode(jpegData, frameDataSize, &jpegDataSize, frameData, frameDataSize, &params);
@@ -143,16 +136,18 @@ void DcmJpegLsCodec::Encode(DcmDataset^ dataset, DcmPixelData^ oldPixelData, Dcm
 void DcmJpegLsCodec::Decode(DcmDataset^ dataset, DcmPixelData^ oldPixelData, DcmPixelData^ newPixelData, DcmCodecParameters^ parameters) {
 	array<unsigned char>^ destArray = gcnew array<unsigned char>(oldPixelData->UncompressedFrameSize);
 	pin_ptr<unsigned char> destPin = &destArray[0];
-	unsigned char* destData = destPin;
-	const int destDataSize = destArray->Length;
+	void* destData = destPin;
+	size_t destDataSize = destArray->Length;
 
 	for (int frame = 0; frame < oldPixelData->NumberOfFrames; frame++) {
 		array<unsigned char>^ jpegArray = oldPixelData->GetFrameDataU8(frame);
 		pin_ptr<unsigned char> jpegPin = &jpegArray[0];
-		unsigned char* jpegData = jpegPin;
-		const int jpegDataSize = jpegArray->Length;
+		void* jpegData = jpegPin;
+		size_t jpegDataSize = jpegArray->Length;
 
-		JLS_ERROR err = JpegLsDecode(destData, destDataSize, jpegData, jpegDataSize);
+		JlsParameters params = {0};
+
+		JLS_ERROR err = JpegLsDecode(destData, destDataSize, jpegData, jpegDataSize, &params);
 		if (err != OK) throw gcnew DicomJpegLsCodecException(err);
 
 		oldPixelData->Unload();

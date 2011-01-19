@@ -89,5 +89,8 @@
     <ClInclude Include="..\CharLS\util.h">
       <Filter>Header Files\CharLS</Filter>
     </ClInclude>
+    <ClInclude Include="..\CharLS\publictypes.h">
+      <Filter>Header Files\CharLS</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

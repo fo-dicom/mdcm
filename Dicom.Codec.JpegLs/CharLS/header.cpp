@@ -1,8 +1,9 @@
 // 
-// (C) Jan de Vaan 2007-2009, all rights reserved. See the accompanying "License.txt" for licensed use. 
+// (C) Jan de Vaan 2007-2010, all rights reserved. See the accompanying "License.txt" for licensed use. 
 // 
 
-#include "stdafx.h"
+#include "config.h"
+#include "util.h"
 #include "header.h"
 #include "streams.h"
 #include "decoderstrategy.h"
@@ -35,7 +36,31 @@ bool IsDefault(const JlsCustomParameters* pcustom)
 }
 
 
-JLS_ERROR CheckParameterCoherent(const JlsParamaters* pparams)
+LONG CLAMP(LONG i, LONG j, LONG MAXVAL)
+{
+	if (i > MAXVAL || i < j)
+		return j;
+
+	return i;
+}
+
+
+JlsCustomParameters ComputeDefault(LONG MAXVAL, LONG NEAR)
+{
+	JlsCustomParameters preset = JlsCustomParameters();
+
+	LONG FACTOR = (MIN(MAXVAL, 4095) + 128)/256;
+
+	preset.T1 = CLAMP(FACTOR * (BASIC_T1 - 2) + 2 + 3*NEAR, NEAR + 1, MAXVAL);
+	preset.T2 = CLAMP(FACTOR * (BASIC_T2 - 3) + 3 + 5*NEAR, preset.T1, MAXVAL);
+	preset.T3 = CLAMP(FACTOR * (BASIC_T3 - 4) + 4 + 7*NEAR, preset.T2, MAXVAL);
+	preset.MAXVAL = MAXVAL;
+	preset.RESET = BASIC_RESET;
+	return preset;
+}
+
+
+JLS_ERROR CheckParameterCoherent(const JlsParameters* pparams)
 {
 	if (pparams->bitspersample < 6 || pparams->bitspersample > 16)
 		return ParameterValueNotSupported;
@@ -95,19 +120,20 @@ void push_back(std::vector<BYTE>& vec, USHORT value)
 //
 // CreateMarkerStartOfFrame()
 //
-JpegSegment* CreateMarkerStartOfFrame(Size size, LONG cbpp, LONG ccomp)
+JpegSegment* CreateMarkerStartOfFrame(Size size, LONG bitsPerSample, LONG ccomp)
 {
+
 	std::vector<BYTE> vec;
-	vec.push_back(static_cast<BYTE>(cbpp));
+	vec.push_back(static_cast<BYTE>(bitsPerSample));
 	push_back(vec, static_cast<USHORT>(size.cy));
 	push_back(vec, static_cast<USHORT>(size.cx));
 	
 	// components
 	vec.push_back(static_cast<BYTE>(ccomp));
-	for (BYTE icomp = 0; icomp < ccomp; icomp++)
+	for (BYTE component = 0; component < ccomp; component++)
 	{
 		// rescaling
-		vec.push_back(icomp + 1);
+		vec.push_back(component + 1);
 		vec.push_back(0x11); 
 		//"Tq1" reserved, 0
 		vec.push_back(0);		
@@ -124,11 +150,11 @@ JpegSegment* CreateMarkerStartOfFrame(Size size, LONG cbpp, LONG ccomp)
 //
 JLSOutputStream::JLSOutputStream() :
 	_bCompare(false),
-	_pdata(NULL),
+	_pdata(NULL),	
 	_cbyteOffset(0),
 	_cbyteLength(0),
-	_icompLast(0)
-{
+	_lastCompenentIndex(0)
+{	
 }
 
 
@@ -151,9 +177,9 @@ JLSOutputStream::~JLSOutputStream()
 //
 // Init()
 //
-void JLSOutputStream::Init(Size size, LONG cbpp, LONG ccomp)
+void JLSOutputStream::Init(Size size, LONG bitsPerSample, LONG ccomp)
 {
-		_segments.push_back(CreateMarkerStartOfFrame(size, cbpp, ccomp));
+	_segments.push_back(CreateMarkerStartOfFrame(size, bitsPerSample, ccomp));
 }
 
 
@@ -196,56 +222,71 @@ size_t JLSOutputStream::Write(BYTE* pdata, size_t cbyteLength)
 
 
 
-JLSInputStream::JLSInputStream(const BYTE* pdata, LONG cbyteLength) :
-		_pdata(pdata),
-		_cbyteOffset(0),
-		_cbyteLength(cbyteLength),
+JLSInputStream::JLSInputStream(ByteStreamInfo byteStreamInfo) :
+		_byteStream(byteStreamInfo),
+		_byteStreamStart(byteStreamInfo.rawData),
 		_bCompare(false),
-		_info()
+		_info(),
+		_rect()
 {
+}
+
+
+int ReadScanHeader(BYTE* compressedBytes)
+{
+	BYTE rgbyte[20];
+	size_t readBytes = 0;
+	::memcpy(rgbyte, compressedBytes, 4);
+	readBytes += 4;
+
+	size_t cbyteScanheader = rgbyte[3] - 2;
+
+	if (cbyteScanheader > sizeof(rgbyte))
+		throw JlsException(InvalidCompressedData);
+
+	::memcpy(rgbyte, compressedBytes, cbyteScanheader);
+	readBytes += cbyteScanheader;
+    return (int)readBytes;
 }
 
 //
 // Read()
 //
-void JLSInputStream::Read(void* pvoid, LONG cbyteAvailable)
+void JLSInputStream::Read(ByteStreamInfo rawPixels)
 {
 	ReadHeader();
 
 	JLS_ERROR error = CheckParameterCoherent(&_info);
 	if (error != OK)
 		throw JlsException(error);
+	
+	if (_rect.Width <= 0)
+	{
+		_rect.Width = _info.width;
+		_rect.Height = _info.height;
+	}
 
-	ReadPixels(pvoid, cbyteAvailable);
-}
+	int64_t bytesPerPlane = (int64_t)(_rect.Width) * _rect.Height * ((_info.bitspersample + 7)/8);
 
-
-
-
-
-//
-// ReadPixels()
-//
-void JLSInputStream::ReadPixels(void* pvoid, LONG cbyteAvailable)
-{
-	long long cbytePlane = (long long)(_info.width) * _info.height * ((_info.bitspersample + 7)/8);
-
-	if (cbyteAvailable < cbytePlane * _info.components)
+	if (rawPixels.rawData != NULL && int64_t(rawPixels.count) < bytesPerPlane * _info.components)
 		throw JlsException(UncompressedBufferTooSmall);
- 	
-	if (_info.ilv == ILV_NONE)
+
+	int componentsSeen = 0;
+	
+	while (componentsSeen < _info.components)
 	{
-		BYTE* pbyte = (BYTE*)pvoid;
-		for (LONG icomp = 0; icomp < _info.components; ++icomp)
-		{
-			ReadScan(pbyte);
-			pbyte += cbytePlane; 
-		}	
-	}
-	else
-	{
-		ReadScan(pvoid);
-	}
+		ReadStartOfScan(componentsSeen == 0);
+
+		std::auto_ptr<DecoderStrategy> qcodec = JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom);	
+		ProcessLine* processLine = qcodec->CreateProcess(rawPixels);
+		qcodec->DecodeScan(std::auto_ptr<ProcessLine>(processLine), _rect, &_byteStream, _bCompare); 
+		SkipBytes(&rawPixels, (size_t)bytesPerPlane);		
+
+		if (_info.ilv != ILV_NONE)
+			return;
+
+		componentsSeen += 1;
+	}	
 }
 
 // ReadNBytes()
@@ -277,33 +318,42 @@ void JLSInputStream::ReadHeader()
 
 		BYTE marker = (BYTE)ReadByte();
 
-		size_t cbyteStart = _cbyteOffset;
+		if (marker == JPEG_SOS)
+			return;
+
 		LONG cbyteMarker = ReadWord();
 
-		switch (marker)
-		{
-			case JPEG_SOS: ReadStartOfScan();  break;
-			case JPEG_SOF: ReadStartOfFrame(); break;
-			case JPEG_COM: ReadComment();	   break;
-			case JPEG_LSE: ReadPresetParameters();	break;
-			case JPEG_APP0: ReadJfif(); break;
-			case JPEG_APP7: ReadColorSpace(); break;
-			case JPEG_APP8: ReadColorXForm(); break;			
-			// Other tags not supported (among which DNL DRI)
-			default: 		throw JlsException(ImageTypeNotSupported);
-		}
+		int bytesRead = ReadMarker(marker) + 2;
+		
+		int paddingToRead = cbyteMarker - bytesRead;
 
-		if (marker == JPEG_SOS)
-		{				
-			_cbyteOffset = cbyteStart - 2;
-			return;
+		if (paddingToRead < 0)
+			throw JlsException(InvalidCompressedData);
+
+		for (int i = 0; i < paddingToRead; ++i)
+		{
+			ReadByte();
 		}
-		_cbyteOffset = cbyteStart + cbyteMarker;
 	}
 }
 
+int JLSInputStream::ReadMarker(BYTE marker)
+{
+		switch (marker)
+		{
+			case JPEG_SOF: return ReadStartOfFrame(); 
+			case JPEG_COM: return ReadComment();	   
+			case JPEG_LSE: return ReadPresetParameters();
+			case JPEG_APP0: return 0; 
+			case JPEG_APP7: return ReadColorSpace(); 
+			case JPEG_APP8: return ReadColorXForm(); 
+			// Other tags not supported (among which DNL DRI)
+			default: 		throw JlsException(ImageTypeNotSupported);
+		}
+}
 
-JpegMarkerSegment* EncodeStartOfScan(const JlsParamaters* pparams, LONG icomponent)
+
+JpegMarkerSegment* EncodeStartOfScan(const JlsParameters* pparams, LONG icomponent)
 {
 	BYTE itable		= 0;
 	
@@ -351,10 +401,9 @@ JpegMarkerSegment* CreateLSE(const JlsCustomParameters* pcustom)
 //
 // ReadPresetParameters()
 //
-void JLSInputStream::ReadPresetParameters()
+int JLSInputStream::ReadPresetParameters()
 {
 	LONG type = ReadByte();
-
 
 	switch (type)
 	{
@@ -365,43 +414,63 @@ void JLSInputStream::ReadPresetParameters()
 			_info.custom.T2 = ReadWord();
 			_info.custom.T3 = ReadWord();
 			_info.custom.RESET = ReadWord();
-			return;
+			return 11;
 		}
 	}
 
-	
+	return 1;
+}
+
+void Assert(bool valid)
+{
+	if (!valid)
+		throw JlsException(InvalidCompressedData);
 }
 
 
 //
 // ReadStartOfScan()
 //
-void JLSInputStream::ReadStartOfScan()
+void JLSInputStream::ReadStartOfScan(bool firstComponent)
 {
-	LONG ccomp = ReadByte();
-	for (LONG i = 0; i < ccomp; ++i)
+	if (!firstComponent)
+	{
+		Assert(ReadByte() == 0xFF);
+		Assert(ReadByte() == JPEG_SOS);
+	}
+	int length = ReadByte(); //length
+	length = length * 256 + ReadByte();
+	
+	LONG componentCount = ReadByte();
+	if (componentCount != 1 && componentCount != _info.components)
+		throw JlsException(ParameterValueNotSupported);
+
+	for (LONG i = 0; i < componentCount; ++i)
 	{
 		ReadByte();
 		ReadByte();
 	}
 	_info.allowedlossyerror = ReadByte();
 	_info.ilv = interleavemode(ReadByte());
+	Assert(ILV_NONE <= _info.ilv && _info.ilv <= ILV_SAMPLE);
+	Assert(ReadByte() == 0);
 
-	
 	if(_info.bytesperline == 0)
 	{
+		int width = _rect.Width != 0 ? _rect.Width : _info.width;
 		int components = _info.ilv == ILV_NONE ? 1 : _info.components;
-		_info.bytesperline = components*_info.width * ((_info.bitspersample+7)/8);
+		_info.bytesperline = components * width * ((_info.bitspersample + 7)/8);
 	}
-
 }
 
 
 //
 // ReadComment()
 //
-void JLSInputStream::ReadComment()
-{}
+int JLSInputStream::ReadComment()
+{
+	return 0;
+}
 
 
 //
@@ -451,12 +520,12 @@ JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
 	// thumbnail
 	rgbyte.push_back((BYTE)jfif->Xthumb);
 	rgbyte.push_back((BYTE)jfif->Ythumb);
-	if(jfif->Xthumb > 0) {
+	if(jfif->Xthumb > 0) 
+	{
 		if(jfif->pdataThumbnail)
 			throw JlsException(InvalidJlsParameters);
-		rgbyte.insert(rgbyte.end(), 
-			(BYTE*)jfif->pdataThumbnail, 
-			(BYTE*)jfif->pdataThumbnail+3*jfif->Xthumb*jfif->Ythumb
+
+		rgbyte.insert(rgbyte.end(), (BYTE*)jfif->pdataThumbnail, (BYTE*)jfif->pdataThumbnail+3*jfif->Xthumb*jfif->Ythumb
 		);
 	}
 	
@@ -467,7 +536,7 @@ JpegMarkerSegment* CreateJFIF(const JfifParameters* jfif)
 //
 // ReadStartOfFrame()
 //
-void JLSInputStream::ReadStartOfFrame()
+int JLSInputStream::ReadStartOfFrame()
 {
 	_info.bitspersample = ReadByte();
 	int cline = ReadWord();
@@ -475,6 +544,7 @@ void JLSInputStream::ReadStartOfFrame()
 	_info.width = ccol;
 	_info.height = cline;
 	_info.components= ReadByte();
+	return 6;
 }
 
 
@@ -483,10 +553,17 @@ void JLSInputStream::ReadStartOfFrame()
 //
 BYTE JLSInputStream::ReadByte()
 {  
-    if (_cbyteOffset >= _cbyteLength)
-	throw JlsException(InvalidCompressedData);
+	if (_byteStream.rawStream != NULL)
+		return (BYTE)_byteStream.rawStream->sbumpc();
+	
+	if (_byteStream.count <= 0)
+		throw JlsException(InvalidCompressedData);
 
-    return _pdata[_cbyteOffset++]; 
+	BYTE value = _byteStream.rawData[0]; 
+	
+	SkipBytes(&_byteStream, 1);
+
+	return value;
 }
 
 
@@ -500,47 +577,41 @@ int JLSInputStream::ReadWord()
 }
 
 
-void JLSInputStream::ReadScan(void* pvout) 
-{
-	std::auto_ptr<DecoderStrategy> qcodec(JlsCodecFactory<DecoderStrategy>().GetCodec(_info, _info.custom));
-	Size size = Size(_info.width,_info.height);
-	_cbyteOffset += qcodec->DecodeScan(pvout, size, _pdata + _cbyteOffset, _cbyteLength - _cbyteOffset, _bCompare); 
-}
-
 
 class JpegImageDataSegment: public JpegSegment
 {
 public:
-	JpegImageDataSegment(const void* pvoidRaw, const JlsParamaters& info, LONG icompStart, int ccompScan)  :
+
+	JpegImageDataSegment(ByteStreamInfo rawStream, const JlsParameters& info, LONG icompStart, int ccompScan)  :
 		_ccompScan(ccompScan),
 		_icompStart(icompStart),
-		_pvoidRaw(pvoidRaw),
+		_rawStreamInfo(rawStream),
 		_info(info)
-	{
+	{		
 	}
-
 
 	void Write(JLSOutputStream* pstream)
 	{		
-		JlsParamaters info = _info;
+		JlsParameters info = _info;
 		info.components = _ccompScan;	
-		std::auto_ptr<EncoderStrategy> qcodec(JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom));
-		size_t cbyteWritten = qcodec->EncodeScan((BYTE*)_pvoidRaw, Size(_info.width, _info.height), pstream->GetPos(), pstream->GetLength(), pstream->_bCompare ? pstream->GetPos() : NULL); 
+		std::auto_ptr<EncoderStrategy> qcodec =JlsCodecFactory<EncoderStrategy>().GetCodec(info, _info.custom);
+		ProcessLine* processLine = qcodec->CreateProcess(_rawStreamInfo);
+		ByteStreamInfo compressedData = {NULL, pstream->GetPos(), pstream->GetLength()};
+		size_t cbyteWritten = qcodec->EncodeScan(std::auto_ptr<ProcessLine>(processLine), &compressedData, pstream->_bCompare ? pstream->GetPos() : NULL); 
 		pstream->Seek(cbyteWritten);
 	}
 
 
-
 	int _ccompScan;
 	LONG _icompStart;
-	const void* _pvoidRaw;
-	JlsParamaters _info;
+	ByteStreamInfo _rawStreamInfo;
+	JlsParameters _info;	
 };
 
 
+ 
 
-
-void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparams)
+void JLSOutputStream::AddScan(ByteStreamInfo info, const JlsParameters* pparams)
 {
 	if (pparams->jfif.Ver)
 	{
@@ -550,34 +621,40 @@ void JLSOutputStream::AddScan(const void* pbyteComp, const JlsParamaters* pparam
 	{
 		_segments.push_back(CreateLSE(&pparams->custom));		
 	}
+	else if (pparams->bitspersample > 12)
+	{
+		JlsCustomParameters preset = ComputeDefault((1 << pparams->bitspersample) - 1, pparams->allowedlossyerror);
+        _segments.push_back(CreateLSE(&preset));
+	}
 
-	_icompLast += 1;
-	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _icompLast : -1));
-
-	Size size = Size(pparams->width, pparams->height);
+	_lastCompenentIndex += 1;
+	_segments.push_back(EncodeStartOfScan(pparams,pparams->ilv == ILV_NONE ? _lastCompenentIndex : -1));
+	
 	int ccomp = pparams->ilv == ILV_NONE ? 1 : pparams->components;
-		_segments.push_back(new JpegImageDataSegment(pbyteComp, *pparams, _icompLast, ccomp));
+	
+	_segments.push_back(new JpegImageDataSegment(info, *pparams, _lastCompenentIndex, ccomp));
 }
-
 
 //
 // ReadColorSpace()
 //
-void JLSInputStream::ReadColorSpace()
-{}
+int JLSInputStream::ReadColorSpace()
+{
+	return 0;
+}
 
 
 
 //
 // ReadColorXForm()
 //
-void JLSInputStream::ReadColorXForm()
+int JLSInputStream::ReadColorXForm()
 {
 	std::vector<char> sourceTag;
 	ReadNBytes(sourceTag, 4);
 
 	if(strncmp(&sourceTag[0],"mrfx", 4) != 0)
-		return;
+		return 4;
 	
 	int xform = ReadByte();
 	switch(xform) 
@@ -587,7 +664,7 @@ void JLSInputStream::ReadColorXForm()
 		case COLORXFORM_HP2:
 		case COLORXFORM_HP3:
 			_info.colorTransform = xform;
-			return;
+			return 5;
 		case COLORXFORM_RGB_AS_YUV_LOSSY:
 		case COLORXFORM_MATRIX:
 			throw JlsException(ImageTypeNotSupported);
@@ -596,3 +673,28 @@ void JLSInputStream::ReadColorXForm()
 	}
 }
 
+
+
+ByteStreamInfo FromByteArray(const void* bytes, size_t count)
+{
+	ByteStreamInfo info = ByteStreamInfo();
+	info.rawData = (BYTE*)bytes;
+	info.count = count;
+	return info;
+}
+
+ByteStreamInfo FromStream(std::basic_streambuf<char>* stream)
+{
+	ByteStreamInfo info = ByteStreamInfo();
+	info.rawStream = stream;	
+	return info;
+}
+
+void SkipBytes(ByteStreamInfo* streamInfo, size_t count)
+{
+	if (streamInfo->rawData == NULL)
+		return;
+
+	streamInfo->rawData += count;
+	streamInfo->count -= count;
+}
