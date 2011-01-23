@@ -120,7 +120,7 @@ namespace Dicom.HL7 {
 			if (segment == null) {
 				segment = new List<string>();
 				segment.Add(tag.Segment);
-				if (IsControlSegment(tag.Segment)) {
+				if (IsHeaderSegment(tag.Segment)) {
 					segment.Add("|");
 					segment.Add("^~\\&");
 				}
@@ -131,7 +131,7 @@ namespace Dicom.HL7 {
 				segment.Add(String.Empty);
 			segment[tag.Field] = value;
 
-			if (IsControlSegment(tag.Segment)) {
+			if (IsHeaderSegment(tag.Segment)) {
 				if (tag.Field == 1)
 					_field_delim = value[0];
 				else if (tag.Field == 2) {
@@ -290,7 +290,7 @@ namespace Dicom.HL7 {
 			StringBuilder hl7 = new StringBuilder();
 			foreach (List<string> segment in _segments) {
 				string id = segment[0];
-				if (IsControlSegment(id)) {
+				if (IsHeaderSegment(id)) {
 					field_delimiter = segment[1];
 
 					hl7.Append(id);
@@ -318,7 +318,7 @@ namespace Dicom.HL7 {
 					continue;
 
 				string id = line.Substring(0, 3);
-				if (IsControlSegment(id)) {
+				if (IsHeaderSegment(id)) {
 					msg._field_delim = line[3];
 					msg._component_delim = line[4];
 					msg._subcomponent_delim = line[7];
@@ -337,7 +337,7 @@ namespace Dicom.HL7 {
 			return msg;
 		}
 
-		public static bool IsControlSegment(string segmentId) {
+		public static bool IsHeaderSegment(string segmentId) {
 			return segmentId == "MSH" || segmentId == "BHS" || segmentId == "FHS";
 		}
 		#endregion
