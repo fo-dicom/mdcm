@@ -18,7 +18,7 @@ namespace Dicom.Dump {
 			Application.SetCompatibleTextRenderingDefault(false);
 
 			DicomCodec.RegisterCodecs();
-			DicomCodec.RegisterExternalCodecs(".", "Dicom.Codec.*.dll");
+			DicomCodec.RegisterExternalCodecs(".", "Dicom.Codec*.dll");
 
 			if (File.Exists("dicom.dic"))
 				DcmDictionary.ImportDictionary("dicom.dic");
