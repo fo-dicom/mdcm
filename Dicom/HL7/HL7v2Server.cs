@@ -5,7 +5,13 @@ using System.Net.Sockets;
 using System.Threading;
 
 namespace Dicom.HL7 {
-public delegate void HL7v2MessageCallback(MLLP client, HL7v2 hl7);
+	/// <summary>
+	/// Callback for received HL7v2 message.
+	/// </summary>
+	/// <param name="client">Connection to remote client</param>
+	/// <param name="hl7">Received HL7v2 message</param>
+	/// <returns>HL7 message to respond with or null if no response required</returns>
+	public delegate HL7v2 HL7v2MessageCallback(MLLP client, HL7v2 hl7);
 
 	public class HL7v2Server {
 		#region Private Members
@@ -79,18 +85,28 @@ public delegate void HL7v2MessageCallback(MLLP client, HL7v2 hl7);
 				MLLP mllp = new MLLP(stream, false);
 
 				while (socket.Connected && !_stop) {
-					if (!stream.DataAvailable) {
-						Thread.Sleep(50);
+					if (!socket.Poll(100000, SelectMode.SelectRead))
 						continue;
+
+					try {
+						if (!stream.DataAvailable)
+							break;
+					} catch {
+						// http://msdn.microsoft.com/en-us/library/system.net.sockets.networkstream.dataavailable.aspx
+						// "If the remote host shuts down or closes the connection, DataAvailable may throw a SocketException."
+						break;
 					}
-					string message = mllp.Receive();
+
+					string hl7 = mllp.Receive();
 
 					if (OnReceiveMessage != null) {
 						try {
-							HL7v2 hl7 = HL7v2.Parse(message);
-							OnReceiveMessage(mllp, hl7);
+							HL7v2 req = HL7v2.Parse(hl7);
+							HL7v2 rsp = OnReceiveMessage(mllp, req);
+							if (rsp != null)
+								mllp.Send(rsp.ToString());
 						} catch (Exception ex) {
-							Debug.Log.Error("Error in HL7 message handler: " + ex.ToString());
+							Debug.Log.Error("Error processing HL7 message: " + ex.ToString());
 						}
 					}
 				}
