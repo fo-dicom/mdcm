@@ -78,7 +78,7 @@ namespace Dicom.Data {
 		}
 
 		public override int GetHashCode() {
-			return base.GetHashCode();
+			return UID.GetHashCode();
 		}
 
 		private static DicomUID _instanceRootUid = null;
