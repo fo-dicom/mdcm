@@ -115,6 +115,43 @@ namespace Dicom.Network.Client {
 			}
 		}
 
+		public DcmDataset ToDataset() {
+			DcmDataset dataset = new DcmDataset();
+			switch (QueryRetrieveLevel) {
+			case DcmQueryRetrieveLevel.Patient:
+				dataset.AddElementWithValue(DicomTags.QueryRetrieveLevel, "PATIENT");
+				dataset.AddElementWithValue(DicomTags.PatientID, PatientID);
+				break;
+			case DcmQueryRetrieveLevel.Study:
+				dataset.AddElementWithValue(DicomTags.QueryRetrieveLevel, "STUDY");
+				if (!String.IsNullOrEmpty(PatientID))
+					dataset.AddElementWithValue(DicomTags.PatientID, PatientID);
+				dataset.AddElementWithValue(DicomTags.StudyInstanceUID, StudyInstanceUID);
+				break;
+			case DcmQueryRetrieveLevel.Series:
+				dataset.AddElementWithValue(DicomTags.QueryRetrieveLevel, "SERIES");
+				if (!String.IsNullOrEmpty(PatientID))
+					dataset.AddElementWithValue(DicomTags.PatientID, PatientID);
+				if (!String.IsNullOrEmpty(StudyInstanceUID))
+					dataset.AddElementWithValue(DicomTags.StudyInstanceUID, StudyInstanceUID);
+				dataset.AddElementWithValue(DicomTags.SeriesInstanceUID, SeriesInstanceUID);
+				break;
+			case DcmQueryRetrieveLevel.Image:
+				dataset.AddElementWithValue(DicomTags.QueryRetrieveLevel, "IMAGE");
+				if (!String.IsNullOrEmpty(PatientID))
+					dataset.AddElementWithValue(DicomTags.PatientID, PatientID);
+				if (!String.IsNullOrEmpty(StudyInstanceUID))
+					dataset.AddElementWithValue(DicomTags.StudyInstanceUID, StudyInstanceUID);
+				if (!String.IsNullOrEmpty(SeriesInstanceUID))
+					dataset.AddElementWithValue(DicomTags.SeriesInstanceUID, SeriesInstanceUID);
+				dataset.AddElementWithValue(DicomTags.SOPInstanceUID, SOPInstanceUID);
+				break;
+			default:
+				break;
+			}
+			return dataset;
+		}
+
 		public object UserState {
 			get { return _userState; }
 			set { _userState = value; }
@@ -124,7 +161,7 @@ namespace Dicom.Network.Client {
 
 	public delegate void CMoveResponseDelegate(CMoveQuery query, DcmDataset dataset, DcmStatus status, ushort remain, ushort complete, ushort warning, ushort failure);
 
-	public sealed class CMoveClient : DcmClientBase  {
+	public sealed class CMoveClient : DcmClientBase {
 		#region Private Members
 		private string _destAe;
 		private DicomUID _moveSopClass;
@@ -172,6 +209,7 @@ namespace Dicom.Network.Client {
 			DcmAssociate associate = new DcmAssociate();
 
 			byte pcid = associate.AddPresentationContext(_moveSopClass);
+			associate.AddTransferSyntax(pcid, DicomTransferSyntax.ExplicitVRLittleEndian);
 			associate.AddTransferSyntax(pcid, DicomTransferSyntax.ImplicitVRLittleEndian);
 
 			associate.CalledAE = CalledAE;
@@ -185,36 +223,8 @@ namespace Dicom.Network.Client {
 			if (_moveQueries.Count > 0) {
 				byte pcid = Associate.FindAbstractSyntax(MoveSopClassUID);
 				if (Associate.GetPresentationContextResult(pcid) == DcmPresContextResult.Accept) {
-					CMoveQuery query = _moveQueries.Dequeue();
-					DcmDataset dataset = new DcmDataset(Associate.GetAcceptedTransferSyntax(pcid));
-					switch (query.QueryRetrieveLevel) {
-					case DcmQueryRetrieveLevel.Patient:
-						dataset.AddElementWithValue(DicomTags.QueryRetrieveLevel, "PATIENT");
-						dataset.AddElementWithValue(DicomTags.PatientID, query.PatientID);
-						break;
-					case DcmQueryRetrieveLevel.Study:
-						dataset.AddElementWithValue(DicomTags.QueryRetrieveLevel, "STUDY");
-						dataset.AddElementWithValue(DicomTags.PatientID, query.PatientID);
-						dataset.AddElementWithValue(DicomTags.StudyInstanceUID, query.StudyInstanceUID);
-						break;
-					case DcmQueryRetrieveLevel.Series:
-						dataset.AddElementWithValue(DicomTags.QueryRetrieveLevel, "SERIES");
-						dataset.AddElementWithValue(DicomTags.PatientID, query.PatientID);
-						dataset.AddElementWithValue(DicomTags.StudyInstanceUID, query.StudyInstanceUID);
-						dataset.AddElementWithValue(DicomTags.SeriesInstanceUID, query.SeriesInstanceUID);
-						break;
-					case DcmQueryRetrieveLevel.Image:
-						dataset.AddElementWithValue(DicomTags.QueryRetrieveLevel, "IMAGE");
-						dataset.AddElementWithValue(DicomTags.PatientID, query.PatientID);
-						dataset.AddElementWithValue(DicomTags.StudyInstanceUID, query.StudyInstanceUID);
-						dataset.AddElementWithValue(DicomTags.SeriesInstanceUID, query.SeriesInstanceUID);
-						dataset.AddElementWithValue(DicomTags.SOPInstanceUID, query.SOPInstanceUID);
-						break;
-					default:
-						break;
-					}
-					_current = query;
-					SendCMoveRequest(pcid, 1, DestinationAE, Priority, dataset);
+					_current = _moveQueries.Dequeue();
+					SendCMoveRequest(pcid, 1, DestinationAE, Priority, _current.ToDataset());
 				}
 				else {
 					Log.Info("{0} -> Presentation context rejected: {1}", LogID, Associate.GetPresentationContextResult(pcid));
