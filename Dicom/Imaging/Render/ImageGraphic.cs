@@ -30,7 +30,7 @@ using Dicom.Imaging.Algorithms;
 using Dicom.Imaging.LUT;
 using Dicom.Imaging.Render;
 
-namespace Dicom.Imaging.Display {
+namespace Dicom.Imaging.Render {
 	public class ImageGraphic : IGraphic {
 		#region Protected Members
 		protected IPixelData _originalData;

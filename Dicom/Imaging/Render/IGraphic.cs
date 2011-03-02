@@ -24,7 +24,7 @@ using System.Drawing;
 
 using Dicom.Imaging.LUT;
 
-namespace Dicom.Imaging.Display {
+namespace Dicom.Imaging.Render {
 	public interface IGraphic {
 		int OriginalWidth { get; }
 		int OriginalHeight { get; }

@@ -23,7 +23,7 @@ using System;
 
 using Dicom.Imaging.Render;
 
-namespace Dicom.Imaging.Display {
+namespace Dicom.Imaging.Render {
 	public class OverlayGraphic : ImageGraphic {
 		#region Public Constructors
 		public OverlayGraphic(IPixelData pixelData, int offsetx, int offsety) {

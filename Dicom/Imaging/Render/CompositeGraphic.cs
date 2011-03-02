@@ -26,7 +26,7 @@ using System.Text;
 
 using Dicom.Imaging.LUT;
 
-namespace Dicom.Imaging.Display {
+namespace Dicom.Imaging.Render {
 	public class CompositeGraphic : IGraphic {
 		#region Private Members
 		private List<IGraphic> _layers = new List<IGraphic>();
