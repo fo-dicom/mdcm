@@ -146,6 +146,7 @@ namespace Dicom.Network.Client {
 
 		protected override void OnDimseTimeout() {
 			_closedOnError = true;
+			_error = "DIMSE Timeout";
 			Close();
 		}
 
