@@ -1007,6 +1007,60 @@ namespace Dicom.Data {
 		#endregion
 
 		#region Public Members
+		public float GetFloat() {
+			return GetFloat(0);
+		}
+
+		public float GetFloat(int index) {
+			string val = GetValue(index);
+			return float.Parse(val);
+		}
+
+		public float[] GetFloats() {
+			float[] vals = new float[GetVM()];
+			for (int i = 0; i < vals.Length; i++) {
+				vals[i] = GetFloat(i);
+			}
+			return vals;
+		}
+
+		public List<float> GetFloatList() {
+			List<float> vals = new List<float>(GetVM());
+			for (int i = 0; i < vals.Count; i++) {
+				vals[i] = GetFloat(i);
+			}
+			return vals;
+		}
+
+		public void SetFloat(float value) {
+			SetValue(value.ToString());
+		}
+		public void SetFloat(float value, int round) {
+			SetValue(Math.Round(value, round).ToString());
+		}
+
+		public void SetFloats(float[] values) {
+			string[] strs = new string[values.Length];
+			for (int i = 0; i < strs.Length; i++) {
+				strs[i] = values[i].ToString();
+			}
+			SetValues(strs);
+		}
+		public void SetFloats(float[] values, int round) {
+			string[] strs = new string[values.Length];
+			for (int i = 0; i < strs.Length; i++) {
+				strs[i] = Math.Round(values[i], round).ToString();
+			}
+			SetValues(strs);
+		}
+
+		public void SetFloats(IEnumerable<float> values) {
+			SetFloats(new List<float>(values).ToArray());
+		}
+		public void SetFloats(IEnumerable<float> values, int round) {
+			SetFloats(new List<float>(values).ToArray(), round);
+		}
+
 		public double GetDouble() {
 			return GetDouble(0);
 		}
@@ -1035,6 +1089,9 @@ namespace Dicom.Data {
 		public void SetDouble(double value) {
 			SetValue(value.ToString());
 		}
+		public void SetDouble(double value, int round) {
+			SetValue(Math.Round(value, round).ToString());
+		}
 
 		public void SetDoubles(double[] values) {
 			string[] strs = new string[values.Length];
@@ -1043,9 +1100,19 @@ namespace Dicom.Data {
 			}
 			SetValues(strs);
 		}
+		public void SetDoubles(double[] values, int round) {
+			string[] strs = new string[values.Length];
+			for (int i = 0; i < strs.Length; i++) {
+				strs[i] = Math.Round(values[i], round).ToString();
+			}
+			SetValues(strs);
+		}
 
 		public void SetDoubles(IEnumerable<double> values) {
 			SetDoubles(new List<double>(values).ToArray());
+		}
+		public void SetDoubles(IEnumerable<double> values, int round) {
+			SetDoubles(new List<double>(values).ToArray(), round);
 		}
 
 		public decimal GetDecimal() {

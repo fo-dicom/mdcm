@@ -628,6 +628,25 @@ namespace Dicom.Data {
 				throw new DicomDataException("Tried to access element with incorrect VR");
 			return null;
 		}
+
+		/// <summary>
+		/// Performs a recursive search for the specified tag. This function returns value elements only.
+		/// </summary>
+		/// <param name="tag">DICOM Tag</param>
+		/// <returns>First occurence of tag or null.</returns>
+		public IEnumerable<DcmElement> Search(DicomTag tag) {
+			foreach (DcmItem item in _items.Values) {
+				if (item.Tag == tag && item is DcmElement)
+					yield return item as DcmElement;
+				else if (item is DcmItemSequence) {
+					DcmItemSequence sq = item as DcmItemSequence;
+					foreach (DcmItemSequenceItem sqi in sq.SequenceItems) {
+						foreach (DcmElement elem in sqi.Dataset.Search(tag))
+							yield return elem;
+					}
+				}
+			}
+		}
 		#endregion
 
 		#region Data Access Methods
@@ -690,6 +709,10 @@ namespace Dicom.Data {
 			throw new DicomDataException("Element does not exist in Dataset");
 		}
 
+		public DateTime GetDateTime(DicomTag tag, DateTime deflt) {
+			return GetDateTime(tag, 0, deflt);
+		}
+
 		public DateTime GetDateTime(DicomTag tag, int index, DateTime deflt) {
 			DcmElement elem = GetElement(tag);
 			if (elem is DcmDate || elem is DcmTime || elem is DcmDateTime) {
@@ -742,21 +765,21 @@ namespace Dicom.Data {
 
 		public DicomTag GetDcmTag(DicomTag tag) {
 			DcmAttributeTag at = GetAT(tag);
-			if (at != null)
+			if (at != null && at.Length > 0)
 				return at.GetValue();
 			return null;
 		}
 
 		public DicomUID GetUID(DicomTag tag) {
 			DcmUniqueIdentifier ui = GetUI(tag);
-			if (ui != null)
+			if (ui != null && ui.Length > 0)
 				return ui.GetUID();
 			return null;
 		}
 
 		public int GetInt32(DicomTag tag, int deflt) {
 			DcmElement elem = GetElement(tag);
-			if (elem != null) {
+			if (elem != null && elem.Length > 0) {
 				if (elem.VR == DicomVR.IS)
 					return (elem as DcmIntegerString).GetInt32();
 				else if (elem.VR == DicomVR.SL)
@@ -769,21 +792,34 @@ namespace Dicom.Data {
 
 		public short GetInt16(DicomTag tag, short deflt) {
 			DcmSignedShort ss = GetSS(tag);
-			if (ss != null)
+			if (ss != null && ss.Length > 0)
 				return ss.GetValue();
 			return deflt;
 		}
 
 		public ushort GetUInt16(DicomTag tag, ushort deflt) {
 			DcmUnsignedShort us = GetUS(tag);
-			if (us != null)
+			if (us != null && us.Length > 0)
 				return us.GetValue();
+			return deflt;
+		}
+
+		public float GetFloat(DicomTag tag, float deflt) {
+			DcmElement elem = GetElement(tag);
+			if (elem != null && elem.Length > 0) {
+				if (elem.VR == DicomVR.FL)
+					return (elem as DcmFloatingPointSingle).GetValue();
+				else if (elem.VR == DicomVR.DS)
+					return (elem as DcmDecimalString).GetFloat();
+				else
+					throw new DicomDataException("Tried to access element with incorrect VR");
+			}
 			return deflt;
 		}
 
 		public double GetDouble(DicomTag tag, double deflt) {
 			DcmElement elem = GetElement(tag);
-			if (elem != null) {
+			if (elem != null && elem.Length > 0) {
 				if (elem.VR == DicomVR.FD)
 					return (elem as DcmFloatingPointDouble).GetValue();
 				else if (elem.VR == DicomVR.DS)
@@ -796,7 +832,7 @@ namespace Dicom.Data {
 
 		public decimal GetDecimal(DicomTag tag, decimal deflt) {
 			DcmDecimalString ds = GetDS(tag);
-			if (ds != null)
+			if (ds != null && ds.Length > 0)
 				return ds.GetDecimal();
 			return deflt;
 		}
