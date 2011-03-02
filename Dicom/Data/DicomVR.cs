@@ -111,33 +111,88 @@ namespace Dicom.Data {
 		private const byte PadSpace = 0x20;
 		private const byte PadZero = 0x00;
 
+		/// <summary>No VR</summary>
 		public static DicomVR NONE = new DicomVR("NONE", "No VR", false, false, false, PadZero, 0, 0, DicomVrRestriction.NotApplicable);
+
+		/// <summary>Application Entity</summary>
 		public static DicomVR AE = new DicomVR("AE", "Application Entity", true, false, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Age String</summary>
 		public static DicomVR AS = new DicomVR("AS", "Age String", true, false, true, PadSpace, 4, 1, DicomVrRestriction.Fixed);
+
+		/// <summary>Attribute Tag</summary>
 		public static DicomVR AT = new DicomVR("AT", "Attribute Tag", false, false, true, PadZero, 4, 4, DicomVrRestriction.Fixed);
+
+		/// <summary>Code String</summary>
 		public static DicomVR CS = new DicomVR("CS", "Code String", true, false, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Date</summary>
 		public static DicomVR DA = new DicomVR("DA", "Date", true, false, true, PadSpace, 8, 1, DicomVrRestriction.Fixed);
+
+		/// <summary>Decimal String</summary>
 		public static DicomVR DS = new DicomVR("DS", "Decimal String", true, false, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Date Time</summary>
 		public static DicomVR DT = new DicomVR("DT", "Date Time", true, false, true, PadSpace, 26, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Floating Point Double</summary>
 		public static DicomVR FD = new DicomVR("FD", "Floating Point Double", false, false, true, PadZero, 8, 8, DicomVrRestriction.Fixed);
+
+		/// <summary>Floating Point Single</summary>
 		public static DicomVR FL = new DicomVR("FL", "Floating Point Single", false, false, true, PadZero, 4, 4, DicomVrRestriction.Fixed);
+
+		/// <summary>Integer String</summary>
 		public static DicomVR IS = new DicomVR("IS", "Integer String", true, false, true, PadSpace, 12, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Long String</summary>
 		public static DicomVR LO = new DicomVR("LO", "Long String", true, true, true, PadSpace, 64, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Long Text</summary>
 		public static DicomVR LT = new DicomVR("LT", "Long Text", true, true, true, PadSpace, 10240, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Other Byte</summary>
 		public static DicomVR OB = new DicomVR("OB", "Other Byte", false, false, false, PadZero, 0, 1, DicomVrRestriction.Any);
+
+		/// <summary>Other Float</summary>
 		public static DicomVR OF = new DicomVR("OF", "Other Float", false, false, false, PadZero, 0, 4, DicomVrRestriction.Any);
+
+		/// <summary>Other Word</summary>
 		public static DicomVR OW = new DicomVR("OW", "Other Word", false, false, false, PadZero, 0, 2, DicomVrRestriction.Any);
+
+		/// <summary>Person Name</summary>
 		public static DicomVR PN = new DicomVR("PN", "Person Name", true, true, true, PadSpace, 64, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Short String</summary>
 		public static DicomVR SH = new DicomVR("SH", "Short String", true, true, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Signed Long</summary>
 		public static DicomVR SL = new DicomVR("SL", "Signed Long", false, false, true, PadZero, 4, 4, DicomVrRestriction.Fixed);
+
+		/// <summary>Sequence of Items</summary>
 		public static DicomVR SQ = new DicomVR("SQ", "Sequence of Items", false, false, false, PadZero, 0, 0, DicomVrRestriction.NotApplicable);
+
+		/// <summary>Signed Short</summary>
 		public static DicomVR SS = new DicomVR("SS", "Signed Short", false, false, true, PadZero, 2, 2, DicomVrRestriction.Fixed);
+
+		/// <summary>Short Text</summary>
 		public static DicomVR ST = new DicomVR("ST", "Short Text", true, true, true, PadSpace, 1024, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Time</summary>
 		public static DicomVR TM = new DicomVR("TM", "Time", true, false, true, PadSpace, 16, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Unique Identifier</summary>
 		public static DicomVR UI = new DicomVR("UI", "Unique Identifier", true, false, true, PadZero, 64, 1, DicomVrRestriction.Maximum);
+
+		/// <summary>Unsigned Long</summary>
 		public static DicomVR UL = new DicomVR("UL", "Unsigned Long", false, false, true, PadZero, 4, 4, DicomVrRestriction.Fixed);
+
+		/// <summary>Unknown</summary>
 		public static DicomVR UN = new DicomVR("UN", "Unknown", false, false, false, PadZero, 0, 1, DicomVrRestriction.Any);
+
+		/// <summary>Unsigned Short</summary>
 		public static DicomVR US = new DicomVR("US", "Unsigned Short", false, false, true, PadZero, 2, 2, DicomVrRestriction.Fixed);
+
+		/// <summary>Unlimited Text</summary>
 		public static DicomVR UT = new DicomVR("UT", "Unlimited Text", true, true, false, PadSpace, 0, 1, DicomVrRestriction.Any);
 
 		#region Static Methods
