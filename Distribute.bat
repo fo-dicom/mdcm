@@ -7,7 +7,9 @@ copy Dicom.Dump\bin\Release\*.dic Distribute\ /Y
 copy Dicom.Dump\bin\Release\*.txt Distribute\ /Y
 copy Dicom.Linq\bin\Release\*.dll Distribute\ /Y
 copy Dicom.Scu\bin\Release\*.exe Distribute\ /Y
+copy Release\*.dll Distribute\ /Y
 copy Dicom\bin\Release\Dicom.XML Distribute\ /Y
+copy README Distribute\ /Y
 copy "3rd Party\OpenSSL\*.dll" Distribute\ /Y
 del /F /Q Distribute\ssleay32.dll
 del /F /Q Distrubite\libeay32.dll
