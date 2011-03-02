@@ -33,19 +33,20 @@ namespace Dicom.Utility {
 		private object _queueLock;
 		private Queue<T> _queue;
 
-		private bool _pause;
-		private int _threadCount;
+		private volatile bool _pause;
+		private volatile int _threadCount;
 
-		private int _processed;
-		private int _active;
+		private volatile int _processed;
+		private volatile int _active;
 		#endregion
 
 		#region Public Constructors
-		public WorkQueue(WorkItemProcessor processor) : this(processor, Environment.ProcessorCount) {
+		public WorkQueue(WorkItemProcessor processor)
+			: this(processor, Environment.ProcessorCount) {
 		}
 
 		public WorkQueue(WorkItemProcessor processor, int threads) {
-			_threadCount = Math.Max(1, Math.Min(Environment.ProcessorCount * 2, threads));
+			_threadCount = threads;
 
 			_processor = processor;
 
@@ -78,15 +79,9 @@ namespace Dicom.Utility {
 		public bool Pause {
 			get { return _pause; }
 			set {
-				if (_pause != value) {
-					lock (_queueLock) {
-						_pause = value;
-
-						if (!_pause && _active < _threadCount) {
-							_active++;
-							ThreadPool.QueueUserWorkItem(WorkerProc);
-						}
-					}
+				lock (_queueLock) {
+					_pause = value;
+					ProcessNext();
 				}
 			}
 		}
@@ -94,39 +89,33 @@ namespace Dicom.Utility {
 
 		#region Public Methods
 		public void QueueWorkItem(T workItem) {
-			lock (_queueLock) {
+			lock (_queueLock)
 				_queue.Enqueue(workItem);
-
-				if (!_pause && _active < _threadCount) {
-					_active++;
-					ThreadPool.QueueUserWorkItem(WorkerProc);
-				}
-			}
+			ProcessNext();
 		}
 		#endregion
 
 		#region Private Members
-		private void WorkerProc(object state) {
-			while (true) {
-				T item;
+		private void ProcessNext() {
+			lock (_queueLock) {
+				if (_queue.Count > 0 && !_pause && _active < _threadCount) {
+					T item = _queue.Dequeue();
+					_processor.BeginInvoke(item, WorkerProcComplete, null);
+					_active++;
+				}
+			}
+		}
 
+		private void WorkerProcComplete(IAsyncResult result) {
+			try {
+				_processor.EndInvoke(result);
+			} catch {
+			} finally {
 				lock (_queueLock) {
-					if (_pause || _queue.Count == 0) {
-						_active--;
-						return;
-					}
-
-					item = _queue.Dequeue();
+					_processed++;
+					_active--;
 				}
-
-				try {
-					_processor(item);
-				}
-				catch {
-				}
-				finally {
-					Interlocked.Increment(ref _processed);
-				}
+				ProcessNext();
 			}
 		}
 		#endregion
