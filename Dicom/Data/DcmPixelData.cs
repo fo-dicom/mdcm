@@ -360,6 +360,27 @@ namespace Dicom.Data {
 			}
 		}
 
+		public short[] GetFrameDataS16(int frame) {
+			if (frame < 0 || frame >= NumberOfFrames)
+				throw new IndexOutOfRangeException("Requested frame out of range!");
+
+			unchecked {
+				int sign = 1 << HighBit;
+				int mask = sign - 1;
+				int count = ImageWidth * ImageHeight;
+				short[] pixels = new short[count];
+				ushort[] data = GetFrameDataU16(frame);
+				for (int p = 0; p < count; p++) {
+					ushort d = data[p];
+					if ((d & sign) != 0)
+						pixels[p] = (short)-(d & mask);
+					else
+						pixels[p] = (short)(d & mask);
+				}
+				return pixels;
+			}
+		}
+
 		public int[] GetFrameDataS32(int frame) {
 			if (SamplesPerPixel == 1) {
 				if (BitsAllocated != 8 && BitsAllocated != 16)
