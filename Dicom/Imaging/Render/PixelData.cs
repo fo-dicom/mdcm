@@ -22,6 +22,9 @@
 using System;
 using System.Collections;
 
+using Dicom;
+using Dicom.Data;
+
 using Dicom.Imaging.Algorithms;
 using Dicom.Imaging.LUT;
 
@@ -34,6 +37,27 @@ namespace Dicom.Imaging.Render {
 		int Components { get; }
 		IPixelData Rescale(double scale);
 		void Render(ILUT lut, int[] output);
+	}
+
+	public static class PixelDataFactory {
+		public static IPixelData Create(DcmPixelData pixelData, int frame) {
+			PhotometricInterpretation pi = PhotometricInterpretation.Lookup(pixelData.PhotometricInterpretation);
+			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2 || pi == PhotometricInterpretation.PaletteColor) {
+				if (pixelData.BitsStored <= 8)
+					return new GrayscalePixelDataU8(pixelData.ImageWidth, pixelData.ImageHeight, pixelData.GetFrameDataU8(frame));
+				else if (pixelData.BitsStored <= 16) {
+					if (pixelData.IsSigned)
+						return new GrayscalePixelDataS16(pixelData.ImageWidth, pixelData.ImageHeight, pixelData.GetFrameDataS16(frame));
+					else
+						return new GrayscalePixelDataU16(pixelData.ImageWidth, pixelData.ImageHeight, pixelData.GetFrameDataU16(frame));
+				} else
+					throw new DicomImagingException("Unsupported pixel data value for bits stored: {0}", pixelData.BitsStored);
+			} else if (pi == PhotometricInterpretation.Rgb || pi == PhotometricInterpretation.YbrFull) {
+				return new ColorPixelData24(pixelData.ImageWidth, pixelData.ImageHeight, pixelData.GetFrameDataU8(frame));
+			} else {
+				throw new DicomImagingException("Unsupported pixel data photometric interpretation: {0}", pi.Value);
+			}
+		}
 	}
 
 	public class GrayscalePixelDataU8 : IPixelData {

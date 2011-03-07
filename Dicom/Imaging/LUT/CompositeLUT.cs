@@ -26,9 +26,6 @@ namespace Dicom.Imaging.LUT {
 	public class CompositeLUT : ILUT {
 		#region Private Members
 		private List<ILUT> _luts = new List<ILUT>();
-
-		private int _minValue;
-		private int _maxValue;
 		#endregion
 
 		#region Public Properties
@@ -42,9 +39,7 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 
 		#region Public Constructor
-		public CompositeLUT(int minValue, int maxValue) {
-			_minValue = minValue;
-			_maxValue = maxValue;
+		public CompositeLUT() {
 		}
 		#endregion
 
@@ -60,7 +55,7 @@ namespace Dicom.Imaging.LUT {
 				ILUT lut = FinalLUT;
 				if (lut != null)
 					return lut.MinimumOutputValue;
-				return _minValue;
+				return 0;
 			}
 		}
 
@@ -69,7 +64,7 @@ namespace Dicom.Imaging.LUT {
 				ILUT lut = FinalLUT;
 				if (lut != null)
 					return lut.MaximumOutputValue;
-				return _maxValue;
+				return 255;
 			}
 		}
 

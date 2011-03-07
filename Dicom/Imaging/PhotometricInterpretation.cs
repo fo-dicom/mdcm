@@ -89,7 +89,7 @@ namespace Dicom.Imaging {
 			_photometricInterpretationMap.Add(YbrRct.Value, YbrRct);
 		}
 
-		public PhotometricInterpretation Lookup(string photometricInterpretation) {
+		public static PhotometricInterpretation Lookup(string photometricInterpretation) {
 			PhotometricInterpretation pi;
 			if (!_photometricInterpretationMap.TryGetValue(photometricInterpretation, out pi))
 				throw new DicomImagingException("Unknown Photometric Interpretation [{0}]", photometricInterpretation);

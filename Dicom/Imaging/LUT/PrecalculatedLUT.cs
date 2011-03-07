@@ -34,9 +34,9 @@ namespace Dicom.Imaging.LUT {
 		#endregion
 
 		#region Public Constructor
-		public PrecalculatedLUT(int minValue, int maxValue, ILUT lut) {
-			_minValue = minValue;
-			_maxValue = maxValue;
+		public PrecalculatedLUT(ILUT lut) {
+			_minValue = lut.MinimumOutputValue;
+			_maxValue = lut.MaximumOutputValue;
 			_offset = -_minValue;
 			_table = new int[_maxValue - _minValue + 1];
 			_lut = lut;

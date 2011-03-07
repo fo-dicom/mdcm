@@ -84,6 +84,7 @@
     <Compile Include="HL7\HL7v2Server.cs" />
     <Compile Include="HL7\HL7v2.cs" />
     <Compile Include="Imaging\Algorithms\BilinearInterpolation.cs" />
+    <Compile Include="Imaging\DicomImage.cs" />
     <Compile Include="Imaging\DicomImagingException.cs" />
     <Compile Include="Imaging\ColorTable.cs" />
     <Compile Include="Imaging\LUT\PrecalculatedLUT.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Imaging\PhotometricInterpretation.cs" />
     <Compile Include="Imaging\Process\GenericGrayscalePipeline.cs" />
     <Compile Include="Imaging\Process\IPipeline.cs" />
+    <Compile Include="Imaging\Process\RgbColorPipeline.cs" />
     <Compile Include="Imaging\Render\CompositeGraphic.cs" />
     <Compile Include="Imaging\Render\IGraphic.cs" />
     <Compile Include="Imaging\Render\ImageGraphic.cs" />

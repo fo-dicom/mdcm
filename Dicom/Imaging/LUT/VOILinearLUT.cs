@@ -32,15 +32,11 @@ namespace Dicom.Imaging.LUT {
 		private int _windowStart;
 		private int _windowEnd;
 
-		private int _minValue;
-		private int _maxValue;
 		private bool _valid;
 		#endregion
 
 		#region Public Constructors
-		public VOILinearLUT(int minValue, int maxValue, WindowLevel wl) {
-			_minValue = minValue;
-			_maxValue = maxValue;
+		public VOILinearLUT(WindowLevel wl) {
 			WindowLevel = wl;
 		}
 		#endregion

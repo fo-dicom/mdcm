@@ -22,27 +22,36 @@
 using System;
 using System.Drawing;
 
+using Dicom;
+using Dicom.Data;
+
 using Dicom.Imaging.LUT;
 
 namespace Dicom.Imaging.Process {
 	public interface IPipeline {
-		WindowLevel WindowLevel {
-			get;
-			set;
-		}
-
-		bool Invert {
-			get;
-			set;
-		}
-
-		Color[] ColorMap {
-			get;
-			set;
-		}
-
 		ILUT LUT {
 			get;
+		}
+	}
+
+	public static class PipelineFactory {
+		public static IPipeline Create(DcmDataset dataset, DcmPixelData pixelData) {
+			PhotometricInterpretation pi = PhotometricInterpretation.Lookup(pixelData.PhotometricInterpretation);
+			if (pi == PhotometricInterpretation.Monochrome1 || pi == PhotometricInterpretation.Monochrome2) {
+				GenericGrayscalePipeline pipeline = new GenericGrayscalePipeline(pixelData.RescaleSlope, pixelData.RescaleIntercept, pixelData.BitsStored, pixelData.IsSigned);
+				if (pi == PhotometricInterpretation.Monochrome1)
+					pipeline.ColorMap = ColorTable.Monochrome1;
+				else
+					pipeline.ColorMap = ColorTable.Monochrome2;
+				WindowLevel[] wl = WindowLevel.FromDataset(dataset);
+				if (wl.Length > 0)
+					pipeline.WindowLevel = wl[0];
+				return pipeline;
+			} else if (pi == PhotometricInterpretation.Rgb) {
+				return new RgbColorPipeline();
+			} else {
+				throw new DicomImagingException("Unsupported pipeline photometric interpretation: {0}", pi.Value);
+			}
 		}
 	}
 }

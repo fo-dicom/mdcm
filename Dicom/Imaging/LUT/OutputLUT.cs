@@ -41,7 +41,7 @@ namespace Dicom.Imaging.LUT {
 		public Color[] ColorMap {
 			get { return _lut; }
 			set {
-				if (_lut == null || _lut.Length != 256)
+				if (value == null || value.Length != 256)
 					throw new DicomImagingException("Expected 256 entry color map");
 				_lut = value;
 				_table = null;

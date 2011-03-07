@@ -6,14 +6,20 @@ using Dicom.Imaging.LUT;
 namespace Dicom.Imaging.Process {
 	public class GenericGrayscalePipeline : IPipeline {
 		#region Private Members
-		private PrecalculatedLUT _lut;
+		private CompositeLUT _lut;
+		private RescaleLUT _rescaleLut;
 		private VOILinearLUT _voiLut;
 		private OutputLUT _outputLut;
 		private bool _invert;
 		#endregion
 
 		#region Public Constructor
-		public GenericGrayscalePipeline() {
+		public GenericGrayscalePipeline(double slope, double intercept, int bitsStored, bool signed) {
+			int minValue = signed ? -(1 << (bitsStored - 1)) : 0;
+			int maxValue = signed ? (1 << (bitsStored - 1)) : (1 << (bitsStored + 1) - 1);
+			_rescaleLut = new RescaleLUT(minValue, maxValue, slope, intercept);
+			_voiLut = new VOILinearLUT(new WindowLevel(maxValue - minValue, (minValue + maxValue) / 2));
+			_outputLut = new OutputLUT(ColorTable.Monochrome2);
 		}
 		#endregion
 
@@ -39,8 +45,14 @@ namespace Dicom.Imaging.Process {
 		public ILUT LUT {
 			get {
 				if (_lut == null) {
-					CompositeLUT composite = new CompositeLUT(0, 0);
-
+					CompositeLUT composite = new CompositeLUT();
+					if (_rescaleLut != null)
+						composite.Add(_rescaleLut);
+					composite.Add(_voiLut);
+					composite.Add(_outputLut);
+					if (_invert)
+						composite.Add(new InvertLUT(_outputLut.MinimumOutputValue, _outputLut.MaximumOutputValue));
+					_lut = composite;
 				}
 				return _lut;
 			}
