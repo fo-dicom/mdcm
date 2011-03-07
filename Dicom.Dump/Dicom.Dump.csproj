@@ -83,6 +83,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DicomDumpResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="DicomQuickDisplayForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DicomQuickDisplayForm.Designer.cs">
+      <DependentUpon>DicomQuickDisplayForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DicomDictionaryForm.resx">
@@ -97,6 +103,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>DicomDumpResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DicomQuickDisplayForm.resx">
+      <DependentUpon>DicomQuickDisplayForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -122,6 +131,14 @@
     <None Include="Dicom.snk" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dicom.Codec\x64\Dicom.Codec64.vcxproj">
+      <Project>{240BAD3B-5A3F-4C2C-9E3B-9FC46BAAB45A}</Project>
+      <Name>Dicom.Codec64</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dicom.Codec\x86\Dicom.Codec.vcxproj">
+      <Project>{55C90D88-88E8-41B5-B5E7-C3B7AF1E1ECD}</Project>
+      <Name>Dicom.Codec</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dicom\Dicom.csproj">
       <Project>{1EFC91C4-EEF8-4AE4-B512-24C00CA46D59}</Project>
       <Name>Dicom</Name>

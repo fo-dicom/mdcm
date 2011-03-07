@@ -101,7 +101,7 @@ namespace Dicom.Forms {
 
 			if (success) {
 				if (ff.Dataset.Contains(DicomTags.PixelData)) {
-					tsbViewImage.Enabled = false;
+					tsbViewImage.Enabled = true;
 					tsbExtractPixels.Enabled = true;
 					tsbPixelDataMD5.Enabled = true;
 				}
@@ -368,22 +368,14 @@ namespace Dicom.Forms {
 		}
 
 		private void OnViewImage(object sender, EventArgs e) {
-			//if (_selected == -1)
-			//    return;
+			if (_selected == -1)
+				return;
 
-			//try {
-			//    DicomFileFormat ff = new DicomFileFormat();
-			//    ff.Load(_files[_selected], DicomReadOptions.Default);
-
-			//    DicomQuickDisplayForm qdf = new DicomQuickDisplayForm(ff.Dataset);
-			//    qdf.ShowDialog(this);
-
-			//    GC.Collect();
-			//    GC.WaitForPendingFinalizers();
-			//    GC.Collect();
-			//}
-			//catch {
-			//}
+			try {
+				DicomQuickDisplayForm qdf = new DicomQuickDisplayForm(_files[_selected]);
+				qdf.ShowDialog(this);
+			} catch {
+			}
 		}
 
 		private void OnClickPrev(object sender, EventArgs e) {
