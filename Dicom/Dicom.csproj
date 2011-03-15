@@ -165,6 +165,7 @@
     <Compile Include="Network\PDataTFStream.cs" />
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Utility\ActiveSchedule.cs" />
+    <Compile Include="Utility\AssemblyDetails.cs" />
     <Compile Include="Utility\Cache.cs" />
     <Compile Include="Utility\PreloadQueue.cs" />
     <Compile Include="Utility\LogWriter.cs" />

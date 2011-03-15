@@ -25,6 +25,7 @@ using System.IO;
 using System.Reflection;
 
 using Dicom.Data;
+using Dicom.Utility;
 
 namespace Dicom.Codec {
 	#region IDcmCodec
@@ -90,8 +91,6 @@ namespace Dicom.Codec {
 		}
 
 		public static void RegisterCodecs() {
-			_codecs = new Dictionary<DicomTransferSyntax, Type>();
-
 			Assembly main = Assembly.GetEntryAssembly();
 			AssemblyName[] referenced = main.GetReferencedAssemblies();
 
@@ -107,17 +106,28 @@ namespace Dicom.Codec {
 			DirectoryInfo dir = new DirectoryInfo(path);
 			FileInfo[] files = dir.GetFiles(pattern);
 			foreach (FileInfo file in files) {
+				Debug.Log.Info("Codec File: {0}", file.FullName);
 				try {
+					//AssemblyDetails details = AssemblyDetails.FromFile(file.FullName);
+					//if (details.CPUVersion == CPUVersion.x64 && IntPtr.Size != 8) continue;
+					//if (details.CPUVersion == CPUVersion.x86 && IntPtr.Size != 4) continue;
+
 					Assembly asm = Assembly.LoadFile(file.FullName);
 					RegisterCodecs(asm);
-				} catch {
+				} catch (BadImageFormatException) {
+					// incorrect CPU version
+				} catch (Exception e) {
+					Debug.Log.Error("Unable to load codecs from file [{0}]: {1}", file.FullName, e.ToString());
 				}
 			}
 		}
 
 		private static void RegisterCodecs(Assembly asm) {
+			if (_codecs == null)
+				_codecs = new Dictionary<DicomTransferSyntax, Type>();
+
 			bool x64 = (IntPtr.Size == 8);
-			string m = null;
+			string m = String.Empty;
 
 			PortableExecutableKinds kind;
 			ImageFileMachine machine;
