@@ -159,6 +159,9 @@
     <ClInclude Include="..\CharLS\util.h">
       <Filter>Header Files\CharLS</Filter>
     </ClInclude>
+    <ClInclude Include="..\OpenJPEG\opj_config.h">
+      <Filter>Header Files\OpenJPEG</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\JpegCodec.i">

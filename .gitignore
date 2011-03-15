@@ -7,6 +7,7 @@ obj/
 bin/
 Debug/
 Release/
+ipch/
 Distribute/
 /_ReSharper.DICOM
 TestResult.xml

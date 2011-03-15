@@ -15,6 +15,7 @@ using Dicom.Data;
 using Dicom.Forms;
 
 using Aga.Controls.Tree;
+using DicomDump;
 
 namespace Dicom.Forms {
 	public partial class DicomDumpForm : Form {

@@ -123,14 +123,10 @@ namespace Dicom.Codec {
 			ImageFileMachine machine;
 			asm.ManifestModule.GetPEKind(out kind, out machine);
 
-			if (kind == PortableExecutableKinds.ILOnly)
-				m = "";
-			else if (kind == PortableExecutableKinds.PE32Plus)
+			if ((kind & PortableExecutableKinds.PE32Plus) != 0)
 				m = " [x64]";
-			else if (kind == PortableExecutableKinds.Required32Bit)
+			else if ((kind & PortableExecutableKinds.Required32Bit) != 0)
 				m = " [x86]";
-			else
-				m = " [Unknown]";
 
 			Type[] types = asm.GetExportedTypes();
 			for (int i = 0; i < types.Length; i++) {
