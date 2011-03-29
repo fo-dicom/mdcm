@@ -22,7 +22,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+#if !SILVERLIGHT
 using System.IO.Compression;
+#endif
 using System.Text;
 
 using Dicom.Data;
@@ -74,10 +76,12 @@ namespace Dicom.IO {
 			set {
 				_syntax = value;
 				_endian = _syntax.Endian;
+#if !SILVERLIGHT
 				if (_syntax.IsDeflate)
 					_writer = EndianBinaryWriter.Create(
 						new DeflateStream(_stream, CompressionMode.Compress), _encoding, _endian);
 				else
+#endif
 					_writer = EndianBinaryWriter.Create(_stream, _encoding, _endian);
 			}
 		}

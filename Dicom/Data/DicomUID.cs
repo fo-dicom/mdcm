@@ -86,6 +86,7 @@ namespace Dicom.Data {
 			get {
 				if (_instanceRootUid == null) {
 					lock (GenerateUidLock) {
+#if !SILVERLIGHT
 						if (_instanceRootUid == null) {
 							NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
 							for (int i = 0; i < interfaces.Length; i++) {
@@ -102,7 +103,8 @@ namespace Dicom.Data {
 							}
 							_instanceRootUid = Generate(Implementation.ClassUID, Environment.TickCount);
 						}
-					}
+#endif
+                    }
 				}
 				return _instanceRootUid;
 			}

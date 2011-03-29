@@ -131,12 +131,14 @@ namespace Dicom.Data {
 				dsr.Dataset = _metainfo;
 				dsr.Read(DcmFileMetaInfo.StopTag, options | DicomReadOptions.FileMetaInfoOnly);
 
+#if !SILVERLIGHT
 				if (_metainfo.TransferSyntax.IsDeflate) {
 					MemoryStream ms = StreamUtility.Deflate(fs, false);
 					dsr = new DicomStreamReader(ms);
 				}
+#endif
 
-				_dataset = new DcmDataset(_metainfo.TransferSyntax);
+                _dataset = new DcmDataset(_metainfo.TransferSyntax);
 				dsr.Dataset = _dataset;
 				DicomReadStatus status = dsr.Read(stopTag, options);
 

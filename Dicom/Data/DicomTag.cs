@@ -27,8 +27,12 @@ using System.Text;
 
 namespace Dicom.Data {
 	/// <summary>DICOM Tag</summary>
+#if SILVERLIGHT
+    public sealed class DicomTag {
+#else
 	[Serializable]
 	public sealed class DicomTag : ISerializable {
+#endif
 		#region Private Members
 		private ushort _g;
 		private ushort _e;
@@ -58,17 +62,18 @@ namespace Dicom.Data {
 			_c = (uint)_g << 16 | (uint)_e;
 			_p = creator ?? String.Empty;
 		}
-
+#if !SILVERLIGHT
 		private DicomTag(SerializationInfo info, StreamingContext context) {
 			_g = info.GetUInt16("Group");
 			_e = info.GetUInt16("Element");
 			_c = (uint)_g << 16 | (uint)_e;
 			_p = String.Empty;
 		}
-		#endregion
+#endif
+        #endregion
 
-		#region Public Properties
-		public ushort Group {
+        #region Public Properties
+        public ushort Group {
 			get { return _g; }
 		}
 		public ushort Element {
@@ -213,12 +218,13 @@ namespace Dicom.Data {
 				return null;
 			}
 		}
-
+#if !SILVERLIGHT
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context) {
 			info.AddValue("Group", Group);
 			info.AddValue("Element", Element);
 		}
-	}
+#endif
+    }
 
 	/// <summary>Compares two DicomTag objects for sorting.</summary>
 	public class DicomTagComparer : IComparer<DicomTag> {

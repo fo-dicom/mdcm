@@ -656,29 +656,38 @@ namespace Dicom.Data {
 		}
 		#endregion
 
-		public string ComputeMD5() {
+        public string ComputeMD5()
+        {
+#if SILVERLIGHT
+            SHA256 md5 = new SHA256Managed();
+#else
 			MD5 md5 = new MD5CryptoServiceProvider();
+#endif
 
-			byte[] hash = null;
-			if (NumberOfFrames == 1) {
-				byte[] frame = GetFrameDataU8(0);
-				hash = md5.ComputeHash(frame);
-			} else {
-				for (int i = 0; i < NumberOfFrames; i++) {
-					byte[] frame = GetFrameDataU8(i);
+            byte[] hash = null;
+            if (NumberOfFrames == 1)
+            {
+                byte[] frame = GetFrameDataU8(0);
+                hash = md5.ComputeHash(frame);
+            }
+            else
+            {
+                for (int i = 0; i < NumberOfFrames; i++)
+                {
+                    byte[] frame = GetFrameDataU8(i);
 
-					if (i < (NumberOfFrames - 1))
-						md5.TransformBlock(frame, 0, frame.Length, frame, 0);
-					else
-						md5.TransformFinalBlock(frame, 0, frame.Length);
-				}
-				hash = md5.Hash;
-			}
+                    if (i < (NumberOfFrames - 1))
+                        md5.TransformBlock(frame, 0, frame.Length, frame, 0);
+                    else
+                        md5.TransformFinalBlock(frame, 0, frame.Length);
+                }
+                hash = md5.Hash;
+            }
 
-			return BitConverter.ToString(hash).Replace("-", "");
-		}
+            return BitConverter.ToString(hash).Replace("-", "");
+        }
 
-		public override string ToString() {
+	    public override string ToString() {
 			StringBuilder sb = new StringBuilder();
 			sb.AppendFormat("Pixel Data (VR={0}): {1}\n", PixelDataItem.VR.VR, TransferSyntax);
 			sb.AppendFormat("    Photometric Interpretation: {0}\n", PhotometricInterpretation);

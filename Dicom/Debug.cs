@@ -31,7 +31,12 @@ using Dicom.Utility;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+#if SILVERLIGHT
+using SyslogTarget = NLog.Targets.ConsoleTarget;
+using ColoredConsoleTarget = NLog.Targets.ConsoleTarget;
+#else
 using NLog.Win32.Targets;
+#endif
 
 namespace Dicom
 {
@@ -64,8 +69,10 @@ namespace Dicom
 			LoggingConfiguration config = new LoggingConfiguration();
 
 			SyslogTarget st = new SyslogTarget();
+#if !SILVERLIGHT
 			st.Port = port;
-			config.AddTarget("Syslog", st);
+#endif
+            config.AddTarget("Syslog", st);
 
 			config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, st));
 
@@ -94,14 +101,21 @@ namespace Dicom
 
 		private static string _startdir;
 		public static string GetStartDirectory() {
-			if (_startdir == null) {
+            if (_startdir == null)
+            {
+#if SILVERLIGHT
+                _startdir = Environment.CurrentDirectory;
+#else
 				_startdir = Process.GetCurrentProcess().StartInfo.WorkingDirectory;
-				if (String.IsNullOrEmpty(_startdir)) {
-					_startdir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-					_startdir = _startdir.Substring(6);
-				}
-			}
-			return _startdir;
+#endif
+                if (String.IsNullOrEmpty(_startdir))
+                {
+                    _startdir =
+                        Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+                    _startdir = _startdir.Substring(6);
+                }
+            }
+		    return _startdir;
 		}
 
 		public static string GetCallingFunction() {

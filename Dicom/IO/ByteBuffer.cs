@@ -312,9 +312,15 @@ namespace Dicom.IO {
 			return dwords;
 		}
 
-		public string GetString() {
+		public string GetString()
+		{
+#if SILVERLIGHT
+		    byte[] bytes = ToBytes();
+			return _encoding.GetString(bytes, 0, bytes.Length);
+#else
 			return _encoding.GetString(ToBytes());
-		}
+#endif
+        }
 
 		public void SetString(string val) {
 			_data = _encoding.GetBytes(val);

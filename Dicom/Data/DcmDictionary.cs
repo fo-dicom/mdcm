@@ -3026,8 +3026,12 @@ namespace Dicom.Data {
 		/// <param name="filename"></param>
 		public static void ImportDictionary(string filename) {
 			lock (Lock) {
+#if SILVERLIGHT
+			    IEnumerable<string> lines = File.ReadLines(filename);
+#else
 				string[] lines = File.ReadAllLines(filename);
-				foreach (string ln in lines) {
+#endif
+                            foreach (string ln in lines) {
 					try {
 						string line = ln.Trim();
 						if (line == String.Empty || line.StartsWith("#"))
@@ -3076,8 +3080,13 @@ namespace Dicom.Data {
 		/// <param name="filename"></param>
 		public static void ImportDcmtkPrivateDictionary(string filename) {
 			lock (Lock) {
+#if SILVERLIGHT
+                IEnumerable<string> lines = File.ReadLines(filename);
+#else
 				string[] lines = File.ReadAllLines(filename);
-				foreach (string ln in lines) {
+#endif
+                foreach (string ln in lines)
+                {
 					try {
 						string line = ln.Trim();
 						if (line == String.Empty || line.StartsWith("#"))
