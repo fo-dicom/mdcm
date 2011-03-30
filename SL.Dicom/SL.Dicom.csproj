@@ -50,14 +50,19 @@
     <Reference Include="NLog">
       <HintPath>..\3rd Party\SL\NLog.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
-    <Reference Include="System.Windows.Browser" />
+    <Reference Include="System.Xml.Linq, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Dicom.Linq\Data\XDicom.cs">
+      <Link>Data\XDicom.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom.Linq\Utility\Helper.cs">
+      <Link>Utility\Helper.cs</Link>
+    </Compile>
     <Compile Include="..\Dicom\Codec\DcmCodecParameters.cs">
       <Link>Codec\DcmCodecParameters.cs</Link>
     </Compile>
@@ -187,6 +192,9 @@
     <Compile Include="..\Dicom\Utility\PreloadQueue.cs">
       <Link>Utility\PreloadQueue.cs</Link>
     </Compile>
+    <Compile Include="..\Dicom\Utility\Utility.cs">
+      <Link>Utility\Utility.cs</Link>
+    </Compile>
     <Compile Include="..\Dicom\Utility\Wildcard.cs">
       <Link>Utility\Wildcard.cs</Link>
     </Compile>
@@ -194,7 +202,7 @@
       <Link>Utility\WorkQueue.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility\SortedList.cs" />
+    <Compile Include="Support\SortedList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Dicom\dicom.dic">

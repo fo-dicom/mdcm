@@ -28,7 +28,13 @@ using System.Threading;
 using Dicom.IO;
 using Dicom.Utility;
 
-namespace Dicom.Data {
+#if SILVERLIGHT
+using MD5 = System.Security.Cryptography.SHA1;
+using MD5CryptoServiceProvider = System.Security.Cryptography.SHA1Managed;
+#endif
+
+namespace Dicom.Data
+{
 	public class DcmPixelData {
 		#region Private Members
 		private string _imageType;
@@ -658,11 +664,7 @@ namespace Dicom.Data {
 
         public string ComputeMD5()
         {
-#if SILVERLIGHT
-            SHA256 md5 = new SHA256Managed();
-#else
 			MD5 md5 = new MD5CryptoServiceProvider();
-#endif
 
             byte[] hash = null;
             if (NumberOfFrames == 1)
