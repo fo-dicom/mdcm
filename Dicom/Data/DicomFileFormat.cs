@@ -136,7 +136,7 @@ namespace Dicom.Data {
         /// </summary>
         /// <param name="fs">File stream to read</param>
         /// <param name="options">DICOM read options</param>
-        public DicomReadStatus Load(FileStream fs, DicomReadOptions options)
+        public DicomReadStatus Load(Stream fs, DicomReadOptions options)
         {
             return Load(fs, null, options);
         }
@@ -147,10 +147,10 @@ namespace Dicom.Data {
 	    /// <param name="fs">File stream to read</param>
 	    /// <param name="stopTag">Tag to stop parsing at</param>
 	    /// <param name="options">DICOM read options</param>
-        public DicomReadStatus Load(FileStream fs, DicomTag stopTag, DicomReadOptions options)
+        public DicomReadStatus Load(Stream fs, DicomTag stopTag, DicomReadOptions options)
         {
             fs.Seek(128, SeekOrigin.Begin);
-            CheckFileHeader(fs);
+            if (!CheckFileHeader(fs)) return DicomReadStatus.UnknownError;
             DicomStreamReader dsr = new DicomStreamReader(fs);
 
             _metainfo = new DcmFileMetaInfo();
@@ -178,9 +178,9 @@ namespace Dicom.Data {
 			bool isDicom = false;
 			using (FileStream fs = File.OpenRead(file)) {
 				fs.Seek(128, SeekOrigin.Begin);
-				if (fs.ReadByte() == (byte)'D' ||
-					fs.ReadByte() == (byte)'I' ||
-					fs.ReadByte() == (byte)'C' ||
+				if (fs.ReadByte() == (byte)'D' &&
+					fs.ReadByte() == (byte)'I' &&
+					fs.ReadByte() == (byte)'C' &&
 					fs.ReadByte() == (byte)'M')
 					isDicom = true;
 				fs.Close();
@@ -196,7 +196,15 @@ namespace Dicom.Data {
 				throw new DicomDataException("Invalid DICOM file: " + fs.Name);
 		}
 
-		/// <summary>
+        private static bool CheckFileHeader(Stream fs)
+        {
+            return (fs.ReadByte() == (byte) 'D' &&
+                    fs.ReadByte() == (byte) 'I' &&
+                    fs.ReadByte() == (byte) 'C' &&
+                    fs.ReadByte() == (byte) 'M');
+        }
+
+        /// <summary>
 		/// Gets file stream starting at DICOM dataset
 		/// </summary>
 		/// <param name="file">Filename</param>
