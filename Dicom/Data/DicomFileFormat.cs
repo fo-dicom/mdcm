@@ -112,8 +112,11 @@ namespace Dicom.Data {
 		/// <param name="file">Filename</param>
 		/// <param name="options">DICOM read options</param>
 		public DicomReadStatus Load(String file, DicomReadOptions options) {
-			return Load(file, null, options);
-		}
+            using (FileStream fs = File.OpenRead(file))
+            {
+                return Load(fs, null, options);
+            }
+        }
 
 		/// <summary>
 		/// Loads a dicom file, stopping at a certain tag
@@ -122,14 +125,39 @@ namespace Dicom.Data {
 		/// <param name="stopTag">Tag to stop parsing at</param>
 		/// <param name="options">DICOM read options</param>
 		public DicomReadStatus Load(String file, DicomTag stopTag, DicomReadOptions options) {
-			using (FileStream fs = File.OpenRead(file)) {
-				fs.Seek(128, SeekOrigin.Begin);
-				CheckFileHeader(fs);
-				DicomStreamReader dsr = new DicomStreamReader(fs);
+			using (FileStream fs = File.OpenRead(file))
+			{
+			    return Load(fs, stopTag, options);
+			}
+		}
 
-				_metainfo = new DcmFileMetaInfo();
-				dsr.Dataset = _metainfo;
-				dsr.Read(DcmFileMetaInfo.StopTag, options | DicomReadOptions.FileMetaInfoOnly);
+        /// <summary>
+        /// Loads a dicom file
+        /// </summary>
+        /// <param name="fs">File stream to read</param>
+        /// <param name="options">DICOM read options</param>
+        public DicomReadStatus Load(FileStream fs, DicomReadOptions options)
+        {
+            return Load(fs, null, options);
+        }
+
+        /// <summary>
+	    /// Loads a dicom file, stopping at a certain tag
+	    /// </summary>
+	    /// <param name="fs">File stream to read</param>
+	    /// <param name="stopTag">Tag to stop parsing at</param>
+	    /// <param name="options">DICOM read options</param>
+        public DicomReadStatus Load(FileStream fs, DicomTag stopTag, DicomReadOptions options)
+	    {
+	        if (fs.CanSeek && fs.CanRead)
+	        {
+	            fs.Seek(128, SeekOrigin.Begin);
+	            CheckFileHeader(fs);
+	            DicomStreamReader dsr = new DicomStreamReader(fs);
+
+	            _metainfo = new DcmFileMetaInfo();
+	            dsr.Dataset = _metainfo;
+	            dsr.Read(DcmFileMetaInfo.StopTag, options | DicomReadOptions.FileMetaInfoOnly);
 
 #if !SILVERLIGHT
 				if (_metainfo.TransferSyntax.IsDeflate) {
@@ -138,17 +166,19 @@ namespace Dicom.Data {
 				}
 #endif
 
-                _dataset = new DcmDataset(_metainfo.TransferSyntax);
-				dsr.Dataset = _dataset;
-				DicomReadStatus status = dsr.Read(stopTag, options);
+	            _dataset = new DcmDataset(_metainfo.TransferSyntax);
+	            dsr.Dataset = _dataset;
+	            DicomReadStatus status = dsr.Read(stopTag, options);
 
-				fs.Close();
+	            fs.Close();
 
-				return status;
-			}
-		}
+	            return status;
+	        }
+	        return DicomReadStatus.UnknownError;
+	    }
 
-		public static bool IsDicomFile(string file) {
+	    public static bool IsDicomFile(string file)
+        {
 			bool isDicom = false;
 			using (FileStream fs = File.OpenRead(file)) {
 				fs.Seek(128, SeekOrigin.Begin);
