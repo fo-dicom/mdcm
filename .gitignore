@@ -11,3 +11,4 @@ ipch/
 Distribute/
 /_ReSharper.DICOM
 TestResult.xml
+*.vs10x

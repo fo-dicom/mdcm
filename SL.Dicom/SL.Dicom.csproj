@@ -45,6 +45,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Dicom.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="NLog">
@@ -211,6 +217,7 @@
     <None Include="..\Dicom\private.dic">
       <Link>private.dic</Link>
     </None>
+    <None Include="Dicom.snk" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HL7\" />
