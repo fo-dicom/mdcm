@@ -58,6 +58,7 @@
     </Reference>
     <Reference Include="system" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Net" />
     <Reference Include="System.Xml.Linq, Version=2.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -144,6 +145,75 @@
     <Compile Include="..\Dicom\Flags.cs">
       <Link>Flags.cs</Link>
     </Compile>
+    <Compile Include="..\Dicom\Imaging\Algorithms\BilinearInterpolation.cs">
+      <Link>Imaging\Algorithms\BilinearInterpolation.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\ColorTable.cs">
+      <Link>Imaging\ColorTable.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\DicomImage.cs">
+      <Link>Imaging\DicomImage.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\DicomImagingException.cs">
+      <Link>Imaging\DicomImagingException.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\LUT\CompositeLUT.cs">
+      <Link>Imaging\LUT\CompositeLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\LUT\ILUT.cs">
+      <Link>Imaging\LUT\ILUT.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\LUT\InvertLUT.cs">
+      <Link>Imaging\LUT\InvertLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\LUT\OutputLUT.cs">
+      <Link>Imaging\LUT\OutputLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\LUT\PaddingLUT.cs">
+      <Link>Imaging\LUT\PaddingLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\LUT\PrecalculatedLUT.cs">
+      <Link>Imaging\LUT\PrecalculatedLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\LUT\RescaleLUT.cs">
+      <Link>Imaging\LUT\RescaleLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\LUT\VOILinearLUT.cs">
+      <Link>Imaging\LUT\VOILinearLUT.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\PhotometricInterpretation.cs">
+      <Link>Imaging\PhotometricInterpretation.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\Process\GenericGrayscalePipeline.cs">
+      <Link>Imaging\Process\GenericGrayscalePipeline.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\Process\IPipeline.cs">
+      <Link>Imaging\Process\IPipeline.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\Process\RgbColorPipeline.cs">
+      <Link>Imaging\Process\RgbColorPipeline.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\Render\CompositeGraphic.cs">
+      <Link>Imaging\Render\CompositeGraphic.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\Render\IGraphic.cs">
+      <Link>Imaging\Render\IGraphic.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\Render\ImageGraphic.cs">
+      <Link>Imaging\Render\ImageGraphic.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\Render\OverlayGraphic.cs">
+      <Link>Imaging\Render\OverlayGraphic.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\Render\PixelData.cs">
+      <Link>Imaging\Render\PixelData.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\SpatialTransform.cs">
+      <Link>Imaging\SpatialTransform.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Imaging\WindowLevel.cs">
+      <Link>Imaging\WindowLevel.cs</Link>
+    </Compile>
     <Compile Include="..\Dicom\Implementation.cs">
       <Link>Implementation.cs</Link>
     </Compile>
@@ -208,7 +278,15 @@
       <Link>Utility\WorkQueue.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Support\SortedList.cs" />
+    <Compile Include="SL\Bitmap.cs" />
+    <Compile Include="SL\Color.cs" />
+    <Compile Include="SL\ColorPalette.cs" />
+    <Compile Include="SL\Graphics.cs" />
+    <Compile Include="SL\Image.cs" />
+    <Compile Include="SL\PixelFormat.cs" />
+    <Compile Include="SL\Point.cs" />
+    <Compile Include="SL\RotateFlipType.cs" />
+    <Compile Include="SL\SortedList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Dicom\dicom.dic">
@@ -221,10 +299,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HL7\" />
-    <Folder Include="Imaging\Algorithms\" />
-    <Folder Include="Imaging\LUT\" />
-    <Folder Include="Imaging\Process\" />
-    <Folder Include="Imaging\Render\" />
     <Folder Include="Network\Client\" />
     <Folder Include="Network\Server\" />
   </ItemGroup>
