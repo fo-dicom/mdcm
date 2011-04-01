@@ -15,14 +15,14 @@ namespace System.Drawing
 
         protected Image(BitmapSource image)
         {
-            Self = image;
+            Object = image;
         }
 
         #endregion
         
         #region PROPERTIES
 
-        public BitmapSource Self { get; private set; }
+        public BitmapSource Object { get; private set; }
 
         internal ColorPalette Palette { get; set; }
 

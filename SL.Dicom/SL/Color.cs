@@ -25,7 +25,7 @@ namespace System.Drawing
 
         #region PROPERTIES
 
-        public Windows.Media.Color Self
+        public Windows.Media.Color Object
         {
             get { return _color; }
         }
