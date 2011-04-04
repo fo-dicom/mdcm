@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Dicom;
 using Dicom.Data;
+using Dicom.Imaging;
 
 namespace SL.DicomToXml
 {
@@ -32,6 +33,7 @@ namespace SL.DicomToXml
                     var txtWriter = new StringWriter();
                     xmlDoc.Save(txtWriter);
                     dicomFileDump.Text = txtWriter.ToString();
+                    dicomImage.Source = new DicomImage(ff.Dataset).Render();
                 }
             }
         }

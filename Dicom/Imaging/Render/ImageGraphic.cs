@@ -190,10 +190,32 @@ namespace Dicom.Imaging.Render {
 			_flipX = flipx;
 			_flipY = flipy;
 		}
+
 #if SILVERLIGHT
         public BitmapSource RenderImage(ILUT lut)
         {
-            throw new NotImplementedException();
+            bool render = false;
+            if (_bitmap == null)
+            {
+                _pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
+                _bitmap = new WriteableBitmap(ScaledData.Width, ScaledData.Height);
+                render = true;
+            }
+            if (_applyLut && lut != null && !lut.IsValid)
+            {
+                lut.Recalculate();
+                render = true;
+            }
+            if (render)
+            {
+                ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
+            }
+
+            // TODO Handle rotation and flip before assigning pixels to bitmap
+            for (int i = 0; i < _pixels.Count; ++i) _bitmap.Pixels[i] = _pixels.Data[i];
+            _bitmap.Invalidate();
+
+            return _bitmap;
         }
 #else
 		public Image RenderImage(ILUT lut) {

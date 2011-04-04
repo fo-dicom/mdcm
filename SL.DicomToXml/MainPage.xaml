@@ -20,7 +20,7 @@
 
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="2*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -31,6 +31,7 @@
         <HyperlinkButton Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" NavigateUri="http://github.com/cureos/mdcm">
             <Image Stretch="None" Source="Resources/symbol.jpg"/>
         </HyperlinkButton>
-        <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="dicomFileDump" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
+        <TextBox Grid.Row="1" Grid.Column="0" x:Name="dicomFileDump" VerticalAlignment="Stretch" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
+        <Image Grid.Row="1" Grid.Column="1" x:Name="dicomImage"/>
     </Grid>
 </UserControl>
