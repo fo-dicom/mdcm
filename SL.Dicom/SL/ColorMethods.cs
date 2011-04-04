@@ -10,7 +10,7 @@ namespace System.Windows.Media
     {
         public static int ToArgb(this Color iColor)
         {
-            return iColor.A << 0x18 + iColor.R << 0x10 + iColor.G << 0x8 + iColor.B;
+            return (iColor.A << 0x18) + (iColor.R << 0x10) + (iColor.G << 0x8) + iColor.B;
         }
     }
 }
