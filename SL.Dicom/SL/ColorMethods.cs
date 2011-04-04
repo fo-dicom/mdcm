@@ -4,23 +4,13 @@
 // which accompanies this distribution, and is available at
 // http://www.eclipse.org/legal/epl-v10.html
 
-namespace System.Drawing.Imaging
+namespace System.Windows.Media
 {
-    public sealed class ColorPalette
+    public static class ColorMethods
     {
-        #region CONSTRUCTORS
-
-        internal ColorPalette(Color[] entries)
+        public static int ToArgb(this Color iColor)
         {
-            Entries = entries;
+            return iColor.A << 0x18 + iColor.R << 0x10 + iColor.G << 0x8 + iColor.B;
         }
-
-        #endregion
-        
-        #region AUTO-IMPLEMENTED PROPERTIES
-
-        internal Color[] Entries { get; private set; }
-
-        #endregion
     }
 }
