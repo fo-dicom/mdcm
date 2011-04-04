@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+#if SILVERLIGHT
+using System.Windows.Media.Imaging;
+#else
 using System.Drawing;
 using System.Drawing.Imaging;
+#endif
 using System.Text;
-
 using Dicom;
 using Dicom.Data;
 using Dicom.Imaging.LUT;
@@ -52,7 +55,12 @@ namespace Dicom.Imaging {
 
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <returns>Rendered image</returns>
-		public Image Render() {
+#if SILVERLIGHT
+        public BitmapSource Render()
+#else
+        public Image Render()
+#endif
+        {
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 			return graphic.RenderImage(_pipeline.LUT);
 		}

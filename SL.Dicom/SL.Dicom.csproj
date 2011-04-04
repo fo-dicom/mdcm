@@ -278,14 +278,10 @@
       <Link>Utility\WorkQueue.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SL\Bitmap.cs" />
     <Compile Include="SL\Color.cs" />
     <Compile Include="SL\ColorPalette.cs" />
-    <Compile Include="SL\Graphics.cs" />
     <Compile Include="SL\Image.cs" />
-    <Compile Include="SL\PixelFormat.cs" />
     <Compile Include="SL\Point.cs" />
-    <Compile Include="SL\RotateFlipType.cs" />
     <Compile Include="SL\SortedList.cs" />
   </ItemGroup>
   <ItemGroup>

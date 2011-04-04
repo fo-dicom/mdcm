@@ -27,14 +27,5 @@ namespace System.Drawing
         internal ColorPalette Palette { get; set; }
 
         #endregion
-
-        #region METHODS
-
-        internal void RotateFlip(RotateFlipType rotateFlipType)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 }

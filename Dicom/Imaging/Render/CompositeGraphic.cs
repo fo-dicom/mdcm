@@ -21,9 +21,12 @@
 
 using System;
 using System.Collections.Generic;
+#if SILVERLIGHT
+using System.Windows.Media.Imaging;
+#else
 using System.Drawing;
+#endif
 using System.Text;
-
 using Dicom.Imaging.LUT;
 
 namespace Dicom.Imaging.Render {
@@ -131,7 +134,12 @@ namespace Dicom.Imaging.Render {
 			foreach (IGraphic graphic in _layers)
 				graphic.Transform(scale, rotation, flipx, flipy);
 		}
-
+#if SILVERLIGHT
+        public BitmapSource RenderImage(ILUT lut)
+        {
+            throw new NotImplementedException();
+        }
+#else
 		public Image RenderImage(ILUT lut) {
 			Image img = BackgroundLayer.RenderImage(lut);
 			if (_layers.Count > 1) {
@@ -144,6 +152,7 @@ namespace Dicom.Imaging.Render {
 			}
 			return img;
 		}
-		#endregion
-	}
+#endif
+        #endregion
+    }
 }

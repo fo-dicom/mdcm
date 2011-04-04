@@ -20,10 +20,13 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
+#if SILVERLIGHT
+using System.Windows.Media.Imaging;
+#else
 using System.Drawing;
 using System.Drawing.Imaging;
+#endif
 using System.Threading;
-
 using Dicom.Utility;
 
 using Dicom.Imaging.Algorithms;
@@ -37,7 +40,11 @@ namespace Dicom.Imaging.Render {
 		protected IPixelData _scaledData;
 
 		protected PinnedIntArray _pixels;
+#if SILVERLIGHT
+	    protected WriteableBitmap _bitmap;
+#else
 		protected Bitmap _bitmap;
+#endif
 
 		protected double _scaleFactor;
 		protected int _rotation;
@@ -183,7 +190,12 @@ namespace Dicom.Imaging.Render {
 			_flipX = flipx;
 			_flipY = flipy;
 		}
-
+#if SILVERLIGHT
+        public BitmapSource RenderImage(ILUT lut)
+        {
+            throw new NotImplementedException();
+        }
+#else
 		public Image RenderImage(ILUT lut) {
 			bool render = false;
 			if (_bitmap == null) {
@@ -235,6 +247,7 @@ namespace Dicom.Imaging.Render {
 				}
 			}
 		}
-		#endregion
-	}
+#endif
+        #endregion
+    }
 }

@@ -20,8 +20,11 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
+#if SILVERLIGHT
+using System.Windows.Media.Imaging;
+#else
 using System.Drawing;
-
+#endif
 using Dicom.Imaging.LUT;
 
 namespace Dicom.Imaging.Render {
@@ -45,6 +48,10 @@ namespace Dicom.Imaging.Render {
 		void FlipX();
 		void FlipY();
 		void Transform(double scale, int rotation, bool flipx, bool flipy);
+#if SILVERLIGHT
+        BitmapSource RenderImage(ILUT lut);
+#else
 		Image RenderImage(ILUT lut);
-	}
+#endif
+    }
 }
