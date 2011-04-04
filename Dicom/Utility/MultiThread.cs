@@ -35,8 +35,10 @@ namespace Dicom.Utility {
 			For(start, end, 4, action);
 		}
 		public static void For(int start, int end, int chunkSize, ForDelegate action) {
+#if SILVERLIGHT
+            for (int i = start; i < end; ++i) action(i);
+#else
 			object oLock = new object();
-
 			ProcessDelegate process = delegate() {
 				for (int n = 0; n < end;) {
 					lock (oLock) {
@@ -56,6 +58,7 @@ namespace Dicom.Utility {
 				handles[i] = process.BeginInvoke(ProcessCallback, process).AsyncWaitHandle;
 			}
 			WaitHandle.WaitAll(handles);
+#endif
 		}
 
 		public delegate void ForEachDelegate<T>(T item);

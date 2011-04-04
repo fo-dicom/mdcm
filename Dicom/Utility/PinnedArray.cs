@@ -26,9 +26,9 @@ namespace Dicom.Utility {
 	public class PinnedArray<T> : IDisposable {
 		#region Private Members
 		private T[] _data;
-		private int _size;
 		private int _count;
 #if !SILVERLIGHT
+		private int _size;
 		private GCHandle _handle;
 		private IntPtr _pointer;
 #endif
@@ -43,11 +43,11 @@ namespace Dicom.Utility {
 			get { return _count; }
 		}
 
+#if !SILVERLIGHT
 		public int ByteSize {
 			get { return _size; }
 		}
 
-#if !SILVERLIGHT
 		public IntPtr Pointer {
 			get { return _pointer; }
 		}
@@ -61,9 +61,9 @@ namespace Dicom.Utility {
 		#region Public Constructor
 		public PinnedArray(int count) {
 			_count = count;
-			_size = Marshal.SizeOf(typeof(T)) * _count;
 			_data = new T[_count];
 #if !SILVERLIGHT
+			_size = Marshal.SizeOf(typeof(T)) * _count;
 			_handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
 			_pointer = _handle.AddrOfPinnedObject();
 #endif
@@ -71,9 +71,9 @@ namespace Dicom.Utility {
 
 		public PinnedArray(T[] data) {
 			_count = data.Length;
-			_size = Marshal.SizeOf(typeof(T)) * _count;
 			_data = data;
 #if !SILVERLIGHT
+			_size = Marshal.SizeOf(typeof(T)) * _count;
 			_handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
 			_pointer = _handle.AddrOfPinnedObject();
 #endif

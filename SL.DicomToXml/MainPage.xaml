@@ -32,6 +32,6 @@
             <Image Stretch="None" Source="Resources/symbol.jpg"/>
         </HyperlinkButton>
         <TextBox Grid.Row="1" Grid.Column="0" x:Name="dicomFileDump" VerticalAlignment="Stretch" IsReadOnly="True" VerticalScrollBarVisibility="Auto" />
-        <Image Grid.Row="1" Grid.Column="1" x:Name="dicomImage"/>
+        <Image Grid.Row="1" Grid.Column="1" x:Name="dicomImage" Stretch="None"/>
     </Grid>
 </UserControl>
