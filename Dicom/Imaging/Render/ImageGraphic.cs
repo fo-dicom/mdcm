@@ -212,8 +212,11 @@ namespace Dicom.Imaging.Render {
                 ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
             }
 
-            // TODO Handle rotation and flip before assigning pixels to bitmap
             for (int i = 0; i < _pixels.Count; ++i) _bitmap.Pixels[i] = _pixels.Data[i];
+            _bitmap.Rotate(_rotation);
+            if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
+            if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
+
             _bitmap.Invalidate();
 
             return _bitmap;

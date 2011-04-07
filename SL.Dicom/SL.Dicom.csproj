@@ -281,6 +281,8 @@
     <Compile Include="SL\ColorMethods.cs" />
     <Compile Include="SL\Point.cs" />
     <Compile Include="SL\SortedList.cs" />
+    <Compile Include="SL\WriteableBitmapBaseExtensions.cs" />
+    <Compile Include="SL\WriteableBitmapTransformationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Dicom\dicom.dic">

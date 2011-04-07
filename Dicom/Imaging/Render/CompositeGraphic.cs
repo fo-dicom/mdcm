@@ -138,7 +138,16 @@ namespace Dicom.Imaging.Render {
 #if SILVERLIGHT
         public ImageSource RenderImage(ILUT lut)
         {
-            throw new NotImplementedException();
+            WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
+            if (_layers.Count > 1)
+            {
+                for (int i = 1; i < _layers.Count; ++i)
+                {
+                    WriteableBitmap layer = _layers[i].RenderImage(null) as WriteableBitmap;
+                    // TODO Add layer to background bitmap
+                }
+            }
+            return img;
         }
 #else
 		public Image RenderImage(ILUT lut) {

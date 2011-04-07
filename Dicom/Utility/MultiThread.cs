@@ -26,19 +26,17 @@ using System.Threading;
 namespace Dicom.Utility {
 	public static class MultiThread {
 		public delegate void ProcessDelegate();
+#if !SILVERLIGHT
 		public static void ProcessCallback(IAsyncResult result) {
 			((ProcessDelegate)result.AsyncState).EndInvoke(result);
 		}
+#endif
 
-		public delegate void ForDelegate(int n);
+        public delegate void ForDelegate(int n);
 		public static void For(int start, int end, ForDelegate action) {
 			For(start, end, 4, action);
 		}
 		public static void For(int start, int end, int chunkSize, ForDelegate action) {
-#if SILVERLIGHT
-            // For the moment ignoring chunkSize
-            for (int i = start; i < end; ++i) action(i);
-#else
 			object oLock = new object();
 			ProcessDelegate process = delegate() {
 				for (int n = 0; n < end;) {
@@ -56,10 +54,18 @@ namespace Dicom.Utility {
 			int threads = Environment.ProcessorCount;
 			WaitHandle[] handles = new WaitHandle[threads];
 			for (int i = 0; i < threads; i++) {
+#if SILVERLIGHT
+                handles[i] = new ManualResetEvent(false);
+			    ThreadPool.QueueUserWorkItem(delegate(object state)
+			                                     {
+			                                         process();
+			                                         ((ManualResetEvent)state).Set();
+			                                     }, handles[i]);
+#else
 				handles[i] = process.BeginInvoke(ProcessCallback, process).AsyncWaitHandle;
+#endif
 			}
 			WaitHandle.WaitAll(handles);
-#endif
 		}
 
 		public delegate void ForEachDelegate<T>(T item);
@@ -84,7 +90,16 @@ namespace Dicom.Utility {
 			int threads = Environment.ProcessorCount;
 			WaitHandle[] handles = new WaitHandle[threads];
 			for (int i = 0; i < threads; i++) {
+#if SILVERLIGHT
+                handles[i] = new ManualResetEvent(false);
+                ThreadPool.QueueUserWorkItem(delegate(object state)
+                                                 {
+                                                     process();
+                                                     ((ManualResetEvent)state).Set();
+                                                 }, handles[i]);
+#else
 				handles[i] = process.BeginInvoke(ProcessCallback, process).AsyncWaitHandle;
+#endif
 			}
 			WaitHandle.WaitAll(handles);
 		}
