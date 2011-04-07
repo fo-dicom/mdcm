@@ -212,7 +212,8 @@ namespace Dicom.Imaging.Render {
                 ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
             }
 
-            for (int i = 0; i < _pixels.Count; ++i) _bitmap.Pixels[i] = _pixels.Data[i];
+//            for (int i = 0; i < _pixels.Count; ++i) _bitmap.Pixels[i] = _pixels.Data[i];
+            MultiThread.For(0, _pixels.Count, delegate(int i) { _bitmap.Pixels[i] = _pixels.Data[i]; });
             _bitmap.Rotate(_rotation);
             if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
             if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
