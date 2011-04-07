@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 #if SILVERLIGHT
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #else
 using System.Drawing;
@@ -56,7 +57,7 @@ namespace Dicom.Imaging {
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <returns>Rendered image</returns>
 #if SILVERLIGHT
-        public BitmapSource Render()
+        public ImageSource Render()
 #else
         public Image Render()
 #endif

@@ -21,6 +21,7 @@
 
 using System;
 #if SILVERLIGHT
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #else
 using System.Drawing;
@@ -49,7 +50,7 @@ namespace Dicom.Imaging.Render {
 		void FlipY();
 		void Transform(double scale, int rotation, bool flipx, bool flipy);
 #if SILVERLIGHT
-        BitmapSource RenderImage(ILUT lut);
+        ImageSource RenderImage(ILUT lut);
 #else
 		Image RenderImage(ILUT lut);
 #endif

@@ -36,6 +36,7 @@ namespace Dicom.Utility {
 		}
 		public static void For(int start, int end, int chunkSize, ForDelegate action) {
 #if SILVERLIGHT
+            // For the moment ignoring chunkSize
             for (int i = start; i < end; ++i) action(i);
 #else
 			object oLock = new object();

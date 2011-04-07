@@ -21,6 +21,7 @@
 
 using System;
 #if SILVERLIGHT
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #else
 using System.Drawing;
@@ -192,7 +193,7 @@ namespace Dicom.Imaging.Render {
 		}
 
 #if SILVERLIGHT
-        public BitmapSource RenderImage(ILUT lut)
+        public ImageSource RenderImage(ILUT lut)
         {
             bool render = false;
             if (_bitmap == null)

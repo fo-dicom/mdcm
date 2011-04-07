@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 #if SILVERLIGHT
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #else
 using System.Drawing;
@@ -135,7 +136,7 @@ namespace Dicom.Imaging.Render {
 				graphic.Transform(scale, rotation, flipx, flipy);
 		}
 #if SILVERLIGHT
-        public BitmapSource RenderImage(ILUT lut)
+        public ImageSource RenderImage(ILUT lut)
         {
             throw new NotImplementedException();
         }
