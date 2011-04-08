@@ -176,7 +176,7 @@ namespace Dicom.Network.Client {
 					if (_originalTransferSyntax.IsEncapsulated) {
 						// Dataset is compressed... decompress
 						try {
-							ff.ChangeTransferSytnax(DicomTransferSyntax.ExplicitVRLittleEndian, null);
+							ff.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, null);
 						}
 						catch {
 							client.Log.Error("{0} -> Unable to change transfer syntax:\n\tclass: {1}\n\told: {2}\n\tnew: {3}\n\treason: {4}\n\tcodecs: {5} - {6}",
@@ -194,7 +194,7 @@ namespace Dicom.Network.Client {
 					if (tx.IsEncapsulated) {
 						// Dataset needs to be compressed
 						try {
-							ff.ChangeTransferSytnax(tx, codecParams);
+							ff.ChangeTransferSyntax(tx, codecParams);
 						}
 						catch {
 							client.Log.Error("{0} -> Unable to change transfer syntax:\n\tclass: {1}\n\told: {2}\n\tnew: {3}\n\treason: {4}\n\tcodecs: {5} - {6}",

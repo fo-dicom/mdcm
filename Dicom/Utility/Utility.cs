@@ -6,8 +6,8 @@ using System.Text;
 
 #if SILVERLIGHT
 using Ionic.Zlib;
-using MD5 = System.Security.Cryptography.SHA1;
-using MD5CryptoServiceProvider = System.Security.Cryptography.SHA1Managed;
+using MD5 = System.Security.Cryptography.MD5Managed;
+using MD5CryptoServiceProvider = System.Security.Cryptography.MD5Managed;
 using SHA1CryptoServiceProvider = System.Security.Cryptography.SHA1Managed;
 #else
 using System.IO.Compression;

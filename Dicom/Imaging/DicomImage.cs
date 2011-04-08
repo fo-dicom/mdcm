@@ -30,6 +30,7 @@ namespace Dicom.Imaging {
 			Load(dataset);
 		}
 
+#if !SILVERLIGHT
 		/// <summary>Creates DICOM image object from file</summary>
 		/// <param name="fileName">Source file</param>
 		public DicomImage(string fileName) {
@@ -37,8 +38,9 @@ namespace Dicom.Imaging {
 			ff.Load(fileName, DicomReadOptions.Default);
 			Load(ff.Dataset);
 		}
+#endif
 
-		/// <summary>Source DICOM dataset</summary>
+        /// <summary>Source DICOM dataset</summary>
 		public DcmDataset Dataset {
 			get;
 			private set;

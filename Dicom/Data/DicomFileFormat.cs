@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.IsolatedStorage;
 using System.Text;
 
 using Dicom.Codec;
@@ -83,11 +84,29 @@ namespace Dicom.Data {
 		/// </summary>
 		/// <param name="ts">New transfer syntax</param>
 		/// <param name="parameters">Encode/Decode params</param>
-		public void ChangeTransferSytnax(DicomTransferSyntax ts, DcmCodecParameters parameters) {
+		public void ChangeTransferSyntax(DicomTransferSyntax ts, DcmCodecParameters parameters) {
 			Dataset.ChangeTransferSyntax(ts, parameters);
 			FileMetaInfo.TransferSyntax = ts;
 		}
 
+#if SILVERLIGHT
+	    /// <summary>
+	    /// Gets the file meta information from a (DICOM) stream
+	    /// </summary>
+	    /// <param name="fs">(DICOM) stream</param>
+	    /// <returns>File meta information</returns>
+        public static DcmFileMetaInfo LoadFileMetaInfo(Stream fs)
+	    {
+	        fs.Seek(128, SeekOrigin.Begin);
+	        if (!CheckFileHeader(fs)) return null;
+	        DicomStreamReader dsr = new DicomStreamReader(fs);
+	        DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
+	        dsr.Dataset = metainfo;
+	        dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly);
+	        fs.Close();
+	        return metainfo;
+	    }
+#else
 		/// <summary>
 		/// Gets the file meta information from a DICOM file
 		/// </summary>
@@ -130,6 +149,7 @@ namespace Dicom.Data {
 			    return Load(fs, stopTag, options);
 			}
 		}
+#endif
 
         /// <summary>
         /// Loads a dicom file
@@ -172,6 +192,7 @@ namespace Dicom.Data {
             return status;
         }
 
+#if !SILVERLIGHT
 	    public static bool IsDicomFile(string file)
         {
 			bool isDicom = false;
@@ -194,6 +215,7 @@ namespace Dicom.Data {
 				fs.ReadByte() != (byte)'M')
 				throw new DicomDataException("Invalid DICOM file: " + fs.Name);
 		}
+#endif
 
         private static bool CheckFileHeader(Stream fs)
         {
@@ -203,6 +225,60 @@ namespace Dicom.Data {
                     fs.ReadByte() == (byte) 'M');
         }
 
+#if SILVERLIGHT
+        /// <summary>
+        /// Sets stream to start at DICOM dataset
+        /// </summary>
+        /// <param name="fs">DICOM stream, current position will be set to the beginning of the dataset, or
+        /// at the end of the stream if no dataset can be identified</param>
+        /// <returns>true if dataset is identified, false otherwise</returns>
+        public static bool SeekDataset(Stream fs)
+        {
+            fs.Seek(128, SeekOrigin.Begin);
+            CheckFileHeader(fs);
+            DicomStreamReader dsr = new DicomStreamReader(fs);
+            DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
+            dsr.Dataset = metainfo;
+            if (dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly) ==
+                DicomReadStatus.Success && fs.Position < fs.Length)
+            {
+                return true;
+            }
+            fs.Seek(0, SeekOrigin.End);
+            return false;
+        }
+
+	    /// <summary>
+	    /// Saves a DICOM file in the isolated storage area
+	    /// </summary>
+	    /// <param name="store">Isolated storage area</param>
+	    /// <param name="file">Filename</param>
+	    /// <param name="options">DICOM write options</param>
+	    public void Save(IsolatedStorageFile store, string file, DicomWriteOptions options)
+        {
+/*            // expand to full path
+            file = Path.GetFullPath(file);
+
+            string dir = Path.GetDirectoryName(file);
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir); */
+            using (IsolatedStorageFileStream fs = store.OpenFile(file, FileMode.Create))
+            {
+                fs.Seek(128, SeekOrigin.Begin);
+                fs.WriteByte((byte)'D');
+                fs.WriteByte((byte)'I');
+                fs.WriteByte((byte)'C');
+                fs.WriteByte((byte)'M');
+
+                DicomStreamWriter dsw = new DicomStreamWriter(fs);
+                dsw.Write(_metainfo, options | DicomWriteOptions.CalculateGroupLengths);
+                if (_dataset != null)
+                    dsw.Write(_dataset, options);
+
+                fs.Close();
+            }
+        }
+#else
         /// <summary>
 		/// Gets file stream starting at DICOM dataset
 		/// </summary>
@@ -249,5 +325,6 @@ namespace Dicom.Data {
 				fs.Close();
 			}
 		}
+#endif
 	}
 }
