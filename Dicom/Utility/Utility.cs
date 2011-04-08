@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 #if SILVERLIGHT
+using Ionic.Zlib;
 using MD5 = System.Security.Cryptography.SHA1;
 using MD5CryptoServiceProvider = System.Security.Cryptography.SHA1Managed;
 using SHA1CryptoServiceProvider = System.Security.Cryptography.SHA1Managed;
@@ -51,12 +52,8 @@ namespace Dicom.Utility {
 		/// <param name="dst">Destination stream</param>
 		/// <param name="compress">Compress or decompress</param>
 		public static void Deflate(Stream src, Stream dst, bool compress) {
-#if SILVERLIGHT
-            Copy(src, dst);
-#else
 			DeflateStream ds = new DeflateStream(src, compress ? CompressionMode.Compress : CompressionMode.Decompress);
 			Copy(ds, dst);
-#endif
         }
 	}
 

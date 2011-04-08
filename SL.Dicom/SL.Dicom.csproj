@@ -52,6 +52,9 @@
     <AssemblyOriginatorKeyFile>Dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ionic.Zlib">
+      <HintPath>..\3rd Party\SL\Ionic.Zlib.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="NLog">
       <HintPath>..\3rd Party\SL\NLog.dll</HintPath>
@@ -70,8 +73,14 @@
     <Compile Include="..\Dicom.Linq\Utility\Helper.cs">
       <Link>Utility\Helper.cs</Link>
     </Compile>
+    <Compile Include="..\Dicom\Codec\DcmCodecHelper.cs">
+      <Link>Codec\DcmCodecHelper.cs</Link>
+    </Compile>
     <Compile Include="..\Dicom\Codec\DcmCodecParameters.cs">
       <Link>Codec\DcmCodecParameters.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Codec\DcmRleCodec.cs">
+      <Link>Codec\DcmRleCodec.cs</Link>
     </Compile>
     <Compile Include="..\Dicom\Codec\DicomCodec.cs">
       <Link>Codec\DicomCodec.cs</Link>

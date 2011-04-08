@@ -22,7 +22,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-#if !SILVERLIGHT
+#if SILVERLIGHT
+using Ionic.Zlib;
+#else
 using System.IO.Compression;
 #endif
 using System.Text;
@@ -76,12 +78,11 @@ namespace Dicom.IO {
 			set {
 				_syntax = value;
 				_endian = _syntax.Endian;
-#if !SILVERLIGHT
-				if (_syntax.IsDeflate)
+
+                if (_syntax.IsDeflate)
 					_writer = EndianBinaryWriter.Create(
 						new DeflateStream(_stream, CompressionMode.Compress), _encoding, _endian);
 				else
-#endif
 					_writer = EndianBinaryWriter.Create(_stream, _encoding, _endian);
 			}
 		}
