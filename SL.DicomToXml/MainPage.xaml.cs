@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.IsolatedStorage;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,10 +12,51 @@ namespace SL.DicomToXml
 {
     public partial class MainPage : UserControl
     {
+        #region FIELDS
+
+        public static readonly DependencyProperty RawDumpProperty =
+            DependencyProperty.Register("RawDump", typeof(string), typeof(MainPage), new PropertyMetadata(String.Empty));
+
+        public static readonly DependencyProperty XmlDumpProperty =
+            DependencyProperty.Register("XmlDump", typeof(string), typeof(MainPage), new PropertyMetadata(String.Empty));
+
+        public static readonly DependencyProperty DicomImageProperty =
+            DependencyProperty.Register("DicomImage", typeof(ImageSource), typeof(MainPage), new PropertyMetadata(null));
+
+        #endregion
+
+        #region CONSTRUCTORS
+
         public MainPage()
         {
             InitializeComponent();
         }
+
+        #endregion
+
+        #region DEPENDENCY PROPERTIES
+
+        public string RawDump
+        {
+            get { return (string)GetValue(RawDumpProperty); }
+            set { SetValue(RawDumpProperty, value); }
+        }
+
+        public string XmlDump
+        {
+            get { return (string)GetValue(XmlDumpProperty); }
+            set { SetValue(XmlDumpProperty, value); }
+        }
+
+        public ImageSource DicomImage
+        {
+            get { return (ImageSource)GetValue(DicomImageProperty); }
+            set { SetValue(DicomImageProperty, value); }
+        }
+
+        #endregion
+
+        #region METHODS
 
         private void fileNameButton_Click(object sender, RoutedEventArgs e)
         {
@@ -36,21 +76,21 @@ namespace SL.DicomToXml
                     {
                         StringBuilder sb = new StringBuilder();
                         ff.Dataset.Dump(sb, String.Empty, DicomDumpOptions.Default);
-                        dicomFileDump.Text = sb.ToString();
-/*
+                        RawDump = sb.ToString();
+
                         var xmlDoc = XDicom.ToXML(ff.Dataset, XDicomOptions.None);
                         var txtWriter = new StringWriter();
                         xmlDoc.Save(txtWriter);
-                        dicomFileDump.Text = txtWriter.ToString();
-*/
-                        dicomImage.Source = ff.Dataset.Contains(DicomTags.PixelData)
+                        XmlDump = txtWriter.ToString();
+
+                        DicomImage = ff.Dataset.Contains(DicomTags.PixelData)
                                                 ? GetImageSource(ff.Dataset)
                                                 : null;
                     }
                     else
                     {
-                        dicomFileDump.Text = String.Format(Resources["noDicomDataMsg"].ToString(), dlg.File.Name);
-                        dicomImage.Source = null;
+                        RawDump = XmlDump = String.Format(Resources["noDicomDataMsg"].ToString(), dlg.File.Name);
+                        DicomImage = null;
                     }
                 }
             }
@@ -67,5 +107,7 @@ namespace SL.DicomToXml
                 return null;
             }
         }
+
+        #endregion
     }
 }
