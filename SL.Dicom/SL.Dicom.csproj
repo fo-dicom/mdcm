@@ -253,6 +253,78 @@
     <Compile Include="..\Dicom\IO\VoidStream.cs">
       <Link>IO\VoidStream.cs</Link>
     </Compile>
+    <Compile Include="..\Dicom\Network\Client\CEchoClient.cs">
+      <Link>Network\Client\CEchoClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Client\CFindClient.cs">
+      <Link>Network\Client\CFindClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Client\CMoveClient.cs">
+      <Link>Network\Client\CMoveClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Client\CStoreClient.cs">
+      <Link>Network\Client\CStoreClient.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Client\DcmClientBase.cs">
+      <Link>Network\Client\DcmClientBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\ConnectionStats.cs">
+      <Link>Network\ConnectionStats.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\DcmAssociate.cs">
+      <Link>Network\DcmAssociate.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\DcmAssociateProfile.cs">
+      <Link>Network\DcmAssociateProfile.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\DcmCommand.cs">
+      <Link>Network\DcmCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\DcmNetworkBase.cs">
+      <Link>Network\DcmNetworkBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\DcmQueryRetrieveLevel.cs">
+      <Link>Network\DcmQueryRetrieveLevel.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\DcmSocket.cs">
+      <Link>Network\DcmSocket.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\DcmStatus.cs">
+      <Link>Network\DcmStatus.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\DicomNetworkException.cs">
+      <Link>Network\DicomNetworkException.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\HookStream.cs">
+      <Link>Network\HookStream.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\NetworkErrorStream.cs">
+      <Link>Network\NetworkErrorStream.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\OpenSSL.cs">
+      <Link>Network\OpenSSL.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\PDataTFStream.cs">
+      <Link>Network\PDataTFStream.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\PDU.cs">
+      <Link>Network\PDU.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Server\CEchoService.cs">
+      <Link>Network\Server\CEchoService.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Server\CStoreService.cs">
+      <Link>Network\Server\CStoreService.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Server\DcmServer.cs">
+      <Link>Network\Server\DcmServer.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Server\DcmServiceBase.cs">
+      <Link>Network\Server\DcmServiceBase.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\ThrottleStream.cs">
+      <Link>Network\ThrottleStream.cs</Link>
+    </Compile>
     <Compile Include="..\Dicom\Utility\ActiveSchedule.cs">
       <Link>Utility\ActiveSchedule.cs</Link>
     </Compile>
@@ -306,8 +378,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="HL7\" />
-    <Folder Include="Network\Client\" />
-    <Folder Include="Network\Server\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>

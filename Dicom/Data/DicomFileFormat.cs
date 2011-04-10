@@ -256,13 +256,7 @@ namespace Dicom.Data {
 	    /// <param name="options">DICOM write options</param>
 	    public void Save(IsolatedStorageFile store, string file, DicomWriteOptions options)
         {
-/*            // expand to full path
-            file = Path.GetFullPath(file);
-
-            string dir = Path.GetDirectoryName(file);
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir); */
-            using (IsolatedStorageFileStream fs = store.OpenFile(file, FileMode.Create))
+            using (IsolatedStorageFileStream fs = store.CreateFile(file))
             {
                 fs.Seek(128, SeekOrigin.Begin);
                 fs.WriteByte((byte)'D');
