@@ -69,7 +69,6 @@ namespace Dicom.Network.Client {
                     if (!store.FileExists(fileName))
                         throw new FileNotFoundException("Unable to load DICOM file!");
 #else
-                    using (var store = IsolatedStorageFile.)
 				    if (!File.Exists(fileName))
 					    throw new FileNotFoundException("Unable to load DICOM file!", fileName);
 #endif

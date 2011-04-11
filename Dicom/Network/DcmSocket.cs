@@ -24,7 +24,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+#if SILVERLIGHT
 using System.Windows;
+#endif
 
 namespace Dicom.Network {
 	//default ports:
@@ -215,7 +217,8 @@ namespace Dicom.Network {
 
 		#endregion
 	}
-/*
+
+#if !SILVERLIGHT
 	#region TCP
 	public class DcmTcpSocket : DcmSocket {
 		private EndPoint _remoteEP;
@@ -343,9 +346,8 @@ namespace Dicom.Network {
 		}
 	}
 	#endregion
-*/
-#if !SILVERLIGHT
-	#region TLS
+
+    #region TLS
 	public class DcmTlsSocket : DcmSocket {
 		private bool _server;
 		private EndPoint _remoteEP;
