@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Windows;
 
 namespace Dicom.Network {
 	//default ports:
@@ -52,6 +53,12 @@ namespace Dicom.Network {
 		private static ConnectionStats _globalStats = new ConnectionStats();
 
 		public static DcmSocket Create(DcmSocketType type) {
+#if SILVERLIGHT
+			if (type == DcmSocketType.TCP)
+				return new DcmTcpSocket();
+            else
+				return null;
+#else
 			if (type == DcmSocketType.TLS)
 				return new DcmTlsSocket();
 			else if (type == DcmSocketType.TCP)
@@ -60,7 +67,8 @@ namespace Dicom.Network {
 				return null;
 			else
 				return null;
-		}
+#endif
+        }
 
 		protected static void RegisterSocket(DcmSocket socket) {
 			lock (_sockets) {
@@ -179,7 +187,11 @@ namespace Dicom.Network {
 		}
 
 		public void Connect(string host, int port) {
+#if SILVERLIGHT
+		    IPAddress[] addresses = new[] { IPAddress.Parse(host) };
+#else
 			IPAddress[] addresses = Dns.GetHostAddresses(host);
+#endif
 			for (int i = 0; i < addresses.Length; i++) {
 				if (addresses[i].AddressFamily == AddressFamily.InterNetwork) {
 					Connect(new IPEndPoint(addresses[i], port));
@@ -232,7 +244,7 @@ namespace Dicom.Network {
 			set { _socket.Blocking = value; }
 		}
 
-		public override bool NoDelay {
+        public override bool NoDelay {
 			get { return _socket.NoDelay; }
 			set { _socket.NoDelay = value; }
 		}
@@ -289,7 +301,7 @@ namespace Dicom.Network {
 			_socket.Bind(localEP);
 		}
 
-		public override void Close() {
+        public override void Close() {
 			if (_socket != null) {
 				UnregisterSocket(this);
 				_socket.Close();
@@ -332,6 +344,7 @@ namespace Dicom.Network {
 	}
 	#endregion
 
+#if !SILVERLIGHT
 	#region TLS
 	public class DcmTlsSocket : DcmSocket {
 		private bool _server;
@@ -464,4 +477,5 @@ namespace Dicom.Network {
 		}
 	}
 	#endregion
+#endif
 }

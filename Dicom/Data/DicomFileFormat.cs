@@ -251,13 +251,17 @@ namespace Dicom.Data {
 	    /// <summary>
 	    /// Saves a DICOM file in the isolated storage area
 	    /// </summary>
-	    /// <param name="store">Isolated storage area</param>
 	    /// <param name="file">Filename</param>
 	    /// <param name="options">DICOM write options</param>
-	    public void Save(IsolatedStorageFile store, string file, DicomWriteOptions options)
-        {
-            using (IsolatedStorageFileStream fs = store.CreateFile(file))
+	    public void Save(string file, DicomWriteOptions options)
+	    {
+            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
             {
+                string dir = Path.GetDirectoryName(file);
+                if (!store.DirectoryExists(dir))
+                    store.CreateDirectory(dir);
+
+                var fs = store.CreateFile(file);
                 fs.Seek(128, SeekOrigin.Begin);
                 fs.WriteByte((byte)'D');
                 fs.WriteByte((byte)'I');
