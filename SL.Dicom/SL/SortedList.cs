@@ -14,6 +14,11 @@ namespace System.Collections.Generic
 
         #region CONSTRUCTORS
 
+        public SortedList()
+        {
+            mComparer = null;
+        }
+
         public SortedList(IComparer<TKey> iComparer)
         {
             mComparer = iComparer;
@@ -22,6 +27,11 @@ namespace System.Collections.Generic
         #endregion
 
         #region PROPERTIES
+
+        public new IList<TKey> Keys
+        {
+            get { return base.Keys.ToList(); }
+        }
 
         public new IList<TValue> Values
         {

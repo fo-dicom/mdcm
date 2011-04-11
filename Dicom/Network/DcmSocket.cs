@@ -54,9 +54,9 @@ namespace Dicom.Network {
 
 		public static DcmSocket Create(DcmSocketType type) {
 #if SILVERLIGHT
-			if (type == DcmSocketType.TCP)
-				return new DcmTcpSocket();
-            else
+//			if (type == DcmSocketType.TCP)
+//				return new DcmTcpSocket();
+//            else
 				return null;
 #else
 			if (type == DcmSocketType.TLS)
@@ -215,7 +215,7 @@ namespace Dicom.Network {
 
 		#endregion
 	}
-
+/*
 	#region TCP
 	public class DcmTcpSocket : DcmSocket {
 		private EndPoint _remoteEP;
@@ -343,7 +343,7 @@ namespace Dicom.Network {
 		}
 	}
 	#endregion
-
+*/
 #if !SILVERLIGHT
 	#region TLS
 	public class DcmTlsSocket : DcmSocket {

@@ -90,21 +90,60 @@ namespace Dicom.Data {
 		}
 
 #if SILVERLIGHT
+		/// <summary>
+		/// Gets the file meta information from a DICOM file
+		/// </summary>
+		/// <param name="file">Filename</param>
+		/// <returns>File meta information</returns>
+        public static DcmFileMetaInfo LoadFileMetaInfo(String file)
+		{
+		    using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+		    {
+		        using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+		        {
+		            fs.Seek(128, SeekOrigin.Begin);
+		            if (!CheckFileHeader(fs)) return null;
+		            DicomStreamReader dsr = new DicomStreamReader(fs);
+		            DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
+		            dsr.Dataset = metainfo;
+		            dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly);
+		            fs.Close();
+		            return metainfo;
+		        }
+		    }
+		}
+
+        /// <summary>
+        /// Loads a dicom file
+        /// </summary>
+        /// <param name="file">Filename</param>
+        /// <param name="options">DICOM read options</param>
+        public DicomReadStatus Load(String file, DicomReadOptions options)
+        {
+            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+                {
+                    return Load(fs, null, options);
+                }
+            }
+        }
+
 	    /// <summary>
-	    /// Gets the file meta information from a (DICOM) stream
-	    /// </summary>
-	    /// <param name="fs">(DICOM) stream</param>
-	    /// <returns>File meta information</returns>
-        public static DcmFileMetaInfo LoadFileMetaInfo(Stream fs)
+        /// Loads a dicom file, stopping at a certain tag
+        /// </summary>
+        /// <param name="file">Filename</param>
+        /// <param name="stopTag">Tag to stop parsing at</param>
+        /// <param name="options">DICOM read options</param>
+        public DicomReadStatus Load(String file, DicomTag stopTag, DicomReadOptions options)
 	    {
-	        fs.Seek(128, SeekOrigin.Begin);
-	        if (!CheckFileHeader(fs)) return null;
-	        DicomStreamReader dsr = new DicomStreamReader(fs);
-	        DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
-	        dsr.Dataset = metainfo;
-	        dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly);
-	        fs.Close();
-	        return metainfo;
+	        using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+	        {
+	            using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+	            {
+	                return Load(fs, stopTag, options);
+	            }
+	        }
 	    }
 #else
 		/// <summary>
@@ -192,7 +231,27 @@ namespace Dicom.Data {
             return status;
         }
 
-#if !SILVERLIGHT
+#if SILVERLIGHT
+	    public static bool IsDicomFile(string file)
+        {
+			bool isDicom = false;
+
+            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+                {
+                    fs.Seek(128, SeekOrigin.Begin);
+                    if (fs.ReadByte() == (byte) 'D' &&
+                        fs.ReadByte() == (byte) 'I' &&
+                        fs.ReadByte() == (byte) 'C' &&
+                        fs.ReadByte() == (byte) 'M')
+                        isDicom = true;
+                    fs.Close();
+                }
+            }
+	        return isDicom;
+		}
+#else
 	    public static bool IsDicomFile(string file)
         {
 			bool isDicom = false;
@@ -206,7 +265,7 @@ namespace Dicom.Data {
 				fs.Close();
 			}
 			return isDicom;
-		}
+        }
 
 		private static void CheckFileHeader(FileStream fs) {
 			if (fs.ReadByte() != (byte)'D' ||
@@ -227,25 +286,28 @@ namespace Dicom.Data {
 
 #if SILVERLIGHT
         /// <summary>
-        /// Sets stream to start at DICOM dataset
+        /// Gets file stream starting at DICOM dataset
         /// </summary>
-        /// <param name="fs">DICOM stream, current position will be set to the beginning of the dataset, or
-        /// at the end of the stream if no dataset can be identified</param>
-        /// <returns>true if dataset is identified, false otherwise</returns>
-        public static bool SeekDataset(Stream fs)
+        /// <param name="file">Filename</param>
+        /// <returns>File stream</returns>
+        public static FileStream GetDatasetStream(String file)
         {
-            fs.Seek(128, SeekOrigin.Begin);
-            CheckFileHeader(fs);
-            DicomStreamReader dsr = new DicomStreamReader(fs);
-            DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
-            dsr.Dataset = metainfo;
-            if (dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly) ==
-                DicomReadStatus.Success && fs.Position < fs.Length)
+            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                return true;
+                var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read);
+                fs.Seek(128, SeekOrigin.Begin);
+                CheckFileHeader(fs);
+                DicomStreamReader dsr = new DicomStreamReader(fs);
+                DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
+                dsr.Dataset = metainfo;
+                if (dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly) ==
+                    DicomReadStatus.Success && fs.Position < fs.Length)
+                {
+                    return fs;
+                }
+                fs.Close();
+                return null;
             }
-            fs.Seek(0, SeekOrigin.End);
-            return false;
         }
 
 	    /// <summary>
@@ -258,7 +320,7 @@ namespace Dicom.Data {
             using (var store = IsolatedStorageFile.GetUserStoreForApplication())
             {
                 string dir = Path.GetDirectoryName(file);
-                if (!store.DirectoryExists(dir))
+                if (dir != null && !store.DirectoryExists(dir))
                     store.CreateDirectory(dir);
 
                 var fs = store.CreateFile(file);

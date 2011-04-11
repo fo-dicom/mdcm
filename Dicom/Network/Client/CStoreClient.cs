@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.IsolatedStorage;
 using System.Threading;
 
 using Dicom;
@@ -62,21 +63,33 @@ namespace Dicom.Network.Client {
 		public CStoreRequestInfo(string fileName, object userModel) {
 			try {
 				_fileName = fileName;
-				if (!File.Exists(fileName))
-					throw new FileNotFoundException("Unable to load DICOM file!", fileName);
+#if SILVERLIGHT
+                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if (!store.FileExists(fileName))
+                        throw new FileNotFoundException("Unable to load DICOM file!");
+#else
+                    using (var store = IsolatedStorageFile.)
+				    if (!File.Exists(fileName))
+					    throw new FileNotFoundException("Unable to load DICOM file!", fileName);
+#endif
 
-				DicomTag stopTag = (userModel != null) ? DicomTags.PixelData : DcmFileMetaInfo.StopTag;
-				DicomFileFormat ff = new DicomFileFormat();
-				ff.Load(fileName, stopTag, DicomReadOptions.Default);
-				_transferSyntax = ff.FileMetaInfo.TransferSyntax;
-				_originalTransferSyntax = _transferSyntax;
-				_sopClass = ff.FileMetaInfo.MediaStorageSOPClassUID;
-				_sopInst = ff.FileMetaInfo.MediaStorageSOPInstanceUID;
-				if (userModel != null) {
-					ff.Dataset.LoadDicomFields(userModel);
-					_userState = userModel;
-				}
-				_status = DcmStatus.Pending;
+                    DicomTag stopTag = (userModel != null) ? DicomTags.PixelData : DcmFileMetaInfo.StopTag;
+                    DicomFileFormat ff = new DicomFileFormat();
+                    ff.Load(fileName, stopTag, DicomReadOptions.Default);
+                    _transferSyntax = ff.FileMetaInfo.TransferSyntax;
+                    _originalTransferSyntax = _transferSyntax;
+                    _sopClass = ff.FileMetaInfo.MediaStorageSOPClassUID;
+                    _sopInst = ff.FileMetaInfo.MediaStorageSOPInstanceUID;
+                    if (userModel != null)
+                    {
+                        ff.Dataset.LoadDicomFields(userModel);
+                        _userState = userModel;
+                    }
+                    _status = DcmStatus.Pending;
+#if SILVERLIGHT
+                }
+#endif
 			}
 			catch (Exception e) {
 				_status = DcmStatus.ProcessingFailure;

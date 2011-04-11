@@ -301,9 +301,6 @@
     <Compile Include="..\Dicom\Network\NetworkErrorStream.cs">
       <Link>Network\NetworkErrorStream.cs</Link>
     </Compile>
-    <Compile Include="..\Dicom\Network\OpenSSL.cs">
-      <Link>Network\OpenSSL.cs</Link>
-    </Compile>
     <Compile Include="..\Dicom\Network\PDataTFStream.cs">
       <Link>Network\PDataTFStream.cs</Link>
     </Compile>
