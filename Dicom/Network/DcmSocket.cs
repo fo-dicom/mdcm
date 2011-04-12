@@ -25,6 +25,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 #if SILVERLIGHT
+using System.Threading;
 using System.Windows;
 #endif
 
@@ -54,12 +55,10 @@ namespace Dicom.Network {
 		private static int _connections = 0;
 		private static ConnectionStats _globalStats = new ConnectionStats();
 
-		public static DcmSocket Create(DcmSocketType type) {
+		public static DcmSocket Create(DcmSocketType type)
+		{
 #if SILVERLIGHT
-//			if (type == DcmSocketType.TCP)
-//				return new DcmTcpSocket();
-//            else
-				return null;
+		    return type == DcmSocketType.TCP ? new DcmTcpSocket() : null;
 #else
 			if (type == DcmSocketType.TLS)
 				return new DcmTlsSocket();
@@ -70,9 +69,9 @@ namespace Dicom.Network {
 			else
 				return null;
 #endif
-        }
+		}
 
-		protected static void RegisterSocket(DcmSocket socket) {
+	    protected static void RegisterSocket(DcmSocket socket) {
 			lock (_sockets) {
 				if (!_sockets.Contains(socket)) {
 					_sockets.Add(socket);
@@ -190,10 +189,9 @@ namespace Dicom.Network {
 
 		public void Connect(string host, int port) {
 #if SILVERLIGHT
-		    IPAddress[] addresses = new[] { IPAddress.Parse(host) };
+		    Connect(new DnsEndPoint(host, port));
 #else
 			IPAddress[] addresses = Dns.GetHostAddresses(host);
-#endif
 			for (int i = 0; i < addresses.Length; i++) {
 				if (addresses[i].AddressFamily == AddressFamily.InterNetwork) {
 					Connect(new IPEndPoint(addresses[i], port));
@@ -201,6 +199,7 @@ namespace Dicom.Network {
 				}
 			}
 			throw new Exception("Unable to resolve host!");
+#endif
 		}
 		#endregion
 
@@ -218,7 +217,146 @@ namespace Dicom.Network {
 		#endregion
 	}
 
-#if !SILVERLIGHT
+#if SILVERLIGHT
+    public class DcmTcpSocket : DcmSocket
+    {
+        #region PRIVATE MEMBERS
+
+        private readonly Socket _socket;
+        private EndPoint _remoteEP;
+        private EndPoint _localEP;
+
+        private static AutoResetEvent _autoEvent = new AutoResetEvent(false);
+
+        #endregion
+
+        #region CONSTRUCTORS
+
+        public DcmTcpSocket()
+        {
+            _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+        }
+
+        #endregion
+
+        #region Overrides of DcmSocket
+
+        public override DcmSocketType Type
+        {
+            get { return DcmSocketType.TCP; }
+        }
+
+        public override bool Blocking
+        {
+            get;
+            set;
+        }
+
+        public override bool NoDelay
+        {
+            get { return _socket.NoDelay; }
+            set { _socket.NoDelay = value; }
+        }
+
+        public override bool Connected
+        {
+            get { return _socket.Connected; }
+        }
+
+        public override int ConnectTimeout
+        {
+            get;
+            set;
+        }
+
+        public override int SendTimeout
+        {
+            get;
+            set;
+        }
+
+        public override int ReceiveTimeout
+        {
+            get;
+            set;
+        }
+
+        public override EndPoint LocalEndPoint
+        {
+            get { return _localEP; }
+        }
+
+        public override EndPoint RemoteEndPoint
+        {
+            get { return _socket.RemoteEndPoint; }
+        }
+
+        public override int Available
+        {
+            get { return 0; }
+        }
+
+        public override DcmSocket Accept()
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Bind(EndPoint localEP)
+        {
+            _localEP = localEP;
+        }
+
+        public override void Close()
+        {
+            _socket.Shutdown(SocketShutdown.Both);
+            _socket.Close();
+        }
+
+        public override void Connect(EndPoint remoteEP)
+        {
+            SocketAsyncEventArgs args = new SocketAsyncEventArgs { UserToken = _socket, RemoteEndPoint = remoteEP };
+            args.Completed += OnConnect;
+
+            _socket.ConnectAsync(args);
+            _autoEvent.WaitOne();
+
+            if (args.SocketError == SocketError.Success) _remoteEP = remoteEP;
+        }
+
+        public override void Reconnect()
+        {
+            Close();
+            Connect(_remoteEP);
+        }
+
+        public override void Listen(int backlog)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override bool Poll(int microSeconds, SelectMode mode)
+        {
+            return false;
+        }
+
+        public override Stream GetInternalStream()
+        {
+            return new NetworkStream(_socket);
+        }
+
+        protected override bool IsIncomingConnection
+        {
+            get { return false; }
+        }
+
+        #endregion
+
+        private static void OnConnect(object sender, SocketAsyncEventArgs e)
+        {
+            _autoEvent.Set();
+        }
+    }
+#else
 	#region TCP
 	public class DcmTcpSocket : DcmSocket {
 		private EndPoint _remoteEP;

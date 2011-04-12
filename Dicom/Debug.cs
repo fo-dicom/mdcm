@@ -23,6 +23,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+#if SILVERLIGHT
+using System.IO.IsolatedStorage;
+#endif
 using System.Text;
 
 using Dicom.Data;
@@ -104,7 +107,11 @@ namespace Dicom
             if (_startdir == null)
             {
 #if SILVERLIGHT
-                _startdir = Environment.CurrentDirectory;
+                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                {                    
+                    _startdir = ".nlog";
+                    if (store.DirectoryExists(_startdir)) store.CreateDirectory(_startdir);
+                }
 #else
 				_startdir = Process.GetCurrentProcess().StartInfo.WorkingDirectory;
 #endif

@@ -7,6 +7,8 @@ using System.Windows.Media;
 using Dicom;
 using Dicom.Data;
 using Dicom.Imaging;
+using Dicom.Network;
+using Dicom.Network.Client;
 
 namespace SL.DicomToXml
 {
@@ -86,6 +88,9 @@ namespace SL.DicomToXml
                         DicomImage = ff.Dataset.Contains(DicomTags.PixelData)
                                                 ? GetImageSource(ff.Dataset)
                                                 : null;
+
+                        ff.Save("temp.dcm", DicomWriteOptions.Default);
+                        SendDataToStoreScp("temp.dcm");
                     }
                     else
                     {
@@ -106,6 +111,25 @@ namespace SL.DicomToXml
             {
                 return null;
             }
+        }
+
+        private static void SendDataToStoreScp(string iFileName)
+        {
+            CStoreClient scu = new CStoreClient
+                                   {
+                                       DisableFileStreaming = true,
+                                       CallingAE = "STORE-SCU",
+                                       CalledAE = "ANY-SCP",
+                                       MaxPduSize = 16384,
+                                       ConnectTimeout = 0,
+                                       SocketTimeout = 30,
+                                       DimseTimeout = 30,
+                                       SerializedPresentationContexts = true,
+                                       PreferredTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian
+                                   };
+            scu.AddFile(iFileName);
+            scu.Connect("localhost", 4502, DcmSocketType.TCP);
+            if (!scu.Wait()) MessageBox.Show(scu.ErrorMessage);
         }
 
         #endregion

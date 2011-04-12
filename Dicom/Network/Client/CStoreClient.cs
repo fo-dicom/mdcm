@@ -96,7 +96,8 @@ namespace Dicom.Network.Client {
 				throw;
 			}
 		}
-		#endregion
+
+        #endregion
 
 		#region Public Properties
 		public bool IsLoaded {
@@ -439,7 +440,7 @@ namespace Dicom.Network.Client {
 			return info;
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Enqueues a file to be transfered to the remote DICOM node.
 		/// </summary>
 		/// <param name="info">C-Store Request Information</param>
