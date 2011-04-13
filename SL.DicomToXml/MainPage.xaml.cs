@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.IO.IsolatedStorage;
+using System.Net;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -128,8 +130,9 @@ namespace SL.DicomToXml
                                        PreferredTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian
                                    };
             scu.AddFile(iFileName);
-            scu.Connect("localhost", 4502, DcmSocketType.TCP);
-            if (!scu.Wait()) MessageBox.Show(scu.ErrorMessage);
+            scu.Connect(Application.Current.Host.Source.DnsSafeHost, 4502, DcmSocketType.TCP);
+            scu.Wait(5000);
+            MessageBox.Show(scu.ErrorMessage);
         }
 
         #endregion

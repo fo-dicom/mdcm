@@ -35,8 +35,8 @@ using NLog;
 using NLog.Config;
 using NLog.Targets;
 #if SILVERLIGHT
-using SyslogTarget = NLog.Targets.ConsoleTarget;
-using ColoredConsoleTarget = NLog.Targets.ConsoleTarget;
+using SyslogTarget = NLog.Targets.FileTarget;
+using ColoredConsoleTarget = NLog.Targets.FileTarget;
 #else
 using NLog.Win32.Targets;
 #endif
@@ -72,7 +72,9 @@ namespace Dicom
 			LoggingConfiguration config = new LoggingConfiguration();
 
 			SyslogTarget st = new SyslogTarget();
-#if !SILVERLIGHT
+#if SILVERLIGHT
+		    st.FileName = "${specialfolder:MyDocuments}/log.${shortdate}.txt";
+#else
 			st.Port = port;
 #endif
             config.AddTarget("Syslog", st);
@@ -103,15 +105,12 @@ namespace Dicom
 		}
 
 		private static string _startdir;
-		public static string GetStartDirectory() {
+        public static string GetStartDirectory()
+        {
             if (_startdir == null)
             {
 #if SILVERLIGHT
-                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-                {                    
-                    _startdir = ".nlog";
-                    if (store.DirectoryExists(_startdir)) store.CreateDirectory(_startdir);
-                }
+                _startdir = ".";
 #else
 				_startdir = Process.GetCurrentProcess().StartInfo.WorkingDirectory;
 #endif
@@ -122,10 +121,10 @@ namespace Dicom
                     _startdir = _startdir.Substring(6);
                 }
             }
-		    return _startdir;
-		}
+            return _startdir;
+        }
 
-		public static string GetCallingFunction() {
+	    public static string GetCallingFunction() {
 			try {
 				StackTrace trace = new StackTrace(true);
 				for (int i = 2; i < trace.FrameCount;) {

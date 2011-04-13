@@ -189,7 +189,7 @@ namespace Dicom.Network {
 
 		public void Connect(string host, int port) {
 #if SILVERLIGHT
-		    Connect(new DnsEndPoint(host, port));
+		    Connect(new DnsEndPoint(host, port, AddressFamily.InterNetwork));
 #else
 			IPAddress[] addresses = Dns.GetHostAddresses(host);
 			for (int i = 0; i < addresses.Length; i++) {
@@ -222,11 +222,12 @@ namespace Dicom.Network {
     {
         #region PRIVATE MEMBERS
 
-        private readonly Socket _socket;
+        private bool _isConnected;
+        private Socket _socket;
         private EndPoint _remoteEP;
         private EndPoint _localEP;
 
-        private static AutoResetEvent _autoEvent = new AutoResetEvent(false);
+        private static readonly ManualResetEvent _clientDone = new ManualResetEvent(false);
 
         #endregion
 
@@ -235,6 +236,7 @@ namespace Dicom.Network {
         public DcmTcpSocket()
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+            _isConnected = false;
         }
 
         #endregion
@@ -260,7 +262,7 @@ namespace Dicom.Network {
 
         public override bool Connected
         {
-            get { return _socket.Connected; }
+            get { return _isConnected; }
         }
 
         public override int ConnectTimeout
@@ -308,8 +310,13 @@ namespace Dicom.Network {
 
         public override void Close()
         {
-            _socket.Shutdown(SocketShutdown.Both);
-            _socket.Close();
+            if (_socket != null)
+            {
+                UnregisterSocket(this);
+                _socket.Close();
+                _socket = null;
+                _isConnected = false;
+            }
         }
 
         public override void Connect(EndPoint remoteEP)
@@ -317,10 +324,16 @@ namespace Dicom.Network {
             SocketAsyncEventArgs args = new SocketAsyncEventArgs { UserToken = _socket, RemoteEndPoint = remoteEP };
             args.Completed += OnConnect;
 
+            _clientDone.Reset();
             _socket.ConnectAsync(args);
-            _autoEvent.WaitOne();
+            _clientDone.WaitOne();
 
-            if (args.SocketError == SocketError.Success) _remoteEP = remoteEP;
+            if (args.SocketError != SocketError.Success)
+                throw new SocketException((int) args.SocketError);
+
+            _isConnected = true;
+            _remoteEP = remoteEP;
+            RegisterSocket(this);
         }
 
         public override void Reconnect()
@@ -353,7 +366,7 @@ namespace Dicom.Network {
 
         private static void OnConnect(object sender, SocketAsyncEventArgs e)
         {
-            _autoEvent.Set();
+            _clientDone.Set();
         }
     }
 #else
