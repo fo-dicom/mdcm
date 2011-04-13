@@ -91,8 +91,14 @@ namespace SL.DicomToXml
                                                 ? GetImageSource(ff.Dataset)
                                                 : null;
 
-                        ff.Save("temp.dcm", DicomWriteOptions.Default);
-                        SendDataToStoreScp("temp.dcm");
+                        string tempDicomFile = "temp.dcm";
+                        ff.Save(tempDicomFile, DicomWriteOptions.ExplicitLengthSequenceItem);
+                        SendDataToStoreScp(tempDicomFile);
+
+                        using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                        {
+                            if (store.FileExists(tempDicomFile)) store.DeleteFile(tempDicomFile);
+                        }
                     }
                     else
                     {
@@ -117,22 +123,28 @@ namespace SL.DicomToXml
 
         private static void SendDataToStoreScp(string iFileName)
         {
-            CStoreClient scu = new CStoreClient
-                                   {
-                                       DisableFileStreaming = true,
-                                       CallingAE = "STORE-SCU",
-                                       CalledAE = "ANY-SCP",
-                                       MaxPduSize = 16384,
-                                       ConnectTimeout = 0,
-                                       SocketTimeout = 30,
-                                       DimseTimeout = 30,
-                                       SerializedPresentationContexts = true,
-                                       PreferredTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian
-                                   };
-            scu.AddFile(iFileName);
-            scu.Connect(Application.Current.Host.Source.DnsSafeHost, 4502, DcmSocketType.TCP);
-            scu.Wait();
-            MessageBox.Show(scu.ErrorMessage);
+            try
+            {
+                CStoreClient scu = new CStoreClient
+                                       {
+                                           DisableFileStreaming = true,
+                                           CallingAE = "STORE-SCU",
+                                           CalledAE = "ANY-SCP",
+                                           MaxPduSize = 16384,
+                                           ConnectTimeout = 0,
+                                           SocketTimeout = 30,
+                                           DimseTimeout = 30,
+                                           SerializedPresentationContexts = true,
+                                           PreferredTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian
+                                       };
+                scu.AddFile(iFileName);
+                scu.Connect(Application.Current.Host.Source.DnsSafeHost, 4502, DcmSocketType.TCP);
+                if (!scu.Wait()) MessageBox.Show(scu.ErrorMessage, "DICOM storage error", MessageBoxButton.OK);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "DICOM storage error", MessageBoxButton.OK);
+            }
         }
 
         #endregion

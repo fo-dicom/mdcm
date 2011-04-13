@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Implementation provided by Stack Overflow user 'luke'
+// Detailed description of the implementation can be found here:
+// http://stackoverflow.com/questions/2993735/silverlight-socket-unhandled-error-in-silverlight-application-an-attempt-was-mad
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

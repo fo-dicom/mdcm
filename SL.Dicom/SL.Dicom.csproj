@@ -361,7 +361,6 @@
     <Compile Include="SL\MD5Managed.cs" />
     <Compile Include="SL\NetworkStream.cs" />
     <Compile Include="SL\Point.cs" />
-    <Compile Include="SL\PolicyServer.cs" />
     <Compile Include="SL\SelectMode.cs" />
     <Compile Include="SL\SortedList.cs" />
     <Compile Include="SL\StateObject.cs" />

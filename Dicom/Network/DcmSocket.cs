@@ -222,7 +222,6 @@ namespace Dicom.Network {
     {
         #region PRIVATE MEMBERS
 
-        private bool _isConnected;
         private Socket _socket;
         private EndPoint _remoteEP;
         private EndPoint _localEP;
@@ -236,7 +235,6 @@ namespace Dicom.Network {
         public DcmTcpSocket()
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
-            _isConnected = false;
         }
 
         #endregion
@@ -262,7 +260,7 @@ namespace Dicom.Network {
 
         public override bool Connected
         {
-            get { return _isConnected; }
+            get { return _socket.Connected; }
         }
 
         public override int ConnectTimeout
@@ -295,7 +293,7 @@ namespace Dicom.Network {
 
         public override int Available
         {
-            get { return 0; }
+            get { return Connected ? 1 : 0; }
         }
 
         public override DcmSocket Accept()
@@ -315,7 +313,6 @@ namespace Dicom.Network {
                 UnregisterSocket(this);
                 _socket.Close();
                 _socket = null;
-                _isConnected = false;
             }
         }
 
@@ -331,7 +328,6 @@ namespace Dicom.Network {
             if (args.SocketError != SocketError.Success)
                 throw new SocketException((int) args.SocketError);
 
-            _isConnected = true;
             _remoteEP = remoteEP;
             RegisterSocket(this);
         }
@@ -349,7 +345,7 @@ namespace Dicom.Network {
 
         public override bool Poll(int microSeconds, SelectMode mode)
         {
-            return false;
+            return true;
         }
 
         public override Stream GetInternalStream()
