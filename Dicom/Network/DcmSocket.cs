@@ -189,7 +189,7 @@ namespace Dicom.Network {
 
 		public void Connect(string host, int port) {
 #if SILVERLIGHT
-		    Connect(new DnsEndPoint(host, port, AddressFamily.InterNetwork));
+		    Connect(new DnsEndPoint(host, port));
 #else
 			IPAddress[] addresses = Dns.GetHostAddresses(host);
 			for (int i = 0; i < addresses.Length; i++) {

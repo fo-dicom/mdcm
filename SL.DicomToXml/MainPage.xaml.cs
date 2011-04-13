@@ -131,7 +131,7 @@ namespace SL.DicomToXml
                                    };
             scu.AddFile(iFileName);
             scu.Connect(Application.Current.Host.Source.DnsSafeHost, 4502, DcmSocketType.TCP);
-            scu.Wait(5000);
+            scu.Wait();
             MessageBox.Show(scu.ErrorMessage);
         }
 
