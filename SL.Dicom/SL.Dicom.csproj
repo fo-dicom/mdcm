@@ -52,6 +52,9 @@
     <AssemblyOriginatorKeyFile>Dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FJ.Core">
+      <HintPath>..\3rd Party\SL\FJ.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Ionic.Zlib">
       <HintPath>..\3rd Party\SL\Ionic.Zlib.dll</HintPath>
     </Reference>
@@ -364,6 +367,8 @@
     <Compile Include="..\Dicom\Utility\WorkQueue.cs">
       <Link>Utility\WorkQueue.cs</Link>
     </Compile>
+    <Compile Include="Codec\DcmJpegCodec.cs" />
+    <Compile Include="Codec\DcmJpegParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SL\ColorMethods.cs" />
     <Compile Include="SL\MD5.cs" />
