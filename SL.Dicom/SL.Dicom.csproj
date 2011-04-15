@@ -70,6 +70,9 @@
     <Compile Include="..\Dicom.Linq\Data\XDicom.cs">
       <Link>Data\XDicom.cs</Link>
     </Compile>
+    <Compile Include="..\Dicom.Linq\HL7\XHL7.cs">
+      <Link>HL7\XHL7.cs</Link>
+    </Compile>
     <Compile Include="..\Dicom.Linq\Utility\Helper.cs">
       <Link>Utility\Helper.cs</Link>
     </Compile>
@@ -153,6 +156,12 @@
     </Compile>
     <Compile Include="..\Dicom\Flags.cs">
       <Link>Flags.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\HL7\HL7v2.cs">
+      <Link>HL7\HL7v2.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\HL7\MLLP.cs">
+      <Link>HL7\MLLP.cs</Link>
     </Compile>
     <Compile Include="..\Dicom\Imaging\Algorithms\BilinearInterpolation.cs">
       <Link>Imaging\Algorithms\BilinearInterpolation.cs</Link>
@@ -377,9 +386,7 @@
     </None>
     <None Include="Dicom.snk" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="HL7\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>

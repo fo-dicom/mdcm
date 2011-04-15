@@ -109,7 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\AppManifest.xml" />
-    <None Include="Properties\OutOfBrowserSettings.xml" />
     <Resource Include="Resources\symbol.jpg" />
   </ItemGroup>
   <ItemGroup />
