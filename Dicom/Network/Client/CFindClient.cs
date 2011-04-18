@@ -229,7 +229,9 @@ namespace Dicom.Network.Client {
 	}
 
 	public sealed class CFindPatientClient : CFindClientT<CFindPatientQuery, CFindPatientResponse> {
-		public CFindPatientClient() : base() {
+		public CFindPatientClient() : base()
+		{
+		    FindSopClassUID = DicomUID.PatientRootQueryRetrieveInformationModelFIND;
 		}
 	}
 	#endregion
