@@ -5,7 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:my="clr-namespace:SL.DicomToXml"
-             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="400">
+             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="400" Loaded="mainPage_Loaded">
     <UserControl.Resources>
         <my:IsCheckedToVisibilityConverter x:Key="isCheckedToVisibilityConverter"/>
         <OpenFileDialog x:Key="dicomFileDialog" Filter="DICOM files (*.dcm)|*.dcm|All files (*.*)|*.*" Multiselect="False"/>

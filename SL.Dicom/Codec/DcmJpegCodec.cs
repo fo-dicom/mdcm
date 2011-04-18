@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Media.Imaging;
 using Dicom.Data;
 using Dicom.IO;
 using FluxJpeg.Core;
@@ -49,16 +50,16 @@ namespace Dicom.Codec
                 pixelsForJpeg[2] = new byte[w, h];
 
                 // Copy data into buffer for FluxJpeg
-                int[] p = oldPixelData.GetFrameDataS32(i);
+                byte[] p = oldPixelData.GetFrameDataU8(i);
                 int j = 0;
                 for (int y = 0; y < h; y++)
                 {
                     for (int x = 0; x < w; x++)
                     {
-                        int color = p[j++];
-                        pixelsForJpeg[0][x, y] = (byte)(color >> 16); // R
-                        pixelsForJpeg[1][x, y] = (byte)(color >> 8);  // G
-                        pixelsForJpeg[2][x, y] = (byte)(color);       // B
+                        byte color = p[j++];
+                        pixelsForJpeg[0][x, y] = color; // R
+                        pixelsForJpeg[1][x, y] = color; // G
+                        pixelsForJpeg[2][x, y] = color; // B
                     }
                 }
 
@@ -77,9 +78,42 @@ namespace Dicom.Codec
 
         public void Decode(DcmDataset dataset, DcmPixelData oldPixelData, DcmPixelData newPixelData, DcmCodecParameters parameters)
         {
-            throw new NotImplementedException();
+            var jpegParams = parameters as DcmJpegParameters ?? GetDefaultParameters() as DcmJpegParameters;
+
+            byte[] frameData = new byte[newPixelData.UncompressedFrameSize];
+
+            for (int i = 0; i < oldPixelData.NumberOfFrames; i++)
+            {
+                var jpegData = oldPixelData.GetFrameDataU8(i);
+                var decoder = new JpegDecoder(new MemoryStream(jpegData));
+                var jpegDecoded = decoder.Decode();
+                var img = jpegDecoded.Image;
+                img.ChangeColorSpace(ColorSpace.RGB);
+
+                // Init Buffer
+                int w = img.Width;
+                int h = img.Height;
+                byte[][,] pixelsFromJpeg = img.Raster;
+
+                // Copy FluxJpeg buffer into new pixel data (only use B byte)
+                int j = 0;
+                for (int y = 0; y < h; y++)
+                {
+                    for (int x = 0; x < w; x++)
+                    {
+                        frameData[j++] = pixelsFromJpeg[2][x, y];
+                    }
+                }
+
+                newPixelData.AddFrame(frameData);
+            }
         }
 
         #endregion
+
+        public static void Register()
+        {
+            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess1, typeof(DcmJpegCodec));
+        }
     }
 }

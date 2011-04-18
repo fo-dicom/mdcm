@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Dicom;
+using Dicom.Codec;
 using Dicom.Data;
 using Dicom.Imaging;
 using Dicom.Network;
@@ -61,6 +62,12 @@ namespace SL.DicomToXml
         #endregion
 
         #region METHODS
+
+        private void mainPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            DcmRleCodec.Register();
+            DcmJpegCodec.Register();
+        }
 
         private void fileNameButton_Click(object sender, RoutedEventArgs e)
         {
