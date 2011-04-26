@@ -232,10 +232,21 @@ namespace Dicom.Network {
 
         #region CONSTRUCTORS
 
+        static DcmTcpSocket()
+        {
+            AccessPolicyProtocol = SocketClientAccessPolicyProtocol.Tcp;
+        }
+
         public DcmTcpSocket()
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
         }
+
+        #endregion
+
+        #region AUTO-IMPLEMENTED PROPERTIES
+
+        public static SocketClientAccessPolicyProtocol AccessPolicyProtocol { get; set; }
 
         #endregion
 
@@ -318,7 +329,12 @@ namespace Dicom.Network {
 
         public override void Connect(EndPoint remoteEP)
         {
-            SocketAsyncEventArgs args = new SocketAsyncEventArgs { UserToken = _socket, RemoteEndPoint = remoteEP };
+            SocketAsyncEventArgs args = new SocketAsyncEventArgs
+                                            {
+                                                UserToken = _socket,
+                                                RemoteEndPoint = remoteEP,
+                                                SocketClientAccessPolicyProtocol = AccessPolicyProtocol
+                                            };
             args.Completed += OnConnect;
 
             _clientDone.Reset();
