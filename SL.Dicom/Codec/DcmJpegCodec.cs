@@ -7,7 +7,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 using System.Windows.Media.Imaging;
+using BitMiracle.LibJpeg.Classic;
 using Dicom.Data;
 using Dicom.IO;
 using FluxJpeg.Core;
@@ -16,6 +18,7 @@ using FluxJpeg.Core.Encoder;
 
 namespace Dicom.Codec
 {
+    [DicomCodec]
     public class DcmJpegCodec : IDcmCodec
     {
         #region Implementation of IDcmCodec
@@ -27,7 +30,7 @@ namespace Dicom.Codec
 
         public DicomTransferSyntax GetTransferSyntax()
         {
-            return DicomTransferSyntax.JPEGProcess1;
+            return DicomTransferSyntax.JPEGProcess2_4;
         }
 
         public DcmCodecParameters GetDefaultParameters()
@@ -82,30 +85,36 @@ namespace Dicom.Codec
 
             byte[] frameData = new byte[newPixelData.UncompressedFrameSize];
 
-            for (int i = 0; i < oldPixelData.NumberOfFrames; i++)
+            try
             {
-                var jpegData = oldPixelData.GetFrameDataU8(i);
-                var decoder = new JpegDecoder(new MemoryStream(jpegData));
-                var jpegDecoded = decoder.Decode();
-                var img = jpegDecoded.Image;
-                img.ChangeColorSpace(ColorSpace.RGB);
-
-                // Init Buffer
-                int w = img.Width;
-                int h = img.Height;
-                byte[][,] pixelsFromJpeg = img.Raster;
-
-                // Copy FluxJpeg buffer into new pixel data (only use B byte)
-                int j = 0;
-                for (int y = 0; y < h; y++)
+                for (int i = 0; i < oldPixelData.NumberOfFrames; i++)
                 {
-                    for (int x = 0; x < w; x++)
-                    {
-                        frameData[j++] = pixelsFromJpeg[2][x, y];
-                    }
-                }
+                    var jpegStream = new MemoryStream(oldPixelData.GetFrameDataU8(i));
 
-                newPixelData.AddFrame(frameData);
+                    jpeg_error_mgr errorMgr = new jpeg_error_mgr();
+                    jpeg_decompress_struct cinfo = new jpeg_decompress_struct(errorMgr);
+                    cinfo.jpeg_stdio_src(jpegStream);
+                    cinfo.jpeg_read_header(true);
+
+                    int w = cinfo.Image_width;
+                    int h = cinfo.Image_height;
+
+                    cinfo.jpeg_start_decompress();
+                    while (cinfo.Output_scanline < cinfo.Output_height)
+                    {
+                        byte[][] pixelsFromJpeg = new byte[w][];
+                        cinfo.jpeg_read_scanlines(pixelsFromJpeg, 1);
+                        int j = cinfo.Output_scanline * w;
+                        for (int x = 0; x < w; ++x) frameData[j++] = pixelsFromJpeg[x][0];
+                    }
+                    cinfo.jpeg_finish_decompress();
+
+                    newPixelData.AddFrame(frameData);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log.Error("Failed to decode JPEG image, reason: {0}", e.Message);
             }
         }
 
@@ -113,7 +122,7 @@ namespace Dicom.Codec
 
         public static void Register()
         {
-            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess1, typeof(DcmJpegCodec));
+            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess2_4, typeof(DcmJpegCodec));
         }
     }
 }
