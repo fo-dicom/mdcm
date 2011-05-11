@@ -32,6 +32,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="5*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
@@ -49,5 +50,7 @@
                  Text="{Binding ElementName=mainPage,Path=XmlDump}"
                  Visibility="{Binding ElementName=xmlButton,Path=IsChecked,Converter={StaticResource isCheckedToVisibilityConverter}}" />
         <Image Grid.Row="1" Grid.Column="1" x:Name="dicomImage" Stretch="None" Source="{Binding ElementName=mainPage,Path=DicomImage}"/>
+        <TextBox Grid.Row="2" Grid.Column="0" x:Name="loggerTextBox" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
+                 Text="{Binding ElementName=mainPage,Path=Log}"/>
     </Grid>
 </UserControl>

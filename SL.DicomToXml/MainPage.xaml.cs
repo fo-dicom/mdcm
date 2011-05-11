@@ -15,7 +15,7 @@ using Dicom.Network.Client;
 
 namespace SL.DicomToXml
 {
-    public partial class MainPage : UserControl
+    public partial class MainPage
     {
         #region FIELDS
 
@@ -27,6 +27,9 @@ namespace SL.DicomToXml
 
         public static readonly DependencyProperty DicomImageProperty =
             DependencyProperty.Register("DicomImage", typeof(ImageSource), typeof(MainPage), new PropertyMetadata(null));
+
+        public static readonly DependencyProperty LogProperty =
+            DependencyProperty.Register("Log", typeof(string), typeof(MainPage), new PropertyMetadata(String.Empty));
 
         #endregion
 
@@ -59,6 +62,12 @@ namespace SL.DicomToXml
             set { SetValue(DicomImageProperty, value); }
         }
 
+        public string Log
+        {
+            get { return (string)GetValue(LogProperty); }
+            set { SetValue(LogProperty, value); }
+        }
+        
         #endregion
 
         #region METHODS
@@ -67,6 +76,7 @@ namespace SL.DicomToXml
         {
             DcmRleCodec.Register();
             DcmJpegCodec.Register();
+            Debug.InitializeIsolatedStorageDebugLogger();
         }
 
         private void fileNameButton_Click(object sender, RoutedEventArgs e)
@@ -95,8 +105,8 @@ namespace SL.DicomToXml
                         XmlDump = txtWriter.ToString();
 
                         DicomImage = ff.Dataset.Contains(DicomTags.PixelData)
-                                                ? GetImageSource(ff.Dataset)
-                                                : null;
+                                         ? GetImageSource(ff.Dataset)
+                                         : null;
 
                         string tempDicomFile = "temp.dcm";
                         ff.Save(tempDicomFile, DicomWriteOptions.ExplicitLengthSequenceItem);
@@ -113,6 +123,7 @@ namespace SL.DicomToXml
                         DicomImage = null;
                     }
                 }
+                UpdateLog();
             }
         }
 
@@ -146,11 +157,26 @@ namespace SL.DicomToXml
                                        };
                 scu.AddFile(iFileName);
                 scu.Connect(Application.Current.Host.Source.DnsSafeHost, 4502, DcmSocketType.TCP);
-                if (!scu.Wait()) MessageBox.Show(scu.ErrorMessage, "DICOM storage error", MessageBoxButton.OK);
+                if (!scu.Wait()) Debug.Log.Warn(scu.ErrorMessage);
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.Message, "DICOM storage error", MessageBoxButton.OK);
+                Debug.Log.Error(e.Message);
+            }
+        }
+
+        private void UpdateLog()
+        {
+            using (IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                using (
+                    var stream = new IsolatedStorageFileStream("Solution.Silverlight.log", FileMode.Open,
+                                                               FileAccess.Read, store))
+                {
+                    var reader = new StreamReader(stream);
+                    Log = reader.ReadToEnd();
+                    reader.Close();
+                }
             }
         }
 

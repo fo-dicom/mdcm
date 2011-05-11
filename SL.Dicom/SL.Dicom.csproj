@@ -157,9 +157,6 @@
     <Compile Include="..\Dicom\Data\DicomVR.cs">
       <Link>Data\DicomVR.cs</Link>
     </Compile>
-    <Compile Include="..\Dicom\Debug.cs">
-      <Link>Debug.cs</Link>
-    </Compile>
     <Compile Include="..\Dicom\Flags.cs">
       <Link>Flags.cs</Link>
     </Compile>
@@ -372,6 +369,8 @@
     </Compile>
     <Compile Include="Codec\DcmJpegCodec.cs" />
     <Compile Include="Codec\DcmJpegParameters.cs" />
+    <Compile Include="Debug.cs" />
+    <Compile Include="IsolatedStorageTarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SL\ColorMethods.cs" />
     <Compile Include="SL\MD5.cs" />
