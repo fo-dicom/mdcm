@@ -12,13 +12,12 @@ This is a Silverlight focused fork of the main mdcm project https://github.com/r
 The Silverlight class library, project SL.Dicom, provides a stripped Silverlight version of the Dicom + Dicom.Linq class libraries. A number of shortcuts are currently taken to yield a successful build of the SL.Dicom library, including but not limited to:
 
 * exclusion of server based HL7 and Network functionality
-* codecs are not registrered
+* only RLE codec supported
 * encoding support limited to UTF-8 (Silverlight does not support ASCII encoding; UTF-8 should be compatible with ASCII)
 * serialization functionality is disabled
 * file operations are limited to the isolated storage
-* NLog support (probably) not available
 
-SL.DicomToXml is a simple proof-of-concept that the SL.Dicom library can provide DICOM functionality in a Silverlight application. It simply reads the user selected DICOM file and dumps the content excluding pixel data in XML format on the web page.
+SL.DicomToXml is a simple proof-of-concept that the SL.Dicom library can provide DICOM functionality in a Silverlight application. It simply reads the user selected DICOM file and dumps the content excluding pixel data in XML or raw format on the web page.
 
 
 == Links

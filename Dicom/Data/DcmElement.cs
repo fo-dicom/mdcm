@@ -1383,7 +1383,47 @@ namespace Dicom.Data {
 			: base(tag, DicomVR.PN, pos, endian, buffer) {
 		}
 		#endregion
-	}
+
+        #region Properties
+
+        public string FamilyNameComplex
+        {
+            get { return GetNameComponent(0); }
+        }
+
+        public string GivenNameComplex
+        {
+            get { return GetNameComponent(1); }
+        }
+
+	    public string MiddleName
+	    {
+            get { return GetNameComponent(2); }
+	    }
+
+	    public string Prefix
+	    {
+            get { return GetNameComponent(3); }
+	    }
+
+	    public string Suffix
+	    {
+            get { return GetNameComponent(4); }
+	    }
+
+        #endregion
+
+        #region Methods
+
+        private string GetNameComponent(int iIndex)
+        {
+            string[] split;
+            var val = GetValueString();
+            return val != null && (split = val.Split('^')).Length > iIndex ? split[iIndex] : String.Empty;            
+        }
+
+        #endregion
+    }
 
 	/// <summary>Short String (SH)</summary>
 	public class DcmShortString : DcmStringElement {
