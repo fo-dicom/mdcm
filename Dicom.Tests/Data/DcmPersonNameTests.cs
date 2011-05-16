@@ -71,17 +71,17 @@ namespace Dicom.Tests.Data
         [Test]
         public void Prefix_Accessor_AdamsInstanceNonEmpty()
         {
-            StringAssert.AreEqualIgnoringCase("Rev.", _instanceAdams.Prefix);
-            Assert.IsNullOrEmpty(_instanceJones.Prefix);
-            Assert.IsNullOrEmpty(_instanceDoe.Prefix);
+            StringAssert.AreEqualIgnoringCase("Rev.", _instanceAdams.NamePrefix);
+            Assert.IsNullOrEmpty(_instanceJones.NamePrefix);
+            Assert.IsNullOrEmpty(_instanceDoe.NamePrefix);
         }
 
         [Test]
         public void Suffix_Accessor_DoeInstanceEmpty()
         {
-            StringAssert.AreEqualIgnoringCase("B.A. M.Div.", _instanceAdams.Suffix);
-            StringAssert.AreEqualIgnoringCase("Ph.D., Chief Executive Officer", _instanceJones.Suffix);
-            Assert.IsNullOrEmpty(_instanceDoe.Prefix);
+            StringAssert.AreEqualIgnoringCase("B.A. M.Div.", _instanceAdams.NameSuffix);
+            StringAssert.AreEqualIgnoringCase("Ph.D., Chief Executive Officer", _instanceJones.NameSuffix);
+            Assert.IsNullOrEmpty(_instanceDoe.NamePrefix);
         }
 
         #endregion

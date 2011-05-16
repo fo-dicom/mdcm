@@ -1401,12 +1401,12 @@ namespace Dicom.Data {
             get { return GetNameComponent(2); }
 	    }
 
-	    public string Prefix
+	    public string NamePrefix
 	    {
             get { return GetNameComponent(3); }
 	    }
 
-	    public string Suffix
+	    public string NameSuffix
 	    {
             get { return GetNameComponent(4); }
 	    }
