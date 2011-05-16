@@ -1384,36 +1384,36 @@ namespace Dicom.Data {
 		}
 		#endregion
 
-        #region Properties
+        #region Public Methods
 
-        public string FamilyNameComplex
+        public string GetFamilyNameComplex()
         {
-            get { return GetNameComponent(0); }
+            return GetNameComponent(0);
         }
 
-        public string GivenNameComplex
+        public string GetGivenNameComplex()
         {
-            get { return GetNameComponent(1); }
+            return GetNameComponent(1);
         }
 
-	    public string MiddleName
+	    public string GetMiddleName()
 	    {
-            get { return GetNameComponent(2); }
+            return GetNameComponent(2);
 	    }
 
-	    public string NamePrefix
+	    public string GetNamePrefix()
 	    {
-            get { return GetNameComponent(3); }
+            return GetNameComponent(3);
 	    }
 
-	    public string NameSuffix
+	    public string GetNameSuffix()
 	    {
-            get { return GetNameComponent(4); }
+            return GetNameComponent(4);
 	    }
 
         #endregion
 
-        #region Methods
+        #region Private Methods
 
         private string GetNameComponent(int iIndex)
         {

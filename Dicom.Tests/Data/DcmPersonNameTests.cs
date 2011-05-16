@@ -47,41 +47,41 @@ namespace Dicom.Tests.Data
         [Test]
         public void FamilyNameComplex_Accessor_AllInstancesNonEmpty()
         {
-            StringAssert.AreEqualIgnoringCase("Adams", _instanceAdams.FamilyNameComplex);
-            StringAssert.AreEqualIgnoringCase("Morrison-Jones", _instanceJones.FamilyNameComplex);
-            StringAssert.AreEqualIgnoringCase("Doe", _instanceDoe.FamilyNameComplex);
+            StringAssert.AreEqualIgnoringCase("Adams", _instanceAdams.GetFamilyNameComplex());
+            StringAssert.AreEqualIgnoringCase("Morrison-Jones", _instanceJones.GetFamilyNameComplex());
+            StringAssert.AreEqualIgnoringCase("Doe", _instanceDoe.GetFamilyNameComplex());
         }
 
         [Test]
         public void GivenNameComplex_Accessor_AllInstancesNonEmpty()
         {
-            StringAssert.AreEqualIgnoringCase("John Robert Quincy", _instanceAdams.GivenNameComplex);
-            StringAssert.AreEqualIgnoringCase("Susan", _instanceJones.GivenNameComplex);
-            StringAssert.AreEqualIgnoringCase("John", _instanceDoe.GivenNameComplex);
+            StringAssert.AreEqualIgnoringCase("John Robert Quincy", _instanceAdams.GetGivenNameComplex());
+            StringAssert.AreEqualIgnoringCase("Susan", _instanceJones.GetGivenNameComplex());
+            StringAssert.AreEqualIgnoringCase("John", _instanceDoe.GetGivenNameComplex());
         }
 
         [Test]
         public void MiddleName_Accessor_AllInstancesEmpty()
         {
-            Assert.IsNullOrEmpty(_instanceAdams.MiddleName);
-            Assert.IsNullOrEmpty(_instanceJones.MiddleName);
-            Assert.IsNullOrEmpty(_instanceDoe.MiddleName);
+            Assert.IsNullOrEmpty(_instanceAdams.GetMiddleName());
+            Assert.IsNullOrEmpty(_instanceJones.GetMiddleName());
+            Assert.IsNullOrEmpty(_instanceDoe.GetMiddleName());
         }
 
         [Test]
         public void Prefix_Accessor_AdamsInstanceNonEmpty()
         {
-            StringAssert.AreEqualIgnoringCase("Rev.", _instanceAdams.NamePrefix);
-            Assert.IsNullOrEmpty(_instanceJones.NamePrefix);
-            Assert.IsNullOrEmpty(_instanceDoe.NamePrefix);
+            StringAssert.AreEqualIgnoringCase("Rev.", _instanceAdams.GetNamePrefix());
+            Assert.IsNullOrEmpty(_instanceJones.GetNamePrefix());
+            Assert.IsNullOrEmpty(_instanceDoe.GetNamePrefix());
         }
 
         [Test]
         public void Suffix_Accessor_DoeInstanceEmpty()
         {
-            StringAssert.AreEqualIgnoringCase("B.A. M.Div.", _instanceAdams.NameSuffix);
-            StringAssert.AreEqualIgnoringCase("Ph.D., Chief Executive Officer", _instanceJones.NameSuffix);
-            Assert.IsNullOrEmpty(_instanceDoe.NamePrefix);
+            StringAssert.AreEqualIgnoringCase("B.A. M.Div.", _instanceAdams.GetNameSuffix());
+            StringAssert.AreEqualIgnoringCase("Ph.D., Chief Executive Officer", _instanceJones.GetNameSuffix());
+            Assert.IsNullOrEmpty(_instanceDoe.GetNameSuffix());
         }
 
         #endregion
