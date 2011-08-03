@@ -209,8 +209,8 @@ namespace Dicom.Data {
 					parts[1].Length != 4)
 					return null;
 
-				ushort g = ushort.Parse(parts[0], NumberStyles.HexNumber);
-				ushort e = ushort.Parse(parts[1], NumberStyles.HexNumber);
+				ushort g = ushort.Parse(parts[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+				ushort e = ushort.Parse(parts[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
 				return new DicomTag(g, e);
 			}
@@ -15295,7 +15295,7 @@ namespace Dicom.Data {
 
 			StringBuilder sb = new StringBuilder(mask);
 			sb.Replace('x', '0');
-			_c = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber);
+			_c = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
 			sb = new StringBuilder(mask);
 			sb.Replace('0', 'F').Replace('1', 'F').Replace('2', 'F')
@@ -15304,7 +15304,7 @@ namespace Dicom.Data {
 				.Replace('9', 'F').Replace('a', 'F').Replace('b', 'F')
 				.Replace('c', 'F').Replace('d', 'F').Replace('e', 'F')
 				.Replace('f', 'F').Replace('x', '0');
-			_m = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber);
+			_m = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 		}
 		#endregion
 

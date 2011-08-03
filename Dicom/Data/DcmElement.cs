@@ -481,9 +481,9 @@ namespace Dicom.Data {
 		private DateTime ParseDate(string date) {
 			try {
 				if (_formats != null)
-					return DateTime.ParseExact(date, _formats, CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault);
+					return DateTime.ParseExact(date, _formats, CultureInfo.InvariantCulture, DateTimeStyles.NoCurrentDateDefault);
 				else
-					return DateTime.Parse(date);
+					return DateTime.Parse(date, CultureInfo.InvariantCulture);
 			}
 			catch {
 				return DateTime.Today;
@@ -646,34 +646,34 @@ namespace Dicom.Data {
 		private object ParseNumber(string val) {
 			try {
 				if (typeof(T) == typeof(byte)) {
-					return byte.Parse(val, NumberStyle);
+					return byte.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 				if (typeof(T) == typeof(sbyte)) {
-					return sbyte.Parse(val, NumberStyle);
+					return sbyte.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 				if (typeof(T) == typeof(short)) {
-					return short.Parse(val, NumberStyle);
+					return short.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 				if (typeof(T) == typeof(ushort)) {
-					return ushort.Parse(val, NumberStyle);
+					return ushort.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 				if (typeof(T) == typeof(int)) {
-					return int.Parse(val, NumberStyle);
+					return int.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 				if (typeof(T) == typeof(uint)) {
-					return uint.Parse(val, NumberStyle);
+					return uint.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 				if (typeof(T) == typeof(long)) {
-					return long.Parse(val, NumberStyle);
+					return long.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 				if (typeof(T) == typeof(ulong)) {
-					return ulong.Parse(val, NumberStyle);
+					return ulong.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 				if (typeof(T) == typeof(float)) {
-					return float.Parse(val, NumberStyle);
+					return float.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 				if (typeof(T) == typeof(double)) {
-					return double.Parse(val, NumberStyle);
+					return double.Parse(val, NumberStyle, CultureInfo.InvariantCulture);
 				}
 			} catch { }
 			return null;
@@ -843,8 +843,8 @@ namespace Dicom.Data {
 				if (strs[i].Length == 8) {
 					string gs = strs[i].Substring(0, 4);
 					string es = strs[i].Substring(4, 4);
-					ushort g = ushort.Parse(gs, NumberStyles.HexNumber);
-					ushort e = ushort.Parse(es, NumberStyles.HexNumber);
+					ushort g = ushort.Parse(gs, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+					ushort e = ushort.Parse(es, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 					tags[i] = new DicomTag(g, e);
 				}
 			}
@@ -1013,7 +1013,7 @@ namespace Dicom.Data {
 
 		public float GetFloat(int index) {
 			string val = GetValue(index);
-			return float.Parse(val);
+			return float.Parse(val, CultureInfo.InvariantCulture);
 		}
 
 		public float[] GetFloats() {
@@ -1067,7 +1067,7 @@ namespace Dicom.Data {
 
 		public double GetDouble(int index) {
 			string val = GetValue(index);
-			return double.Parse(val);
+			return double.Parse(val, CultureInfo.InvariantCulture);
 		}
 
 		public double[] GetDoubles() {
@@ -1121,7 +1121,7 @@ namespace Dicom.Data {
 
 		public decimal GetDecimal(int index) {
 			string val = GetValue(index);
-			return decimal.Parse(val);
+			return decimal.Parse(val, CultureInfo.InvariantCulture);
 		}
 
 		public decimal[] GetDecimals() {
@@ -1233,7 +1233,7 @@ namespace Dicom.Data {
 
 		public int GetInt32(int index) {
 			string val = GetValue(index);
-			return int.Parse(val);
+			return int.Parse(val, CultureInfo.InvariantCulture);
 		}
 
 		public int[] GetInt32s() {

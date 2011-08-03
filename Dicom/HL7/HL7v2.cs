@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -31,7 +32,7 @@ namespace Dicom.HL7 {
 
 					if (tag[3] == '[') {
 						string sn = tag.Substring(4, tag.IndexOf(']') - 4);
-						SegmentNumber = Int32.Parse(sn);
+						SegmentNumber = Int32.Parse(sn, CultureInfo.InvariantCulture);
 					} else {
 						SegmentNumber = 1;
 					}
@@ -41,11 +42,11 @@ namespace Dicom.HL7 {
 						throw new Exception();
 
 					if (parts.Length >= 2)
-						Field = Int32.Parse(parts[1]);
+						Field = Int32.Parse(parts[1], CultureInfo.InvariantCulture);
 					if (parts.Length >= 3)
-						Component = Int32.Parse(parts[2]);
+						Component = Int32.Parse(parts[2], CultureInfo.InvariantCulture);
 					if (parts.Length == 4)
-						SubComponent = Int32.Parse(parts[3]);
+						SubComponent = Int32.Parse(parts[3], CultureInfo.InvariantCulture);
 				} catch {
 					throw new ArgumentException("Invalid HL7 tag: " + tag, "tag");
 				}
