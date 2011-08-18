@@ -31,8 +31,10 @@ namespace Dicom.Utility {
 			Parallel.For(start, end, action);
 		}
 
-		public static void For(int start, int end, int chunkSize, Action<int> action) {
-			For(start, end, action);
+		public static void For(int start, int end, int chunkSize, Action<int> action)
+		{
+			var options = new ParallelOptions { MaxDegreeOfParallelism = chunkSize };
+			Parallel.For(start, end, options, action);
 		}
 
 		public static void ForEach<T>(IEnumerable<T> enumerable, Action<T> action)

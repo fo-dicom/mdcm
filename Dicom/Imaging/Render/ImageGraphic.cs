@@ -257,6 +257,8 @@ namespace Dicom.Imaging.Render {
 		private static void FillWriteableBitmap(WriteableBitmap iBitmap, int[] iPixelData, int iRotation, bool iFlipX, bool iFlipY)
 		{
 			// TODO Apply rotation and flipping on the pixel data before copying to bitmap
+			if (iRotation != 0 || iFlipX || iFlipY)
+				throw new NotSupportedException("Rotation and/or flipping not yet supported in WPF!");
 
 			// Reserve the back buffer for updates.
 			iBitmap.Lock();
