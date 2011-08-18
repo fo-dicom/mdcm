@@ -29,8 +29,8 @@
             <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Button Grid.Row="0" Grid.Column="0" x:Name="loadButton" Click="LoadButtonClick">Open DICOM file...</Button>
-        <TextBox Grid.Row="1" Grid.Column="0" x:Name="dicomDumpTextBox" IsReadOnly="True"/>
+        <Button Grid.Row="0" Grid.Column="0" x:Name="loadButton" Click="LoadButtonClick" HorizontalAlignment="Left">Open DICOM file...</Button>
+        <TextBox Grid.Row="1" Grid.Column="0" x:Name="dicomDumpTextBox" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
         <Image Grid.Row="1" Grid.Column="1" x:Name="dicomImage"/>
     </Grid>
 </Window>

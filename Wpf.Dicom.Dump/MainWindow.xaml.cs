@@ -23,6 +23,17 @@ namespace Wpf.Dicom.Dump
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             DicomCodec.RegisterCodecs();
+            DicomCodec.RegisterExternalCodecs(".", "Dicom.Codec*.dll");
+
+            if (File.Exists("dicom.dic"))
+                DcmDictionary.ImportDictionary("dicom.dic");
+            else
+                DcmDictionary.LoadInternalDictionary();
+
+            if (File.Exists("private.dic"))
+                DcmDictionary.ImportDictionary("private.dic");
+
+            Debug.InitializeConsoleDebugLogger();
         }
 
         private void LoadButtonClick(object sender, RoutedEventArgs e)
@@ -67,7 +78,6 @@ namespace Wpf.Dicom.Dump
                         dicomImage.Source = null;
                     }
                 }
-//                UpdateLog();
             }
         }
 

@@ -78,8 +78,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Dicom\Dicom.csproj">
-      <Project>{1efc91c4-eef8-4ae4-b512-24c00ca46d59}</Project>
+    <ProjectReference Include="..\..\Wpf.Dicom\Wpf.Dicom.csproj">
+      <Project>{96490b28-7bec-4c75-b31e-0d5f10c2b79d}</Project>
     </ProjectReference>
     <ProjectReference Include="libijg12.x64.vcxproj">
       <Project>{1b3557d4-1146-428a-aec9-12cadf994527}</Project>
