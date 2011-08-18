@@ -137,7 +137,7 @@ namespace Dicom.Imaging.Render {
 				graphic.Transform(scale, rotation, flipx, flipy);
 		}
 #if SILVERLIGHT
-		public ImageSource RenderImage(ILUT lut)
+		public BitmapSource RenderImage(ILUT lut)
 		{
 			WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
 			if (_layers.Count > 1)
@@ -147,7 +147,7 @@ namespace Dicom.Imaging.Render {
 			return img;
 		}
 #elif WPF
-		public ImageSource RenderImage(ILUT lut)
+		public BitmapSource RenderImage(ILUT lut)
 		{
 			WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
 			if (img != null && _layers.Count > 1)
