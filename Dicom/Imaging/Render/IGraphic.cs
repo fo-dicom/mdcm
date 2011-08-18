@@ -20,7 +20,7 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
-#if SILVERLIGHT
+#if SILVERLIGHT || WPF
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #else
@@ -49,10 +49,10 @@ namespace Dicom.Imaging.Render {
 		void FlipX();
 		void FlipY();
 		void Transform(double scale, int rotation, bool flipx, bool flipy);
-#if SILVERLIGHT
-        ImageSource RenderImage(ILUT lut);
+#if SILVERLIGHT || WPF
+		ImageSource RenderImage(ILUT lut);
 #else
 		Image RenderImage(ILUT lut);
 #endif
-    }
+	}
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-#if SILVERLIGHT
+#if SILVERLIGHT || WPF
 using System.Windows.Media;
 #else
 using System.Drawing;

@@ -20,7 +20,7 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
-#if SILVERLIGHT
+#if SILVERLIGHT || WPF
 using System.Windows.Media;
 #else
 using System.Drawing;

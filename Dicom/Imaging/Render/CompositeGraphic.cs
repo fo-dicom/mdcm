@@ -21,7 +21,7 @@
 
 using System;
 using System.Collections.Generic;
-#if SILVERLIGHT
+#if SILVERLIGHT || WPF
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #else
@@ -135,20 +135,20 @@ namespace Dicom.Imaging.Render {
 			foreach (IGraphic graphic in _layers)
 				graphic.Transform(scale, rotation, flipx, flipy);
 		}
-#if SILVERLIGHT
-        public ImageSource RenderImage(ILUT lut)
-        {
-            WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
-            if (_layers.Count > 1)
-            {
-                for (int i = 1; i < _layers.Count; ++i)
-                {
-                    WriteableBitmap layer = _layers[i].RenderImage(null) as WriteableBitmap;
-                    // TODO Add layer to background bitmap
-                }
-            }
-            return img;
-        }
+#if SILVERLIGHT || WPF
+		public ImageSource RenderImage(ILUT lut)
+		{
+			WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
+			if (_layers.Count > 1)
+			{
+				for (int i = 1; i < _layers.Count; ++i)
+				{
+					WriteableBitmap layer = _layers[i].RenderImage(null) as WriteableBitmap;
+					// TODO Add layer to background bitmap
+				}
+			}
+			return img;
+		}
 #else
 		public Image RenderImage(ILUT lut) {
 			Image img = BackgroundLayer.RenderImage(lut);
@@ -163,6 +163,6 @@ namespace Dicom.Imaging.Render {
 			return img;
 		}
 #endif
-        #endregion
-    }
+		#endregion
+	}
 }

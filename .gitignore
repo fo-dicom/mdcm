@@ -13,3 +13,4 @@ Distribute/
 TestResult.xml
 *.vs10x
 *.docstates
+*.dotCover

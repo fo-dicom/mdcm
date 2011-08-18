@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if SILVERLIGHT
+#if SILVERLIGHT || WPF
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #else
@@ -40,7 +40,7 @@ namespace Dicom.Imaging {
 		}
 #endif
 
-        /// <summary>Source DICOM dataset</summary>
+		/// <summary>Source DICOM dataset</summary>
 		public DcmDataset Dataset {
 			get;
 			private set;
@@ -58,12 +58,12 @@ namespace Dicom.Imaging {
 
 		/// <summary>Renders DICOM image to System.Drawing.Image</summary>
 		/// <returns>Rendered image</returns>
-#if SILVERLIGHT
-        public ImageSource Render()
+#if SILVERLIGHT || WPF
+		public ImageSource Render()
 #else
-        public Image Render()
+		public Image Render()
 #endif
-        {
+		{
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
 			return graphic.RenderImage(_pipeline.LUT);
 		}
