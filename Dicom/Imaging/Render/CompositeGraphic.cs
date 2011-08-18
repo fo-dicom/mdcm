@@ -22,6 +22,7 @@
 using System;
 using System.Collections.Generic;
 #if SILVERLIGHT || WPF
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 #else
@@ -135,16 +136,34 @@ namespace Dicom.Imaging.Render {
 			foreach (IGraphic graphic in _layers)
 				graphic.Transform(scale, rotation, flipx, flipy);
 		}
-#if SILVERLIGHT || WPF
+#if SILVERLIGHT
 		public ImageSource RenderImage(ILUT lut)
 		{
 			WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
 			if (_layers.Count > 1)
 			{
+				throw new NotSupportedException("Multilayered images are not supported in Silverlight!");
+			}
+			return img;
+		}
+#elif WPF
+		public ImageSource RenderImage(ILUT lut)
+		{
+			WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
+			if (img != null && _layers.Count > 1)
+			{
 				for (int i = 1; i < _layers.Count; ++i)
 				{
-					WriteableBitmap layer = _layers[i].RenderImage(null) as WriteableBitmap;
-					// TODO Add layer to background bitmap
+					var g = _layers[i];
+					var layer = _layers[i].RenderImage(null) as WriteableBitmap;
+
+					if (layer != null)
+					{
+						Array pixels = new int[g.ScaledWidth * g.ScaledHeight];
+						layer.CopyPixels(pixels, 4, 0);
+						img.WritePixels(new Int32Rect(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight),
+										pixels, 4, 0);
+					}
 				}
 			}
 			return img;
