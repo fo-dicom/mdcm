@@ -45,6 +45,7 @@ namespace Dicom.Imaging.Render {
 #if SILVERLIGHT
 		protected WriteableBitmap _bitmap;
 #elif WPF
+	    private const int DPI = 96;
 		protected BitmapSource _bitmap;
 #else
 		protected Bitmap _bitmap;
@@ -254,7 +255,7 @@ namespace Dicom.Imaging.Render {
 
 		private static BitmapSource RenderBitmapSource(int iWidth, int iHeight, int[] iPixelData)
 		{
-			var bitmap = new WriteableBitmap(iWidth, iHeight, 96, 96, PixelFormats.Pbgra32, null);
+			var bitmap = new WriteableBitmap(iWidth, iHeight, DPI, DPI, PixelFormats.Bgr32, null);
 
 			// Reserve the back buffer for updates.
 			bitmap.Lock();

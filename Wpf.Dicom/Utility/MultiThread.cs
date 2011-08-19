@@ -1,6 +1,7 @@
 ﻿// mDCM: A C# DICOM library
 //
-// Copyright (c) 2006-2009  Colby Dillion
+// Copyright (c) 2006-2011
+//    Colby Dillion, Anders Gustafsson and others
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -17,7 +18,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author:
-//    Colby Dillion (colby.dillion@gmail.com)
+//    Anders Gustafsson (anders at cureos dot com)
 
 using System;
 using System.Collections.Generic;
