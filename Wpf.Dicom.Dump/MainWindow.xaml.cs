@@ -92,5 +92,14 @@ namespace Wpf.Dicom.Dump
                 return null;
             }
         }
+
+        private void getFromStoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            var queryDlg = new DicomQueryDialog();
+            if (queryDlg.ShowDialog().GetValueOrDefault())
+            {
+                
+            }
+        }
     }
 }
