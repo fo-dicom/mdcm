@@ -46,7 +46,7 @@ namespace Dicom
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
             }
         }
@@ -67,7 +67,7 @@ namespace Dicom
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
             }
         }

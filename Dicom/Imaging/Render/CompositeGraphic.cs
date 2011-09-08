@@ -140,9 +140,19 @@ namespace Dicom.Imaging.Render {
 		public BitmapSource RenderImage(ILUT lut)
 		{
 			WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
-			if (_layers.Count > 1)
+			if (img != null && _layers.Count > 1)
 			{
-				throw new NotSupportedException("Multilayered images are not supported in Silverlight!");
+				for (int i = 1; i < _layers.Count; ++i)
+				{
+					var g = _layers[i];
+					var layer = _layers[i].RenderImage(null) as WriteableBitmap;
+
+					if (layer != null)
+					{
+						var rect = new Rect(g.ScaledOffsetX, g.ScaledOffsetY, g.ScaledWidth, g.ScaledHeight);
+						img.Blit(rect, layer, rect);
+					}
+				}
 			}
 			return img;
 		}

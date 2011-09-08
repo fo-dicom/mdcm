@@ -261,6 +261,9 @@
     <Compile Include="..\Dicom\Network\Client\CFindClient.cs">
       <Link>Network\Client\CFindClient.cs</Link>
     </Compile>
+    <Compile Include="..\Dicom\Network\Client\CGetClient.cs">
+      <Link>Network\Client\CGetClient.cs</Link>
+    </Compile>
     <Compile Include="..\Dicom\Network\Client\CMoveClient.cs">
       <Link>Network\Client\CMoveClient.cs</Link>
     </Compile>

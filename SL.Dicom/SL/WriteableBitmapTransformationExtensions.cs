@@ -78,7 +78,7 @@ namespace System.Windows.Media.Imaging
          var srcHeight = bmp.PixelHeight;
 
          // If the rectangle is completly out of the bitmap
-         if(x > srcWidth || y > srcHeight)
+         if (x > srcWidth || y > srcHeight)
          {
             return new WriteableBitmap(0, 0);
          }
@@ -125,20 +125,33 @@ namespace System.Windows.Media.Imaging
       /// <returns>A new WriteableBitmap that is a resized version of the input.</returns>
       public static WriteableBitmap Resize(this WriteableBitmap bmp, int width, int height, Interpolation interpolation)
       {
-         // Init vars
-         var ps = bmp.Pixels;
-         var ws = bmp.PixelWidth;
-         var hs = bmp.PixelHeight;
+         var pd = Resize(bmp.Pixels, bmp.PixelWidth, bmp.PixelHeight, width, height, interpolation);
 
          var result = new WriteableBitmap(width, height);
-         var pd = result.Pixels;
-         float xs = (float)ws / width;
-         float ys = (float)hs / height;
+         Buffer.BlockCopy(pd, 0, result.Pixels, 0, SizeOfArgb * pd.Length);
+         return result;
+      }
 
-         float fracx, fracy, ifracx, ifracy, sx, sy, l0, l1;
+      /// <summary>
+      /// Creates a new resized bitmap.
+      /// </summary>
+      /// <param name="pixels">The source pixels.</param>
+      /// <param name="widthSource">The width of the source pixels.</param>
+      /// <param name="heightSource">The height of the source pixels.</param>
+      /// <param name="width">The new desired width.</param>
+      /// <param name="height">The new desired height.</param>
+      /// <param name="interpolation">The interpolation method that should be used.</param>
+      /// <returns>A new bitmap that is a resized version of the input.</returns>
+      public static int[] Resize(int[] pixels, int widthSource, int heightSource, int width, int height, Interpolation interpolation)
+      {
+         var pd = new int[width * height];
+         var xs = (float)widthSource / width;
+         var ys = (float)heightSource / height;
+
+         float fracx, fracy, ifracx, ifracy, sx, sy, l0, l1, rf, gf, bf;
          int c, x0, x1, y0, y1;
          byte c1a, c1r, c1g, c1b, c2a, c2r, c2g, c2b, c3a, c3r, c3g, c3b, c4a, c4r, c4g, c4b;
-         byte a = 0, r = 0, g = 0, b = 0;
+         byte a, r, g, b;
 
          // Nearest Neighbor
          if (interpolation == Interpolation.NearestNeighbor)
@@ -153,12 +166,12 @@ namespace System.Windows.Media.Imaging
                   x0 = (int)sx;
                   y0 = (int)sy;
 
-                  pd[srcIdx++] = ps[y0 * ws + x0];
+                  pd[srcIdx++] = pixels[y0 * widthSource + x0];
                }
             }
          }
 
-         // Bilinear
+            // Bilinear
          else if (interpolation == Interpolation.Bilinear)
          {
             var srcIdx = 0;
@@ -177,33 +190,37 @@ namespace System.Windows.Media.Imaging
                   ifracx = 1f - fracx;
                   ifracy = 1f - fracy;
                   x1 = x0 + 1;
-                  if (x1 >= ws)
+                  if (x1 >= widthSource)
+                  {
                      x1 = x0;
+                  }
                   y1 = y0 + 1;
-                  if (y1 >= hs)
+                  if (y1 >= heightSource)
+                  {
                      y1 = y0;
+                  }
 
 
                   // Read source color
-                  c = ps[y0 * ws + x0];
+                  c = pixels[y0 * widthSource + x0];
                   c1a = (byte)(c >> 24);
                   c1r = (byte)(c >> 16);
                   c1g = (byte)(c >> 8);
                   c1b = (byte)(c);
 
-                  c = ps[y0 * ws + x1];
+                  c = pixels[y0 * widthSource + x1];
                   c2a = (byte)(c >> 24);
                   c2r = (byte)(c >> 16);
                   c2g = (byte)(c >> 8);
                   c2b = (byte)(c);
 
-                  c = ps[y1 * ws + x0];
+                  c = pixels[y1 * widthSource + x0];
                   c3a = (byte)(c >> 24);
                   c3r = (byte)(c >> 16);
                   c3g = (byte)(c >> 8);
                   c3b = (byte)(c);
 
-                  c = ps[y1 * ws + x1];
+                  c = pixels[y1 * widthSource + x1];
                   c4a = (byte)(c >> 24);
                   c4r = (byte)(c >> 16);
                   c4g = (byte)(c >> 8);
@@ -216,31 +233,40 @@ namespace System.Windows.Media.Imaging
                   l1 = ifracx * c3a + fracx * c4a;
                   a = (byte)(ifracy * l0 + fracy * l1);
 
+                  // Red
+                  l0 = ifracx * c1r * c1a + fracx * c2r * c2a;
+                  l1 = ifracx * c3r * c3a + fracx * c4r * c4a;
+                  rf = ifracy * l0 + fracy * l1;
+
+                  // Green
+                  l0 = ifracx * c1g * c1a + fracx * c2g * c2a;
+                  l1 = ifracx * c3g * c3a + fracx * c4g * c4a;
+                  gf = ifracy * l0 + fracy * l1;
+
+                  // Blue
+                  l0 = ifracx * c1b * c1a + fracx * c2b * c2a;
+                  l1 = ifracx * c3b * c3a + fracx * c4b * c4a;
+                  bf = ifracy * l0 + fracy * l1;
+
+                  // Divide by alpha
                   if (a > 0)
                   {
-                     // Red
-                     l0 = ifracx * c1r * c1a + fracx * c2r * c2a;
-                     l1 = ifracx * c3r * c3a + fracx * c4r * c4a;
-                     r = (byte)((ifracy * l0 + fracy * l1) / a);
-
-                     // Green
-                     l0 = ifracx * c1g * c1a + fracx * c2g * c2a;
-                     l1 = ifracx * c3g * c3a + fracx * c4g * c4a;
-                     g = (byte)((ifracy * l0 + fracy * l1) / a);
-
-                     // Blue
-                     l0 = ifracx * c1b * c1a + fracx * c2b * c2a;
-                     l1 = ifracx * c3b * c3a + fracx * c4b * c4a;
-                     b = (byte)((ifracy * l0 + fracy * l1) / a);
+                     rf = rf / a;
+                     gf = gf / a;
+                     bf = bf / a;
                   }
+
+                  // Cast to byte
+                  r = (byte)rf;
+                  g = (byte)gf;
+                  b = (byte)bf;
 
                   // Write destination
                   pd[srcIdx++] = (a << 24) | (r << 16) | (g << 8) | b;
                }
             }
          }
-
-         return result;
+         return pd;
       }
 
       #endregion

@@ -451,6 +451,159 @@ namespace Dicom.Network.Client {
 	}
 	#endregion
 
+    #region Series
+    public sealed class CFindSeriesQuery : CFindQuery
+    {
+        #region Private Members
+        private string _patientId;
+        private string _patientName;
+        private DcmDateRange _seriesDate;
+        private DcmDateRange _seriesTime;
+        private string _seriesInstanceUid;
+        private string _modality;
+        private string _seriesDescription;
+        #endregion
+
+        #region Public Constructors
+        public CFindSeriesQuery()
+        {
+            QueryRetrieveLevel = DcmQueryRetrieveLevel.Series;
+            _seriesDate = new DcmDateRange();
+        }
+        #endregion
+
+        #region Public Properties
+        [DicomField(DicomConstTags.PatientID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string PatientID
+        {
+            get { return _patientId; }
+            set { _patientId = value; }
+        }
+
+        [DicomField(DicomConstTags.PatientsName, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string PatientsName
+        {
+            get { return _patientName; }
+            set { _patientName = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesDate, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public DcmDateRange SeriesDate
+        {
+            get { return _seriesDate; }
+            set { _seriesDate = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesTime, DefaultValue = DicomFieldDefault.MinValue, CreateEmptyElement = true)]
+        public DcmDateRange SeriesTime
+        {
+            get { return _seriesTime; }
+            set { _seriesTime = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesInstanceUID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string SeriesInstanceUid
+        {
+            get { return _seriesInstanceUid; }
+            set { _seriesInstanceUid = value; }
+        }
+
+        [DicomField(DicomConstTags.Modality, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string Modality
+        {
+            get { return _modality; }
+            set { _modality = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesDescription, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string SeriesDescription
+        {
+            get { return _seriesDescription; }
+            set { _seriesDescription = value; }
+        }
+        #endregion
+
+        #region Protected Members
+        protected override void AdditionalMembers(DcmDataset dataset)
+        {
+        }
+        #endregion
+    }
+
+    public sealed class CFindSeriesResponse : CFindResponse
+    {
+        #region Private Members
+        private string _patientId;
+        private string _patientName;
+        private DateTime _seriesDate;
+        private DateTime _seriesTime;
+        private string _seriesInstanceUid;
+        private string _modality;
+        private string _seriesDescription;
+        #endregion
+
+        #region Public Properties
+        [DicomField(DicomConstTags.PatientID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string PatientID
+        {
+            get { return _patientId; }
+            set { _patientId = value; }
+        }
+
+        [DicomField(DicomConstTags.PatientsName, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string PatientsName
+        {
+            get { return _patientName; }
+            set { _patientName = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesDate, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public DateTime SeriesDate
+        {
+            get { return _seriesDate; }
+            set { _seriesDate = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesTime, DefaultValue = DicomFieldDefault.MinValue, CreateEmptyElement = true)]
+        public DateTime SeriesTime
+        {
+            get { return _seriesTime; }
+            set { _seriesTime = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesInstanceUID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string SeriesInstanceUid
+        {
+            get { return _seriesInstanceUid; }
+            set { _seriesInstanceUid = value; }
+        }
+
+        [DicomField(DicomConstTags.Modality, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string Modality
+        {
+            get { return _modality; }
+            set { _modality = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesDescription, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string SeriesDescription
+        {
+            get { return _seriesDescription; }
+            set { _seriesDescription = value; }
+        }
+        #endregion
+    }
+
+    public sealed class CFindSeriesClient : CFindClientT<CFindSeriesQuery, CFindSeriesResponse>
+    {
+        public CFindSeriesClient()
+            : base()
+        {
+            FindSopClassUID = DicomUID.StudyRootQueryRetrieveInformationModelFIND;
+        }
+    }
+    #endregion
+
 	#region Worklist
 	public sealed class CFindWorklistQuery : CFindQuery {
 	#region Private Members
