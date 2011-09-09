@@ -54,34 +54,36 @@ namespace Wpf.Dicom.Dump
 
                     var ff = new DicomFileFormat();
                     ff.Load(memStream, DicomReadOptions.Default);
-                    if (ff.Dataset != null)
-                    {
-                        var xmlDoc = XDicom.ToXML(ff.Dataset, XDicomOptions.None);
-                        var txtWriter = new StringWriter();
-                        xmlDoc.Save(txtWriter);
-                        dicomDumpTextBox.Text = txtWriter.ToString();
-
-                        dicomImage.Source = ff.Dataset.Contains(DicomTags.PixelData)
-                                         ? GetImageSource(ff.Dataset)
-                                         : null;
-
-/*
-                        string tempDicomFile = "temp.dcm";
-                        ff.Save(tempDicomFile, DicomWriteOptions.ExplicitLengthSequenceItem);
-                        SendDataToStoreScp(tempDicomFile);
-
-                        using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-                        {
-                            if (store.FileExists(tempDicomFile)) store.DeleteFile(tempDicomFile);
-                        }
-*/
-                    }
-                    else
-                    {
-                        dicomDumpTextBox.Text = String.Format(Resources["noDicomDataMsg"].ToString(), dlg.FileName);
-                        dicomImage.Source = null;
-                    }
+                    DumpDisplayDataset(dlg.FileName, ff.Dataset);
                 }
+            }
+        }
+        private void getFromStoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            var queryDlg = new DicomQueryDialog();
+            if (queryDlg.ShowDialog().GetValueOrDefault())
+            {
+                DumpDisplayDataset(String.Empty, queryDlg.GetSelectedDicomDataset());
+            }
+        }
+
+        private void DumpDisplayDataset(string instanceName, DcmDataset dataset)
+        {
+            if (dataset != null)
+            {
+                var xmlDoc = XDicom.ToXML(dataset, XDicomOptions.None);
+                var txtWriter = new StringWriter();
+                xmlDoc.Save(txtWriter);
+                dicomDumpTextBox.Text = txtWriter.ToString();
+
+                dicomImage.Source = dataset.Contains(DicomTags.PixelData)
+                                        ? GetImageSource(dataset)
+                                        : null;
+            }
+            else
+            {
+                dicomDumpTextBox.Text = String.Format(Resources["noDicomDataMsg"].ToString(), instanceName);
+                dicomImage.Source = null;
             }
         }
 
@@ -94,14 +96,6 @@ namespace Wpf.Dicom.Dump
             catch (Exception)
             {
                 return null;
-            }
-        }
-
-        private void getFromStoreButton_Click(object sender, RoutedEventArgs e)
-        {
-            var queryDlg = new DicomQueryDialog();
-            if (queryDlg.ShowDialog().GetValueOrDefault())
-            {
             }
         }
 

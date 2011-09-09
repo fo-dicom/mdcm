@@ -5,7 +5,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib" Title="WPF DICOM Dump"  Loaded="Window_Loaded" WindowState="Maximized">
     <Window.Resources>
         <Win32:OpenFileDialog x:Key="dicomFileDialog" Filter="DICOM files (*.dcm)|*.dcm|All files (*.*)|*.*" Multiselect="False"/>
-        <sys:String x:Key="noDicomDataMsg">Cannot obtain DICOM data from the selected file {0}</sys:String>
+        <sys:String x:Key="noDicomDataMsg">Cannot obtain DICOM data from the selected instance {0}</sys:String>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>

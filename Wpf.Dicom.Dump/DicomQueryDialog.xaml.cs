@@ -176,5 +176,10 @@ namespace Wpf.Dicom.Dump
         {
             if (storeScp != null) storeScp.Stop();
         }
+
+        public DcmDataset GetSelectedDicomDataset()
+        {
+            return instancesListBox.SelectedItem as DcmDataset;
+        }
     }
 }
