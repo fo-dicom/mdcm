@@ -20,5 +20,8 @@
         <Style TargetType="RadioButton">
             <Setter Property="Margin" Value="6"/>
         </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Margin" Value="6"/>
+        </Style>
     </Application.Resources>
 </Application>

@@ -114,6 +114,7 @@
     <Compile Include="DicomQueryDialog.xaml.cs">
       <DependentUpon>DicomQueryDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DicomValueConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

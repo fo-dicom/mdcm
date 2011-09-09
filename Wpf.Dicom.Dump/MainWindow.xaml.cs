@@ -6,6 +6,8 @@ using Dicom;
 using Dicom.Codec;
 using Dicom.Data;
 using Dicom.Imaging;
+using Dicom.Network;
+using Dicom.Network.Server;
 using Microsoft.Win32;
 
 namespace Wpf.Dicom.Dump
@@ -13,8 +15,10 @@ namespace Wpf.Dicom.Dump
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
+        private DcmServer<CStoreService> storeScp;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -98,8 +102,12 @@ namespace Wpf.Dicom.Dump
             var queryDlg = new DicomQueryDialog();
             if (queryDlg.ShowDialog().GetValueOrDefault())
             {
-                
             }
+        }
+
+        private void closeButton_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }
