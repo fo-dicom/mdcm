@@ -162,9 +162,12 @@ namespace Wpf.Dicom.Dump
                                  ushort moveMessageId, DcmDataset dataset, string fileName)
                         {
                             if (dataset != null)
+                            {
+                                dataset.PreloadDeferredBuffers();
                                 Dispatcher.BeginInvoke(
                                     new AddToSelectedStudyDatasetsDelegate(d => SelectedStudyDatasets.Add(d)),
                                     dataset);
+                            }
                             return new DcmStatus("0000", DcmState.Success, "Success");
                         };
 
