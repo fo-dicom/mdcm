@@ -14,3 +14,5 @@ TestResult.xml
 *.vs10x
 *.docstates
 *.dotCover
+*.pidb
+*.userprefs
