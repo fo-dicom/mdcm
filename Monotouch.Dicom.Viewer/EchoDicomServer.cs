@@ -19,12 +19,17 @@ namespace Monotouch.Dicom.Viewer
 			var calledAetEntry = new EntryElement("Called AET", "Called application AET", "ANYSCP");
 			var callingAetEntry = new EntryElement("Calling AET", "Calling application AET", "ECHOSCU");
 
-			var echoButton = new StyledStringElement("Click to test", delegate {
+			var echoButton = new StyledStringElement("Click to test", 
+			delegate {
 				if (resultSection != null) root.Remove(resultSection);
-				var echoResult = new StringElement(DoEcho(hostEntry.Value, Int32.Parse(portEntry.Value), calledAetEntry.Value, callingAetEntry.Value));
-				resultSection = new Section(String.Empty, "C-ECHO result") { echoResult };
+				string message;
+				var echoFlag = new BooleanImageElement(String.Empty, DoEcho(hostEntry.Value, Int32.Parse(portEntry.Value), calledAetEntry.Value, callingAetEntry.Value, out message), 
+					new UIImage("yes-icon.png"), new UIImage("no-icon.png"));
+				var echoMessage = new StringElement(message);
+				resultSection = new Section(String.Empty, "C-ECHO result") { echoFlag, echoMessage };
 				root.Add(resultSection);
-			}) { Alignment = UITextAlignment.Center, BackgroundColor = UIColor.Blue, TextColor = UIColor.White };
+			})
+			{ Alignment = UITextAlignment.Center, BackgroundColor = UIColor.Blue, TextColor = UIColor.White };
 			
 			root = new RootElement("Echo DICOM server") {
 				new Section { hostEntry, portEntry, calledAetEntry, callingAetEntry},
@@ -36,19 +41,22 @@ namespace Monotouch.Dicom.Viewer
 			navigation.PushViewController (dvc, true);
 		}
 		
-		private string DoEcho(string host, int port, string calledAet, string callingAet)
+		private bool DoEcho(string host, int port, string calledAet, string callingAet, out string message)
 		{
-			var message = "Unidentified failure";
+			var success = false;
+			var msg = "Unidentified failure";
+			
 			var echoScu = new CEchoClient { CalledAE = calledAet, CallingAE = callingAet };
-			echoScu.OnCEchoResponse += delegate(byte presentationID, ushort messageID, DcmStatus status) { message = status.Description; };
+			echoScu.OnCEchoResponse += delegate(byte presentationID, ushort messageID, DcmStatus status) { success = true; msg = status.Description; };
 			
 			echoScu.Connect(host, port, DcmSocketType.TCP);
-			if (!echoScu.Wait(60000))
+			if (!echoScu.Wait())
 			{
-				message = echoScu.ErrorMessage;
+				msg = echoScu.ErrorMessage;
 			}
 			
-			return message;
+			message = msg;
+			return success;
 		}
 	}
 }

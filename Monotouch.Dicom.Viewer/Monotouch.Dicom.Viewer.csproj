@@ -84,4 +84,8 @@
   <ItemGroup>
     <InterfaceDefinition Include="MainWindow.xib" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="no-icon.png" />
+    <Content Include="yes-icon.png" />
+  </ItemGroup>
 </Project>
