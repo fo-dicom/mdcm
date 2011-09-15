@@ -146,8 +146,8 @@ namespace SL.DicomToXml
                 CStoreClient scu = new CStoreClient
                                        {
                                            DisableFileStreaming = true,
-                                           CallingAE = "STORE-SCU",
-                                           CalledAE = "ANY-SCP",
+                                           CallingAE = "STORESCU",
+                                           CalledAE = "COMMON",
                                            MaxPduSize = 16384,
                                            ConnectTimeout = 0,
                                            SocketTimeout = 30,
@@ -156,7 +156,7 @@ namespace SL.DicomToXml
                                            PreferredTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian
                                        };
                 scu.AddFile(iFileName);
-                scu.Connect(Application.Current.Host.Source.DnsSafeHost, 4502, DcmSocketType.TCP);
+                scu.Connect("localhost", 104, DcmSocketType.TCP);
                 if (!scu.Wait()) Debug.Log.Warn(scu.ErrorMessage);
             }
             catch (Exception e)

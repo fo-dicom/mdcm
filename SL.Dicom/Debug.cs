@@ -52,10 +52,17 @@ namespace Dicom
 		{
 			try
 			{
+#if SILVERLIGHT
+				var trace = new StackTrace();
+				var frame = trace.GetFrame(2);
+				var method = frame.GetMethod();
+				return String.Format("{0}() in {1}", method.Name, method.DeclaringType.FullName);
+#else
 				StackTrace trace = new StackTrace(true);
 				StackFrame frame = trace.GetFrame(2);
 				return String.Format("{0}() at {1}:{2}", frame.GetMethod().Name, frame.GetFileName(),
 									 frame.GetFileLineNumber());
+#endif
 			}
 			catch
 			{
