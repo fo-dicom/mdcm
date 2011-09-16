@@ -19,6 +19,8 @@ namespace SL.DicomToXml
     {
         #region FIELDS
 
+        private DicomHostDialog dicomHostDialog;
+
         public static readonly DependencyProperty RawDumpProperty =
             DependencyProperty.Register("RawDump", typeof(string), typeof(MainPage), new PropertyMetadata(String.Empty));
 
@@ -74,6 +76,8 @@ namespace SL.DicomToXml
 
         private void mainPage_Loaded(object sender, RoutedEventArgs e)
         {
+            dicomHostDialog = new DicomHostDialog();
+
             DcmRleCodec.Register();
             DcmJpegCodec.Register();
             Debug.InitializeIsolatedStorageDebugLogger();
@@ -108,14 +112,14 @@ namespace SL.DicomToXml
                                          ? GetImageSource(ff.Dataset)
                                          : null;
 
-                        string tempDicomFile = "temp.dcm";
-                        ff.Save(tempDicomFile, DicomWriteOptions.ExplicitLengthSequenceItem);
-                        SendDataToStoreScp(tempDicomFile);
+//                        string tempDicomFile = "temp.dcm";
+//                        ff.Save(tempDicomFile, DicomWriteOptions.ExplicitLengthSequenceItem);
+//                        SendDataToStoreScp(tempDicomFile);
 
-                        using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-                        {
-                            if (store.FileExists(tempDicomFile)) store.DeleteFile(tempDicomFile);
-                        }
+//                        using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+//                        {
+//                            if (store.FileExists(tempDicomFile)) store.DeleteFile(tempDicomFile);
+//                        }
                     }
                     else
                     {
@@ -181,5 +185,10 @@ namespace SL.DicomToXml
         }
 
         #endregion
+
+        private void connectButton_Click(object sender, RoutedEventArgs e)
+        {
+            dicomHostDialog.Show();
+        }
     }
 }

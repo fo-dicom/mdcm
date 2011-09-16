@@ -3,6 +3,26 @@
              x:Class="SL.DicomToXml.App"
              >
     <Application.Resources>
-        
+        <Style TargetType="TextBlock">
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="6"/>
+        </Style>
+        <Style TargetType="Image">
+            <Setter Property="Margin" Value="6"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="Padding" Value="6"/>
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Margin" Value="6"/>
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Margin" Value="6"/>
+        </Style>
     </Application.Resources>
 </Application>

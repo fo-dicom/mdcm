@@ -52,5 +52,6 @@
         <Image Grid.Row="1" Grid.Column="1" x:Name="dicomImage" Stretch="None" Source="{Binding ElementName=mainPage,Path=DicomImage}"/>
         <TextBox Grid.Row="2" Grid.Column="0" x:Name="loggerTextBox" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
                  Text="{Binding ElementName=mainPage,Path=Log}"/>
+        <Button Grid.Row="2" Grid.Column="1" x:Name="connectButton" VerticalAlignment="Bottom" HorizontalAlignment="Right" Content="Setup connection" Click="connectButton_Click"/>
     </Grid>
 </UserControl>
