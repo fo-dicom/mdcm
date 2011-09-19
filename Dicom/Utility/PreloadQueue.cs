@@ -27,7 +27,7 @@ using System.Threading;
 namespace Dicom.Utility {
 	public interface IPreloadable<Tstate> {
 		bool IsLoaded { get; }
-		void Load(Tstate state);
+		void Load(Tstate state, bool useIsoStore = false);
 	}
 
 	public class PreloadQueue<Titem, Tstate> : IEnumerable<Titem> where Titem : class, IPreloadable<Tstate> {

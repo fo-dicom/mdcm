@@ -20,175 +20,175 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
-using System.Text;
-
 using Dicom.Codec;
 using Dicom.IO;
 using Dicom.Utility;
 
-namespace Dicom.Data {
-	/// <summary>
-	/// User class for loading and saving DICOM files
-	/// </summary>
-	public class DicomFileFormat {
-		#region Private Members
-		private DcmFileMetaInfo _metainfo;
-		private DcmDataset _dataset;
-		#endregion
+namespace Dicom.Data
+{
+    /// <summary>
+    /// User class for loading and saving DICOM files
+    /// </summary>
+    public class DicomFileFormat
+    {
+        #region Private Members
+        private DcmFileMetaInfo _metainfo;
+        private DcmDataset _dataset;
+        #endregion
 
-		/// <summary>
-		/// Initializes new DICOM file format
-		/// </summary>
-		public DicomFileFormat() {
-		}
+        /// <summary>
+        /// Initializes new DICOM file format
+        /// </summary>
+        public DicomFileFormat()
+        {
+        }
 
-		/// <summary>
-		/// Initializes new DICOM file format from dataset
-		/// </summary>
-		/// <param name="dataset">Dataset</param>
-		public DicomFileFormat(DcmDataset dataset) {
-			_metainfo = new DcmFileMetaInfo();
-			_metainfo.FileMetaInformationVersion = DcmFileMetaInfo.Version;
-			_metainfo.MediaStorageSOPClassUID = dataset.GetUID(DicomTags.SOPClassUID);
-			_metainfo.MediaStorageSOPInstanceUID = dataset.GetUID(DicomTags.SOPInstanceUID);
-			_metainfo.TransferSyntax = dataset.InternalTransferSyntax;
-			_metainfo.ImplementationClassUID = Implementation.ClassUID;
-			_metainfo.ImplementationVersionName = Implementation.Version;
-			_metainfo.SourceApplicationEntityTitle = "";
-			_dataset = dataset;
-		}
+        /// <summary>
+        /// Initializes new DICOM file format from dataset
+        /// </summary>
+        /// <param name="dataset">Dataset</param>
+        public DicomFileFormat(DcmDataset dataset)
+        {
+            _metainfo = new DcmFileMetaInfo();
+            _metainfo.FileMetaInformationVersion = DcmFileMetaInfo.Version;
+            _metainfo.MediaStorageSOPClassUID = dataset.GetUID(DicomTags.SOPClassUID);
+            _metainfo.MediaStorageSOPInstanceUID = dataset.GetUID(DicomTags.SOPInstanceUID);
+            _metainfo.TransferSyntax = dataset.InternalTransferSyntax;
+            _metainfo.ImplementationClassUID = Implementation.ClassUID;
+            _metainfo.ImplementationVersionName = Implementation.Version;
+            _metainfo.SourceApplicationEntityTitle = "";
+            _dataset = dataset;
+        }
 
-		/// <summary>
-		/// File Meta Information
-		/// </summary>
-		public DcmFileMetaInfo FileMetaInfo {
-			get {
-				if (_metainfo == null)
-					_metainfo = new DcmFileMetaInfo();
-				return _metainfo;
-			}
-		}
+        /// <summary>
+        /// File Meta Information
+        /// </summary>
+        public DcmFileMetaInfo FileMetaInfo
+        {
+            get
+            {
+                if (_metainfo == null)
+                    _metainfo = new DcmFileMetaInfo();
+                return _metainfo;
+            }
+        }
 
-		/// <summary>
-		/// DICOM Dataset
-		/// </summary>
-		public DcmDataset Dataset {
-			get { return _dataset; }
-		}
+        /// <summary>
+        /// DICOM Dataset
+        /// </summary>
+        public DcmDataset Dataset
+        {
+            get { return _dataset; }
+        }
 
-		/// <summary>
-		/// Changes transfer syntax of dataset and updates file meta information
-		/// </summary>
-		/// <param name="ts">New transfer syntax</param>
-		/// <param name="parameters">Encode/Decode params</param>
-		public void ChangeTransferSyntax(DicomTransferSyntax ts, DcmCodecParameters parameters) {
-			Dataset.ChangeTransferSyntax(ts, parameters);
-			FileMetaInfo.TransferSyntax = ts;
-		}
+        /// <summary>
+        /// Changes transfer syntax of dataset and updates file meta information
+        /// </summary>
+        /// <param name="ts">New transfer syntax</param>
+        /// <param name="parameters">Encode/Decode params</param>
+        public void ChangeTransferSyntax(DicomTransferSyntax ts, DcmCodecParameters parameters)
+        {
+            Dataset.ChangeTransferSyntax(ts, parameters);
+            FileMetaInfo.TransferSyntax = ts;
+        }
 
-#if SILVERLIGHT
-		/// <summary>
-		/// Gets the file meta information from a DICOM file
-		/// </summary>
-		/// <param name="file">Filename</param>
-		/// <returns>File meta information</returns>
-        public static DcmFileMetaInfo LoadFileMetaInfo(String file)
-		{
-		    using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-		    {
-		        using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
-		        {
-		            fs.Seek(128, SeekOrigin.Begin);
-		            if (!CheckFileHeader(fs)) return null;
-		            DicomStreamReader dsr = new DicomStreamReader(fs);
-		            DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
-		            dsr.Dataset = metainfo;
-		            dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly);
-		            fs.Close();
-		            return metainfo;
-		        }
-		    }
-		}
+        /// <summary>
+        /// Gets the file meta information from a DICOM file
+        /// </summary>
+        /// <param name="file">Filename</param>
+        /// <param name="useIsoStore">Load file from isolated storage</param>
+        /// <returns>File meta information</returns>
+        public static DcmFileMetaInfo LoadFileMetaInfo(String file, bool useIsoStore = false)
+        {
+            if (useIsoStore)
+            {
+                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+                    {
+                        fs.Seek(128, SeekOrigin.Begin);
+                        if (!CheckFileHeader(fs)) return null;
+                        DicomStreamReader dsr = new DicomStreamReader(fs);
+                        DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
+                        dsr.Dataset = metainfo;
+                        dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly);
+                        fs.Close();
+                        return metainfo;
+                    }
+                }
+            }
+            else
+            {
+                using (var fs = File.OpenRead(file))
+                {
+                    fs.Seek(128, SeekOrigin.Begin);
+                    CheckFileHeader(fs);
+                    DicomStreamReader dsr = new DicomStreamReader(fs);
+                    DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
+                    dsr.Dataset = metainfo;
+                    dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly);
+                    fs.Close();
+                    return metainfo;
+                }
+            }
+        }
 
         /// <summary>
         /// Loads a dicom file
         /// </summary>
         /// <param name="file">Filename</param>
         /// <param name="options">DICOM read options</param>
-        public DicomReadStatus Load(String file, DicomReadOptions options)
+        /// <param name="useIsoStore">Load file from isolated storage</param>
+        public DicomReadStatus Load(String file, DicomReadOptions options, bool useIsoStore = false)
         {
-            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+            if (useIsoStore)
             {
-                using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+                    {
+                        return Load(fs, null, options);
+                    }
+                }
+            }
+            else
+            {
+                using (var fs = File.OpenRead(file))
                 {
                     return Load(fs, null, options);
                 }
             }
         }
 
-	    /// <summary>
+        /// <summary>
         /// Loads a dicom file, stopping at a certain tag
         /// </summary>
         /// <param name="file">Filename</param>
         /// <param name="stopTag">Tag to stop parsing at</param>
         /// <param name="options">DICOM read options</param>
-        public DicomReadStatus Load(String file, DicomTag stopTag, DicomReadOptions options)
-	    {
-	        using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-	        {
-	            using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
-	            {
-	                return Load(fs, stopTag, options);
-	            }
-	        }
-	    }
-#else
-		/// <summary>
-		/// Gets the file meta information from a DICOM file
-		/// </summary>
-		/// <param name="file">Filename</param>
-		/// <returns>File meta information</returns>
-		public static DcmFileMetaInfo LoadFileMetaInfo(String file) {
-			using (FileStream fs = File.OpenRead(file)) {
-				fs.Seek(128, SeekOrigin.Begin);
-				CheckFileHeader(fs);
-				DicomStreamReader dsr = new DicomStreamReader(fs);
-				DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
-				dsr.Dataset = metainfo;
-				dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly);
-				fs.Close();
-				return metainfo;
-			}
-		}
-
-		/// <summary>
-		/// Loads a dicom file
-		/// </summary>
-		/// <param name="file">Filename</param>
-		/// <param name="options">DICOM read options</param>
-		public DicomReadStatus Load(String file, DicomReadOptions options) {
-            using (FileStream fs = File.OpenRead(file))
+        /// <param name="useIsoStore">Load file from isolated storage</param>
+        public DicomReadStatus Load(String file, DicomTag stopTag, DicomReadOptions options, bool useIsoStore = false)
+        {
+            if (useIsoStore)
             {
-                return Load(fs, null, options);
+                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+                    {
+                        return Load(fs, stopTag, options);
+                    }
+                }
+            }
+            else
+            {
+                using (var fs = File.OpenRead(file))
+                {
+                    return Load(fs, stopTag, options);
+                }
             }
         }
-
-		/// <summary>
-		/// Loads a dicom file, stopping at a certain tag
-		/// </summary>
-		/// <param name="file">Filename</param>
-		/// <param name="stopTag">Tag to stop parsing at</param>
-		/// <param name="options">DICOM read options</param>
-		public DicomReadStatus Load(String file, DicomTag stopTag, DicomReadOptions options) {
-			using (FileStream fs = File.OpenRead(file))
-			{
-			    return Load(fs, stopTag, options);
-			}
-		}
-#endif
 
         /// <summary>
         /// Loads a dicom file
@@ -201,11 +201,11 @@ namespace Dicom.Data {
         }
 
         /// <summary>
-	    /// Loads a dicom file, stopping at a certain tag
-	    /// </summary>
-	    /// <param name="fs">File stream to read</param>
-	    /// <param name="stopTag">Tag to stop parsing at</param>
-	    /// <param name="options">DICOM read options</param>
+        /// Loads a dicom file, stopping at a certain tag
+        /// </summary>
+        /// <param name="fs">File stream to read</param>
+        /// <param name="stopTag">Tag to stop parsing at</param>
+        /// <param name="options">DICOM read options</param>
         public DicomReadStatus Load(Stream fs, DicomTag stopTag, DicomReadOptions options)
         {
             fs.Seek(128, SeekOrigin.Begin);
@@ -231,77 +231,87 @@ namespace Dicom.Data {
             return status;
         }
 
-#if SILVERLIGHT
-	    public static bool IsDicomFile(string file)
+        public static bool IsDicomFile(string file, bool useIsoStore = false)
         {
-			bool isDicom = false;
+            bool isDicom = false;
 
-            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+            if (useIsoStore)
             {
-                using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    using (var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read))
+                    {
+                        fs.Seek(128, SeekOrigin.Begin);
+                        if (fs.ReadByte() == (byte)'D' &&
+                            fs.ReadByte() == (byte)'I' &&
+                            fs.ReadByte() == (byte)'C' &&
+                            fs.ReadByte() == (byte)'M')
+                            isDicom = true;
+                        fs.Close();
+                    }
+                }
+            }
+            else
+            {
+                using (var fs = File.OpenRead(file))
                 {
                     fs.Seek(128, SeekOrigin.Begin);
-                    if (fs.ReadByte() == (byte) 'D' &&
-                        fs.ReadByte() == (byte) 'I' &&
-                        fs.ReadByte() == (byte) 'C' &&
-                        fs.ReadByte() == (byte) 'M')
+                    if (fs.ReadByte() == (byte)'D' &&
+                        fs.ReadByte() == (byte)'I' &&
+                        fs.ReadByte() == (byte)'C' &&
+                        fs.ReadByte() == (byte)'M')
                         isDicom = true;
                     fs.Close();
                 }
             }
-	        return isDicom;
-		}
-#else
-	    public static bool IsDicomFile(string file)
-        {
-			bool isDicom = false;
-			using (FileStream fs = File.OpenRead(file)) {
-				fs.Seek(128, SeekOrigin.Begin);
-				if (fs.ReadByte() == (byte)'D' &&
-					fs.ReadByte() == (byte)'I' &&
-					fs.ReadByte() == (byte)'C' &&
-					fs.ReadByte() == (byte)'M')
-					isDicom = true;
-				fs.Close();
-			}
-			return isDicom;
+            return isDicom;
         }
-
-		private static void CheckFileHeader(FileStream fs) {
-			if (fs.ReadByte() != (byte)'D' ||
-				fs.ReadByte() != (byte)'I' ||
-				fs.ReadByte() != (byte)'C' ||
-				fs.ReadByte() != (byte)'M')
-				throw new DicomDataException("Invalid DICOM file: " + fs.Name);
-		}
-#endif
 
         private static bool CheckFileHeader(Stream fs)
         {
-            return (fs.ReadByte() == (byte) 'D' &&
-                    fs.ReadByte() == (byte) 'I' &&
-                    fs.ReadByte() == (byte) 'C' &&
-                    fs.ReadByte() == (byte) 'M');
+            return (fs.ReadByte() == (byte)'D' &&
+                    fs.ReadByte() == (byte)'I' &&
+                    fs.ReadByte() == (byte)'C' &&
+                    fs.ReadByte() == (byte)'M');
         }
 
-#if SILVERLIGHT
         /// <summary>
         /// Gets file stream starting at DICOM dataset
         /// </summary>
         /// <param name="file">Filename</param>
+        /// <param name="useIsoStore">Get dataset from isolated store</param>
         /// <returns>File stream</returns>
-        public static FileStream GetDatasetStream(String file)
+        public static FileStream GetDatasetStream(String file, bool useIsoStore = false)
         {
-            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+            if (useIsoStore)
             {
-                var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read);
+                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    var fs = store.OpenFile(file, FileMode.Open, FileAccess.Read);
+                    fs.Seek(128, SeekOrigin.Begin);
+                    CheckFileHeader(fs);
+                    DicomStreamReader dsr = new DicomStreamReader(fs);
+                    DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
+                    dsr.Dataset = metainfo;
+                    if (
+                        dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly) ==
+                        DicomReadStatus.Success && fs.Position < fs.Length)
+                    {
+                        return fs;
+                    }
+                    fs.Close();
+                    return null;
+                }
+            }
+            else
+            {
+                FileStream fs = File.OpenRead(file);
                 fs.Seek(128, SeekOrigin.Begin);
                 CheckFileHeader(fs);
                 DicomStreamReader dsr = new DicomStreamReader(fs);
                 DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
                 dsr.Dataset = metainfo;
-                if (dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly) ==
-                    DicomReadStatus.Success && fs.Position < fs.Length)
+                if (dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly) == DicomReadStatus.Success && fs.Position < fs.Length)
                 {
                     return fs;
                 }
@@ -310,81 +320,61 @@ namespace Dicom.Data {
             }
         }
 
-	    /// <summary>
-	    /// Saves a DICOM file in the isolated storage area
-	    /// </summary>
-	    /// <param name="file">Filename</param>
-	    /// <param name="options">DICOM write options</param>
-	    public void Save(string file, DicomWriteOptions options)
-	    {
-            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+        /// <summary>
+        /// Saves a DICOM file in the isolated storage area
+        /// </summary>
+        /// <param name="file">Filename</param>
+        /// <param name="options">DICOM write options</param>
+        /// <param name="useIsoStore">Save in isolated storage</param>
+        public void Save(string file, DicomWriteOptions options, bool useIsoStore = false)
+        {
+            if (useIsoStore)
             {
+                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    string dir = Path.GetDirectoryName(file);
+                    if (dir != null && !store.DirectoryExists(dir))
+                        store.CreateDirectory(dir);
+
+                    var fs = store.CreateFile(file);
+                    fs.Seek(128, SeekOrigin.Begin);
+                    fs.WriteByte((byte)'D');
+                    fs.WriteByte((byte)'I');
+                    fs.WriteByte((byte)'C');
+                    fs.WriteByte((byte)'M');
+
+                    DicomStreamWriter dsw = new DicomStreamWriter(fs);
+                    dsw.Write(_metainfo, options | DicomWriteOptions.CalculateGroupLengths);
+                    if (_dataset != null)
+                        dsw.Write(_dataset, options);
+
+                    fs.Close();
+                }
+            }
+            else
+            {
+                // expand to full path
+                file = Path.GetFullPath(file);
+
                 string dir = Path.GetDirectoryName(file);
-                if (dir != null && !store.DirectoryExists(dir))
-                    store.CreateDirectory(dir);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
+                using (FileStream fs = File.Create(file))
+                {
+                    fs.Seek(128, SeekOrigin.Begin);
+                    fs.WriteByte((byte)'D');
+                    fs.WriteByte((byte)'I');
+                    fs.WriteByte((byte)'C');
+                    fs.WriteByte((byte)'M');
 
-                var fs = store.CreateFile(file);
-                fs.Seek(128, SeekOrigin.Begin);
-                fs.WriteByte((byte)'D');
-                fs.WriteByte((byte)'I');
-                fs.WriteByte((byte)'C');
-                fs.WriteByte((byte)'M');
+                    DicomStreamWriter dsw = new DicomStreamWriter(fs);
+                    dsw.Write(_metainfo, options | DicomWriteOptions.CalculateGroupLengths);
+                    if (_dataset != null)
+                        dsw.Write(_dataset, options);
 
-                DicomStreamWriter dsw = new DicomStreamWriter(fs);
-                dsw.Write(_metainfo, options | DicomWriteOptions.CalculateGroupLengths);
-                if (_dataset != null)
-                    dsw.Write(_dataset, options);
-
-                fs.Close();
+                    fs.Close();
+                }
             }
         }
-#else
-        /// <summary>
-		/// Gets file stream starting at DICOM dataset
-		/// </summary>
-		/// <param name="file">Filename</param>
-		/// <returns>File stream</returns>
-		public static FileStream GetDatasetStream(String file) {
-			FileStream fs = File.OpenRead(file);
-			fs.Seek(128, SeekOrigin.Begin);
-			CheckFileHeader(fs);
-			DicomStreamReader dsr = new DicomStreamReader(fs);
-			DcmFileMetaInfo metainfo = new DcmFileMetaInfo();
-			dsr.Dataset = metainfo;
-			if (dsr.Read(DcmFileMetaInfo.StopTag, DicomReadOptions.Default | DicomReadOptions.FileMetaInfoOnly) == DicomReadStatus.Success && fs.Position < fs.Length) {
-				return fs;
-			}
-			fs.Close();
-			return null;
-		}
-
-		/// <summary>
-		/// Saves a DICOM file
-		/// </summary>
-		/// <param name="file">Filename</param>
-		/// <param name="options">DICOM write options</param>
-		public void Save(String file, DicomWriteOptions options) {
-			// expand to full path
-			file = Path.GetFullPath(file);
-
-			string dir = Path.GetDirectoryName(file);
-			if (!Directory.Exists(dir))
-				Directory.CreateDirectory(dir);
-			using (FileStream fs = File.Create(file)) {
-				fs.Seek(128, SeekOrigin.Begin);
-				fs.WriteByte((byte)'D');
-				fs.WriteByte((byte)'I');
-				fs.WriteByte((byte)'C');
-				fs.WriteByte((byte)'M');
-
-				DicomStreamWriter dsw = new DicomStreamWriter(fs);
-				dsw.Write(_metainfo, options | DicomWriteOptions.CalculateGroupLengths);
-				if (_dataset != null)
-					dsw.Write(_dataset, options);
-
-				fs.Close();
-			}
-		}
-#endif
-	}
+    }
 }

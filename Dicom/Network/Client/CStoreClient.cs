@@ -57,47 +57,52 @@ namespace Dicom.Network.Client {
 		#endregion
 
 		#region Public Constructors
-		public CStoreRequestInfo(string fileName) : this(fileName, null) {
+		public CStoreRequestInfo(string fileName, bool useIsoStore = false) : this(fileName, null, useIsoStore) {
 		}
 
-		public CStoreRequestInfo(string fileName, object userModel) {
-			try {
-				_fileName = fileName;
-#if SILVERLIGHT
-                using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-                {
-                    if (!store.FileExists(fileName))
-                        throw new FileNotFoundException("Unable to load DICOM file!");
-#else
-				    if (!File.Exists(fileName))
-					    throw new FileNotFoundException("Unable to load DICOM file!", fileName);
-#endif
+		public CStoreRequestInfo(string fileName, object userModel, bool useIsoStore = false)
+		{
+			try
+			{
+				if (useIsoStore)
+				{
+					using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+					{
+						if (!store.FileExists(fileName))
+							throw new FileNotFoundException(String.Format("Unable to load DICOM file {0}!", fileName));
+					}
+				}
+				else
+				{
+					if (!File.Exists(fileName))
+						throw new FileNotFoundException(String.Format("Unable to load DICOM file {0}!", fileName));
+				}
 
-                    DicomTag stopTag = (userModel != null) ? DicomTags.PixelData : DcmFileMetaInfo.StopTag;
-                    DicomFileFormat ff = new DicomFileFormat();
-                    ff.Load(fileName, stopTag, DicomReadOptions.Default);
-                    _transferSyntax = ff.FileMetaInfo.TransferSyntax;
-                    _originalTransferSyntax = _transferSyntax;
-                    _sopClass = ff.FileMetaInfo.MediaStorageSOPClassUID;
-                    _sopInst = ff.FileMetaInfo.MediaStorageSOPInstanceUID;
-                    if (userModel != null)
-                    {
-                        ff.Dataset.LoadDicomFields(userModel);
-                        _userState = userModel;
-                    }
-                    _status = DcmStatus.Pending;
-#if SILVERLIGHT
-                }
-#endif
+				_fileName = fileName;
+
+				DicomTag stopTag = (userModel != null) ? DicomTags.PixelData : DcmFileMetaInfo.StopTag;
+				DicomFileFormat ff = new DicomFileFormat();
+				ff.Load(fileName, stopTag, DicomReadOptions.Default, useIsoStore);
+				_transferSyntax = ff.FileMetaInfo.TransferSyntax;
+				_originalTransferSyntax = _transferSyntax;
+				_sopClass = ff.FileMetaInfo.MediaStorageSOPClassUID;
+				_sopInst = ff.FileMetaInfo.MediaStorageSOPInstanceUID;
+				if (userModel != null)
+				{
+					ff.Dataset.LoadDicomFields(userModel);
+					_userState = userModel;
+				}
+				_status = DcmStatus.Pending;
 			}
-			catch (Exception e) {
+			catch (Exception e)
+			{
 				_status = DcmStatus.ProcessingFailure;
 				_exception = e;
 				throw;
 			}
 		}
 
-        #endregion
+		#endregion
 
 		#region Public Properties
 		public bool IsLoaded {
@@ -148,11 +153,14 @@ namespace Dicom.Network.Client {
 		#endregion
 
 		#region Public Methods
+
 		/// <summary>
 		/// Loads the DICOM file and changes the transfer syntax if needed. (Internal)
 		/// </summary>
 		/// <param name="client">C-Store Client</param>
-		public void Load(CStoreClient client) {
+		/// <param name="useIsoStore">Load from isolated storage</param>
+		public void Load(CStoreClient client, bool useIsoStore = false)
+		{
 			if (_loaded)
 				return;
 
@@ -171,7 +179,7 @@ namespace Dicom.Network.Client {
 
 				// Possible to stream from file?
 				if (!client.DisableFileStreaming && tx == TransferSyntax) {
-					using (FileStream fs = DicomFileFormat.GetDatasetStream(_fileName)) {
+					using (FileStream fs = DicomFileFormat.GetDatasetStream(_fileName, useIsoStore)) {
 						_datasetSize = Convert.ToUInt32(fs.Length - fs.Position);
 						fs.Close();
 					}
@@ -183,7 +191,7 @@ namespace Dicom.Network.Client {
 					codecParams = client.PreferredTransferSyntaxParams;
 
 				DicomFileFormat ff = new DicomFileFormat();
-				ff.Load(FileName, DicomReadOptions.DefaultWithoutDeferredLoading);
+				ff.Load(FileName, DicomReadOptions.DefaultWithoutDeferredLoading, useIsoStore);
 
 				if (_originalTransferSyntax != tx) {
 					if (_originalTransferSyntax.IsEncapsulated) {
@@ -440,7 +448,7 @@ namespace Dicom.Network.Client {
 			return info;
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Enqueues a file to be transfered to the remote DICOM node.
 		/// </summary>
 		/// <param name="info">C-Store Request Information</param>
