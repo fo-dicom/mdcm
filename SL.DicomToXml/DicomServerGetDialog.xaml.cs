@@ -90,6 +90,11 @@ namespace SL.DicomToXml
 
         private void getStudiesButton_Click(object sender, RoutedEventArgs e)
         {
+            GetStudies();
+        }
+
+        private void GetStudies()
+        {
             var success = false;
             var message = "Unidentified failure.";
 
@@ -98,16 +103,16 @@ namespace SL.DicomToXml
                 Dispatcher.BeginInvoke(new ClearStudyResponsesDelegate(() => StudyResponses.Clear()));
 
                 var findStudy = new CFindStudyClient
-                {
-                    CallingAE = CallingApplicationEntityTitle,
-                    CalledAE = CalledApplicationEntityTitle
-                };
+                                    {
+                                        CallingAE = CallingApplicationEntityTitle,
+                                        CalledAE = CalledApplicationEntityTitle
+                                    };
                 findStudy.OnCFindResponse +=
                     delegate(CFindStudyQuery query, CFindStudyResponse result)
-                    {
-                        if (result != null)
-                            Dispatcher.BeginInvoke(new AddToStudyResponsesDelegate(r => StudyResponses.Add(r)), result);
-                    };
+                        {
+                            if (result != null)
+                                Dispatcher.BeginInvoke(new AddToStudyResponsesDelegate(r => StudyResponses.Add(r)), result);
+                        };
 
                 findStudy.AddQuery(new CFindStudyQuery());
 
@@ -182,6 +187,7 @@ namespace SL.DicomToXml
 
         private void ChildWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            GetStudies();
 /*
             _storeScp = new DcmServer<CStoreService>();
             _storeScp.AddPort(ServerPort, DcmSocketType.TCP);

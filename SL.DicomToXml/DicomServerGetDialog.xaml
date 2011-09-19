@@ -12,19 +12,17 @@
 
         <Grid Grid.Row="0" x:Name="ContentRoot">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Button Grid.Row="0" x:Name="getStudiesButton" HorizontalAlignment="Left" Content="Get studies" Click="getStudiesButton_Click"/>
-            <sdk:DataGrid Grid.Row="1" x:Name="studiesDataGrid" ItemsSource="{Binding StudyResponses}" AutoGenerateColumns="False" SelectionChanged="studiesDataGrid_SelectionChanged">
+            <sdk:DataGrid Grid.Row="0" x:Name="studiesDataGrid" ItemsSource="{Binding StudyResponses}" AutoGenerateColumns="False" SelectionChanged="studiesDataGrid_SelectionChanged" SelectionMode="Single">
                 <sdk:DataGrid.Columns>
                     <sdk:DataGridTextColumn Header="Patient ID" Binding="{Binding PatientID,Mode=OneWay}"/>
                     <sdk:DataGridTextColumn Header="Patient Name" Binding="{Binding PatientsName,Mode=OneWay}"/>
                     <sdk:DataGridTextColumn Header="Study Instance UID" Binding="{Binding StudyInstanceUID,Mode=OneWay}"/>
                 </sdk:DataGrid.Columns>
             </sdk:DataGrid>
-            <sdk:DataGrid Grid.Row="2" x:Name="imagesDataGrid" ItemsSource="{Binding SelectedStudyImages}" AutoGenerateColumns="False">
+            <sdk:DataGrid Grid.Row="1" x:Name="imagesDataGrid" ItemsSource="{Binding SelectedStudyImages}" AutoGenerateColumns="False" SelectionMode="Single">
                 <sdk:DataGrid.Columns>
                     <sdk:DataGridTextColumn Header="Modality" Binding="{Binding Modality,Mode=OneWay}"/>
                     <sdk:DataGridTextColumn Header="Instance Number" Binding="{Binding InstanceNumber,Mode=OneWay}"/>
