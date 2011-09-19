@@ -16,10 +16,64 @@ namespace SL.DicomToXml
 {
     public partial class DicomHostDialog
     {
+        #region FIELDS
+
+        // Using a DependencyProperty as the backing store for DicomHost.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DicomHostProperty =
+            DependencyProperty.Register("DicomHost", typeof(string), typeof(DicomHostDialog), new PropertyMetadata("server"));
+
+        // Using a DependencyProperty as the backing store for ServerPort.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ServerPortProperty =
+            DependencyProperty.Register("ServerPort", typeof(int), typeof(DicomHostDialog), new PropertyMetadata(104));
+
+        // Using a DependencyProperty as the backing store for CalledApplicationEntityTitle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CalledApplicationEntityTitleProperty =
+            DependencyProperty.Register("CalledApplicationEntityTitle", typeof(string), typeof(DicomHostDialog), new PropertyMetadata("COMMON"));
+
+        // Using a DependencyProperty as the backing store for CallingApplicationEntityTitle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CallingApplicationEntityTitleProperty =
+            DependencyProperty.Register("CallingApplicationEntityTitle", typeof(string), typeof(DicomHostDialog), new PropertyMetadata("ANYSCU"));
+
+        #endregion
+
+        #region CONSTRUCTORS
+
         public DicomHostDialog()
         {
             InitializeComponent();
         }
+
+        #endregion
+
+        #region DEPENDENCY PROPERTIES
+
+        public string DicomHost
+        {
+            get { return (string)GetValue(DicomHostProperty); }
+            set { SetValue(DicomHostProperty, value); }
+        }
+
+        public int ServerPort
+        {
+            get { return (int)GetValue(ServerPortProperty); }
+            set { SetValue(ServerPortProperty, value); }
+        }
+
+        public string CalledApplicationEntityTitle
+        {
+            get { return (string)GetValue(CalledApplicationEntityTitleProperty); }
+            set { SetValue(CalledApplicationEntityTitleProperty, value); }
+        }
+
+        public string CallingApplicationEntityTitle
+        {
+            get { return (string)GetValue(CallingApplicationEntityTitleProperty); }
+            set { SetValue(CallingApplicationEntityTitleProperty, value); }
+        }
+
+        #endregion
+        
+        #region EVENT HANDLERS
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
@@ -52,6 +106,8 @@ namespace SL.DicomToXml
 
             MessageBox.Show(message, "C-ECHO result", MessageBoxButton.OK);
         }
+
+        #endregion
     }
 }
 

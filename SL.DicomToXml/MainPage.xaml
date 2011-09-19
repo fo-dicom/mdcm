@@ -5,24 +5,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:my="clr-namespace:SL.DicomToXml"
-             mc:Ignorable="d" d:DesignHeight="300" d:DesignWidth="400" Loaded="mainPage_Loaded">
+             mc:Ignorable="d" d:DesignHeight="400" d:DesignWidth="800" Loaded="mainPage_Loaded">
     <UserControl.Resources>
         <my:IsCheckedToVisibilityConverter x:Key="isCheckedToVisibilityConverter"/>
         <OpenFileDialog x:Key="dicomFileDialog" Filter="DICOM files (*.dcm)|*.dcm|All files (*.*)|*.*" Multiselect="False"/>
         <sys:String x:Key="noDicomDataMsg">Cannot obtain DICOM data from the selected file {0}</sys:String>
-        <Style TargetType="TextBox">
-            <Setter Property="Margin" Value="6"/>
-        </Style>
-        <Style TargetType="Image">
-            <Setter Property="Margin" Value="6"/>
-        </Style>
-        <Style TargetType="Button">
-            <Setter Property="Margin" Value="6"/>
-            <Setter Property="Padding" Value="6"/>
-        </Style>
-        <Style TargetType="RadioButton">
-            <Setter Property="Margin" Value="6"/>
-        </Style>
     </UserControl.Resources>
 
     <Grid x:Name="LayoutRoot" Background="White">
@@ -36,9 +23,12 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
-            <Button x:Name="fileNameButton" Click="fileNameButton_Click" HorizontalAlignment="Left">Open DICOM file...</Button>
-            <RadioButton x:Name="rawButton" VerticalAlignment="Center" IsChecked="True">Raw</RadioButton>
-            <RadioButton x:Name="xmlButton" VerticalAlignment="Center">XML</RadioButton>
+            <Button x:Name="fileNameButton" Click="fileNameButton_Click" Content="Open DICOM file" MinWidth="150"/>
+            <Button x:Name="getFromServerButton" Click="getFromServerButton_Click" Content="Get from DICOM server" MinWidth="150"/>
+        </StackPanel>
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <RadioButton x:Name="rawButton" IsChecked="True" Content="Raw"/>
+            <RadioButton x:Name="xmlButton" Content="XML"/>
         </StackPanel>
         <HyperlinkButton Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" NavigateUri="http://github.com/cureos/mdcm">
             <Image Stretch="None" Source="Resources/symbol.jpg"/>
@@ -52,6 +42,6 @@
         <Image Grid.Row="1" Grid.Column="1" x:Name="dicomImage" Stretch="None" Source="{Binding ElementName=mainPage,Path=DicomImage}"/>
         <TextBox Grid.Row="2" Grid.Column="0" x:Name="loggerTextBox" IsReadOnly="True" VerticalScrollBarVisibility="Auto" 
                  Text="{Binding ElementName=mainPage,Path=Log}"/>
-        <Button Grid.Row="2" Grid.Column="1" x:Name="connectButton" VerticalAlignment="Bottom" HorizontalAlignment="Right" Content="Setup connection" Click="connectButton_Click"/>
+        <Button Grid.Row="2" Grid.Column="1" x:Name="setupConnectionButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Content="Setup DICOM connection" Click="connectButton_Click"/>
     </Grid>
 </UserControl>

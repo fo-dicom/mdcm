@@ -111,15 +111,15 @@ namespace SL.DicomToXml
                         DicomImage = ff.Dataset.Contains(DicomTags.PixelData)
                                          ? GetImageSource(ff.Dataset)
                                          : null;
+/*
+                            string tempDicomFile = "temp.dcm";
+                            ff.Save(tempDicomFile, DicomWriteOptions.ExplicitLengthSequenceItem);
+                            SendDataToStoreScp(tempDicomFile);
 
-//                        string tempDicomFile = "temp.dcm";
-//                        ff.Save(tempDicomFile, DicomWriteOptions.ExplicitLengthSequenceItem);
-//                        SendDataToStoreScp(tempDicomFile);
-
-//                        using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-//                        {
-//                            if (store.FileExists(tempDicomFile)) store.DeleteFile(tempDicomFile);
-//                        }
+                            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                            {
+                                if (store.FileExists(tempDicomFile)) store.DeleteFile(tempDicomFile);
+                            }   */
                     }
                     else
                     {
@@ -143,15 +143,15 @@ namespace SL.DicomToXml
             }
         }
 
-        private static void SendDataToStoreScp(string iFileName)
+        private void SendDataToStoreScp(string iFileName)
         {
             try
             {
                 CStoreClient scu = new CStoreClient
                                        {
                                            DisableFileStreaming = true,
-                                           CallingAE = "STORESCU",
-                                           CalledAE = "COMMON",
+                                           CallingAE = dicomHostDialog.CallingApplicationEntityTitle,
+                                           CalledAE = dicomHostDialog.CalledApplicationEntityTitle,
                                            MaxPduSize = 16384,
                                            ConnectTimeout = 0,
                                            SocketTimeout = 30,
@@ -160,7 +160,7 @@ namespace SL.DicomToXml
                                            PreferredTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian
                                        };
                 scu.AddFile(iFileName);
-                scu.Connect("localhost", 104, DcmSocketType.TCP);
+                scu.Connect(dicomHostDialog.DicomHost, dicomHostDialog.ServerPort, DcmSocketType.TCP);
                 if (!scu.Wait()) Debug.Log.Warn(scu.ErrorMessage);
             }
             catch (Exception e)
@@ -189,6 +189,34 @@ namespace SL.DicomToXml
         private void connectButton_Click(object sender, RoutedEventArgs e)
         {
             dicomHostDialog.Show();
+        }
+
+        private void getFromServerButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (dicomHostDialog.DialogResult.GetValueOrDefault())
+            {
+                var getFromServerDlg = new DicomServerGetDialog
+                                           {
+                                               DicomHost = dicomHostDialog.DicomHost,
+                                               ServerPort = dicomHostDialog.ServerPort,
+                                               CalledApplicationEntityTitle = dicomHostDialog.CalledApplicationEntityTitle,
+                                               CallingApplicationEntityTitle =
+                                                   dicomHostDialog.CallingApplicationEntityTitle
+                                           };
+                getFromServerDlg.Closed += getFromServerDlg_Closed;
+                getFromServerDlg.Show();
+            }
+            else
+            {
+                Debug.Log.Warn("Connection to DICOM server has not been set up");
+            }
+            UpdateLog();
+        }
+
+        void getFromServerDlg_Closed(object sender, EventArgs e)
+        {
+            Debug.Log.Info("No image retrieval implemented yet!");
+            UpdateLog();
         }
     }
 }
