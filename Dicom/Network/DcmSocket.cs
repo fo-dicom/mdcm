@@ -240,6 +240,7 @@ namespace Dicom.Network {
         public DcmTcpSocket()
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+            _socket.NoDelay = true;
         }
 
         #endregion
@@ -335,7 +336,7 @@ namespace Dicom.Network {
                                                 RemoteEndPoint = remoteEP,
                                                 SocketClientAccessPolicyProtocol = AccessPolicyProtocol
                                             };
-            args.Completed += OnConnect;
+            args.Completed += OnSocketAsyncEventCompleted;
 
             _clientDone.Reset();
             _socket.ConnectAsync(args);
@@ -376,9 +377,25 @@ namespace Dicom.Network {
 
         #endregion
 
-        private static void OnConnect(object sender, SocketAsyncEventArgs e)
+        private static void OnSocketAsyncEventCompleted(object sender, SocketAsyncEventArgs e)
         {
-            _clientDone.Set();
+            switch (e.LastOperation)
+            {
+                case SocketAsyncOperation.None:
+                    break;
+                case SocketAsyncOperation.Connect:
+                    if (e.SocketError == SocketError.Success)
+                        _clientDone.Set();
+                    else 
+                        throw new SocketException((int)e.SocketError);
+                    break;
+                case SocketAsyncOperation.Receive:
+                    break;
+                case SocketAsyncOperation.Send:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 #else
