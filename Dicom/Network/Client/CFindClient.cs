@@ -604,7 +604,159 @@ namespace Dicom.Network.Client {
     }
     #endregion
 
-	#region Worklist
+    #region Image
+    public sealed class CFindImageQuery : CFindQuery
+    {
+        #region Private Members
+        private string _patientId;
+        private string _patientName;
+        private string _studyInstanceUid;
+        private string _seriesInstanceUid;
+        private string _sopInstanceUid;
+        private string _instanceNumber;
+        private string _modality;
+        #endregion
+
+        #region Public Constructors
+        public CFindImageQuery()
+        {
+            QueryRetrieveLevel = DcmQueryRetrieveLevel.Image;
+        }
+        #endregion
+
+        #region Public Properties
+        [DicomField(DicomConstTags.PatientID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string PatientID
+        {
+            get { return _patientId; }
+            set { _patientId = value; }
+        }
+
+        [DicomField(DicomConstTags.PatientsName, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string PatientsName
+        {
+            get { return _patientName; }
+            set { _patientName = value; }
+        }
+
+        [DicomField(DicomConstTags.StudyInstanceUID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string StudyInstanceUid
+        {
+            get { return _studyInstanceUid; }
+            set { _studyInstanceUid = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesInstanceUID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string SeriesInstanceUid
+        {
+            get { return _seriesInstanceUid; }
+            set { _seriesInstanceUid = value; }
+        }
+
+        [DicomField(DicomConstTags.SOPInstanceUID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string SopInstanceUid
+        {
+            get { return _sopInstanceUid; }
+            set { _sopInstanceUid = value; }
+        }
+
+        [DicomField(DicomConstTags.InstanceNumber, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string InstanceNumber
+        {
+            get { return _instanceNumber; }
+            set { _instanceNumber = value; }
+        }
+
+        [DicomField(DicomConstTags.Modality, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string Modality
+        {
+            get { return _modality; }
+            set { _modality = value; }
+        }
+        #endregion
+
+        #region Protected Members
+        protected override void AdditionalMembers(DcmDataset dataset)
+        {
+        }
+        #endregion
+    }
+
+    public sealed class CFindImageResponse : CFindResponse
+    {
+        #region Private Members
+        private string _patientId;
+        private string _patientName;
+        private string _studyInstanceUid;
+        private string _seriesInstanceUid;
+        private string _sopInstanceUid;
+        private string _instanceNumber;
+        private string _modality;
+        #endregion
+
+        #region Public Properties
+        [DicomField(DicomConstTags.PatientID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string PatientID
+        {
+            get { return _patientId; }
+            set { _patientId = value; }
+        }
+
+        [DicomField(DicomConstTags.PatientsName, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string PatientsName
+        {
+            get { return _patientName; }
+            set { _patientName = value; }
+        }
+
+        [DicomField(DicomConstTags.StudyInstanceUID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string StudyInstanceUid
+        {
+            get { return _studyInstanceUid; }
+            set { _studyInstanceUid = value; }
+        }
+
+        [DicomField(DicomConstTags.SeriesInstanceUID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string SeriesInstanceUid
+        {
+            get { return _seriesInstanceUid; }
+            set { _seriesInstanceUid = value; }
+        }
+
+        [DicomField(DicomConstTags.SOPInstanceUID, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string SopInstanceUid
+        {
+            get { return _sopInstanceUid; }
+            set { _sopInstanceUid = value; }
+        }
+
+        [DicomField(DicomConstTags.InstanceNumber, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string InstanceNumber
+        {
+            get { return _instanceNumber; }
+            set { _instanceNumber = value; }
+        }
+
+        [DicomField(DicomConstTags.Modality, DefaultValue = DicomFieldDefault.Default, CreateEmptyElement = true)]
+        public string Modality
+        {
+            get { return _modality; }
+            set { _modality = value; }
+        }
+        #endregion
+    }
+
+    public sealed class CFindImageClient : CFindClientT<CFindImageQuery, CFindImageResponse>
+    {
+        public CFindImageClient()
+            : base()
+        {
+            FindSopClassUID = DicomUID.StudyRootQueryRetrieveInformationModelFIND;
+        }
+    }
+    #endregion
+
+    #region Worklist
 	public sealed class CFindWorklistQuery : CFindQuery {
 	#region Private Members
 		private string _patientId;

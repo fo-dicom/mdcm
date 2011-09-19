@@ -91,9 +91,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Wpf.Dicom.Dump\DicomValueConverter.cs">
-      <Link>DicomValueConverter.cs</Link>
-    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>

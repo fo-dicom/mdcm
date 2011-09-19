@@ -173,13 +173,19 @@ namespace SL.DicomToXml
         {
             using (IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                using (
-                    var stream = new IsolatedStorageFileStream("Solution.Silverlight.log", FileMode.Open,
-                                                               FileAccess.Read, store))
+                try
                 {
-                    var reader = new StreamReader(stream);
-                    Log = reader.ReadToEnd();
-                    reader.Close();
+                    using (
+                        var stream = new IsolatedStorageFileStream("Solution.Silverlight.log", FileMode.Open,
+                                                                   FileAccess.Read, store))
+                    {
+                        var reader = new StreamReader(stream);
+                        Log = reader.ReadToEnd();
+                        reader.Close();
+                    }
+                }
+                catch (IsolatedStorageException)
+                {
                 }
             }
         }
