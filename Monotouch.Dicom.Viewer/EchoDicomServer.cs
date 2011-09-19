@@ -23,10 +23,10 @@ namespace Monotouch.Dicom.Viewer
 			delegate {
 				if (resultSection != null) root.Remove(resultSection);
 				string message;
-				var echoFlag = new BooleanImageElement(String.Empty, DoEcho(hostEntry.Value, Int32.Parse(portEntry.Value), calledAetEntry.Value, callingAetEntry.Value, out message), 
-					new UIImage("yes-icon.png"), new UIImage("no-icon.png"));
+				var echoFlag = DoEcho(hostEntry.Value, Int32.Parse(portEntry.Value), calledAetEntry.Value, callingAetEntry.Value, out message);
+				var echoImage = new ImageStringElement(String.Empty, echoFlag ? new UIImage("yes-icon.png") : new UIImage("no-icon.png"));
 				var echoMessage = new StringElement(message);
-				resultSection = new Section(String.Empty, "C-ECHO result") { echoFlag, echoMessage };
+				resultSection = new Section(String.Empty, "C-ECHO result") { echoImage, echoMessage };
 				root.Add(resultSection);
 			})
 			{ Alignment = UITextAlignment.Center, BackgroundColor = UIColor.Blue, TextColor = UIColor.White };
@@ -47,7 +47,10 @@ namespace Monotouch.Dicom.Viewer
 			var msg = "Unidentified failure";
 			
 			var echoScu = new CEchoClient { CalledAE = calledAet, CallingAE = callingAet };
-			echoScu.OnCEchoResponse += delegate(byte presentationID, ushort messageID, DcmStatus status) { success = true; msg = status.Description; };
+			echoScu.OnCEchoResponse += delegate(byte presentationID, ushort messageID, DcmStatus status)
+			{
+				success = status.State == DcmState.Success; msg = status.Description;
+			};
 			
 			echoScu.Connect(host, port, DcmSocketType.TCP);
 			if (!echoScu.Wait())
