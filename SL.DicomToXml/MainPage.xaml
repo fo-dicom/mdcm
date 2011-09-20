@@ -9,7 +9,8 @@
     <UserControl.Resources>
         <my:IsCheckedToVisibilityConverter x:Key="isCheckedToVisibilityConverter"/>
         <OpenFileDialog x:Key="dicomFileDialog" Filter="DICOM files (*.dcm)|*.dcm|All files (*.*)|*.*" Multiselect="False"/>
-        <sys:String x:Key="noDicomDataMsg">Cannot obtain DICOM data from the selected file {0}</sys:String>
+        <sys:String x:Key="noDicomFileDataMsg">Cannot obtain DICOM data from the selected file {0}</sys:String>
+        <sys:String x:Key="noDicomObjectDataMsg">Cannot obtain DICOM object with SOP Instance UID {0}</sys:String>
     </UserControl.Resources>
 
     <Grid x:Name="LayoutRoot" Background="White">

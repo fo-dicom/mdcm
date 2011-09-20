@@ -79,6 +79,19 @@ namespace SL.DicomToXml
 
         #endregion
 
+        #region PROPERTIES
+
+        public string SelectedImageSopInstanceUid
+        {
+            get
+            {
+                var selImage = imagesDataGrid.SelectedItem as CFindImageResponse;
+                return selImage != null ? selImage.SopInstanceUid : String.Empty;
+            }
+        }
+
+        #endregion
+        
         #region METHODS
 
         public DcmDataset GetSelectedDataset()

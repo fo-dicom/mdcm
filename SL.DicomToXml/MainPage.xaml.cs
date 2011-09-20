@@ -123,7 +123,7 @@ namespace SL.DicomToXml
                     }
                     else
                     {
-                        RawDump = XmlDump = String.Format(Resources["noDicomDataMsg"].ToString(), dlg.File.Name);
+                        RawDump = XmlDump = String.Format(Resources["noDicomFileDataMsg"].ToString(), dlg.File.Name);
                         DicomImage = null;
                     }
                 }
@@ -242,7 +242,7 @@ namespace SL.DicomToXml
                 }
                 else
                 {
-                    RawDump = XmlDump = String.Format(Resources["noDicomDataMsg"].ToString(), "on the DICOM server");
+                    RawDump = XmlDump = String.Format(Resources["noDicomObjectDataMsg"].ToString(), dlg.SelectedImageSopInstanceUid);
                     DicomImage = null;
                 }
             }
