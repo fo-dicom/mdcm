@@ -225,6 +225,7 @@ namespace Dicom.Network {
 		private Socket _socket;
 		private EndPoint _remoteEP;
 		private EndPoint _localEP;
+	    private bool _incoming;
 
 		private static readonly ManualResetEvent _clientDone = new ManualResetEvent(false);
 
@@ -240,6 +241,7 @@ namespace Dicom.Network {
 		public DcmTcpSocket()
 		{
 			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+		    _incoming = false;
 		}
 
 		#endregion
@@ -337,15 +339,14 @@ namespace Dicom.Network {
 											};
 			args.Completed += OnSocketAsyncEventCompleted;
 
+			lock (_clientDone)
+			{
+				_clientDone.Reset();
+				if (_socket.ConnectAsync(args)) _clientDone.WaitOne();
+			}
+
 			_remoteEP = remoteEP;
 			RegisterSocket(this);
-
-			_clientDone.Reset();
-			_socket.ConnectAsync(args);
-			_clientDone.WaitOne();
-
-			if (args.SocketError != SocketError.Success)
-				throw new SocketException((int) args.SocketError);
 		}
 
 		public override void Reconnect()
@@ -354,11 +355,11 @@ namespace Dicom.Network {
 			Connect(_remoteEP);
 		}
 
-		public override void Listen(int backlog)
-		{
-		}
+        public override void Listen(int backlog)
+        {
+        }
 
-		public override bool Poll(int microSeconds, SelectMode mode)
+	    public override bool Poll(int microSeconds, SelectMode mode)
 		{
 			return true;
 		}
@@ -370,7 +371,7 @@ namespace Dicom.Network {
 
 		protected override bool IsIncomingConnection
 		{
-			get { return true; }
+			get { return _incoming; }
 		}
 
 		#endregion
@@ -382,6 +383,7 @@ namespace Dicom.Network {
 				case SocketAsyncOperation.None:
 					break;
 				case SocketAsyncOperation.Connect:
+					ProcessConnect(e);
 					break;
 				case SocketAsyncOperation.Receive:
 					break;
@@ -390,11 +392,14 @@ namespace Dicom.Network {
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-			if (e.SocketError == SocketError.Success)
-				_clientDone.Set();
-			else
+			if (e.SocketError != SocketError.Success)
 				throw new SocketException((int)e.SocketError);
 		}
+
+		private static void ProcessConnect(SocketAsyncEventArgs e)
+		{
+				_clientDone.Set();
+        }
 	}
 #else
 	#region TCP
