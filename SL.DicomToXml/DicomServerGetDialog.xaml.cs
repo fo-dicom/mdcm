@@ -26,6 +26,7 @@ namespace SL.DicomToXml
         #region FIELDS
 
         private DcmServer<CStoreService> _storeScp;
+        private DcmDataset _selectedDataset;
 
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty StudyResponsesProperty =
@@ -77,53 +78,38 @@ namespace SL.DicomToXml
         public string CallingApplicationEntityTitle { get; set; }
 
         #endregion
-        
-        private void OKButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-        }
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-        }
+        #region METHODS
 
-        private void getStudiesButton_Click(object sender, RoutedEventArgs e)
-        {
-            GetStudies();
-        }
-
-        private void GetStudies()
+        public DcmDataset GetSelectedDataset()
         {
             var success = false;
             var message = "Unidentified failure.";
 
             try
             {
-                Dispatcher.BeginInvoke(new ClearStudyResponsesDelegate(() => StudyResponses.Clear()));
+                var selImage = imagesDataGrid.SelectedItem as CFindImageResponse;
 
-                var findStudy = new CFindStudyClient
-                                    {
-                                        CallingAE = CallingApplicationEntityTitle,
-                                        CalledAE = CalledApplicationEntityTitle
-                                    };
-                findStudy.OnCFindResponse +=
-                    delegate(CFindStudyQuery query, CFindStudyResponse result)
-                        {
-                            if (result != null)
-                                Dispatcher.BeginInvoke(new AddToStudyResponsesDelegate(r => StudyResponses.Add(r)), result);
-                        };
-
-                findStudy.AddQuery(new CFindStudyQuery());
-
-                findStudy.Connect(DicomHost, ServerPort, DcmSocketType.TCP);
-                if (findStudy.Wait())
+                if (selImage != null)
                 {
-                    success = true;
-                }
-                else
-                {
-                    message = findStudy.ErrorMessage;
+                    var moveImage = new CMoveClient
+                    {
+                        CallingAE = CallingApplicationEntityTitle,
+                        CalledAE = CalledApplicationEntityTitle,
+                        DestinationAE = CallingApplicationEntityTitle
+                    };
+                    moveImage.AddQuery(new CMoveQuery(selImage.StudyInstanceUid, selImage.SeriesInstanceUid,
+                                                      selImage.SopInstanceUid));
+
+                    moveImage.Connect(DicomHost, ServerPort, DcmSocketType.TCP);
+                    if (moveImage.Wait())
+                    {
+                        success = true;
+                    }
+                    else
+                    {
+                        message = moveImage.ErrorMessage;
+                    }
                 }
             }
             catch (Exception exception)
@@ -133,8 +119,24 @@ namespace SL.DicomToXml
 
             if (!success)
             {
-                MessageBox.Show(message, "C-FIND Study error", MessageBoxButton.OK);
+                MessageBox.Show(message, "C-MOVE error", MessageBoxButton.OK);
             }
+
+            return _selectedDataset;
+        }
+
+        #endregion
+        
+        #region EVENT HANDLERS
+
+        private void OKButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
         }
 
         private void studiesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -181,14 +183,14 @@ namespace SL.DicomToXml
 
             if (!success)
             {
-                MessageBox.Show(message, "C-MOVE Study error", MessageBoxButton.OK);
+                MessageBox.Show(message, "C-MOVE error", MessageBoxButton.OK);
             }
         }
 
         private void ChildWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            GetStudies();
-/*
+            _selectedDataset = null;
+
             _storeScp = new DcmServer<CStoreService>();
             _storeScp.AddPort(ServerPort, DcmSocketType.TCP);
 
@@ -203,16 +205,15 @@ namespace SL.DicomToXml
                             if (dataset != null)
                             {
                                 dataset.PreloadDeferredBuffers();
-                                Dispatcher.BeginInvoke(
-                                    new AddToSelectedStudyDatasetsDelegate(d => SelectedStudyDatasets.Add(d)),
-                                    dataset);
+                                _selectedDataset = dataset;
                             }
                             return new DcmStatus("0000", DcmState.Success, "Success");
                         };
 
                 };
             _storeScp.Start();
- */ 
+ 
+            GetStudies();
         }
 
         private void ChildWindow_Unloaded(object sender, RoutedEventArgs e)
@@ -220,6 +221,56 @@ namespace SL.DicomToXml
             if (_storeScp != null) _storeScp.Stop();
             _storeScp = null;
         }
+
+        #endregion
+
+        #region PRIVATE METHODS
+
+        private void GetStudies()
+        {
+            var success = false;
+            var message = "Unidentified failure.";
+
+            try
+            {
+                Dispatcher.BeginInvoke(new ClearStudyResponsesDelegate(() => StudyResponses.Clear()));
+
+                var findStudy = new CFindStudyClient
+                {
+                    CallingAE = CallingApplicationEntityTitle,
+                    CalledAE = CalledApplicationEntityTitle
+                };
+                findStudy.OnCFindResponse +=
+                    delegate(CFindStudyQuery query, CFindStudyResponse result)
+                    {
+                        if (result != null)
+                            Dispatcher.BeginInvoke(new AddToStudyResponsesDelegate(r => StudyResponses.Add(r)), result);
+                    };
+
+                findStudy.AddQuery(new CFindStudyQuery());
+
+                findStudy.Connect(DicomHost, ServerPort, DcmSocketType.TCP);
+                if (findStudy.Wait())
+                {
+                    success = true;
+                }
+                else
+                {
+                    message = findStudy.ErrorMessage;
+                }
+            }
+            catch (Exception exception)
+            {
+                message = exception.Message;
+            }
+
+            if (!success)
+            {
+                MessageBox.Show(message, "C-FIND Study error", MessageBoxButton.OK);
+            }
+        }
+
+        #endregion
     }
 }
 

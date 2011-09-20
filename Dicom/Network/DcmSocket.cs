@@ -240,7 +240,6 @@ namespace Dicom.Network {
         public DcmTcpSocket()
         {
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
-            _socket.NoDelay = true;
         }
 
         #endregion
@@ -310,7 +309,7 @@ namespace Dicom.Network {
 
         public override DcmSocket Accept()
         {
-            throw new NotSupportedException();
+            return this;
         }
 
         public override void Bind(EndPoint localEP)
@@ -357,7 +356,6 @@ namespace Dicom.Network {
 
         public override void Listen(int backlog)
         {
-            throw new NotSupportedException();
         }
 
         public override bool Poll(int microSeconds, SelectMode mode)
@@ -372,7 +370,7 @@ namespace Dicom.Network {
 
         protected override bool IsIncomingConnection
         {
-            get { return false; }
+            get { return true; }
         }
 
         #endregion

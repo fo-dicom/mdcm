@@ -221,7 +221,31 @@ namespace SL.DicomToXml
 
         void getFromServerDlg_Closed(object sender, EventArgs e)
         {
-            Debug.Log.Info("No image retrieval implemented yet!");
+            var dlg = sender as DicomServerGetDialog;
+            if (dlg != null && dlg.DialogResult.GetValueOrDefault())
+            {
+                var dataset = dlg.GetSelectedDataset();
+                if (dataset != null)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    dataset.Dump(sb, String.Empty, DicomDumpOptions.Default);
+                    RawDump = sb.ToString();
+
+                    var xmlDoc = XDicom.ToXML(dataset, XDicomOptions.None);
+                    var txtWriter = new StringWriter();
+                    xmlDoc.Save(txtWriter);
+                    XmlDump = txtWriter.ToString();
+
+                    DicomImage = dataset.Contains(DicomTags.PixelData)
+                                     ? GetImageSource(dataset)
+                                     : null;
+                }
+                else
+                {
+                    RawDump = XmlDump = String.Format(Resources["noDicomDataMsg"].ToString(), "on the DICOM server");
+                    DicomImage = null;
+                }
+            }
             UpdateLog();
         }
     }
