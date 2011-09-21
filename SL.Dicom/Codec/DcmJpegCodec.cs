@@ -13,101 +13,115 @@ using FluxJpeg.Core.Encoder;
 
 namespace Dicom.Codec
 {
-    [DicomCodec]
-    public class DcmJpegCodec : IDcmCodec
+    public abstract class DcmJpegCodec : IDcmCodec
     {
+        private readonly DicomTransferSyntax _transferSyntax;
+        private readonly DcmJpegParameters _defaultParameters;
+
+        #region CONSTRUCTORS
+
+        protected DcmJpegCodec(DicomTransferSyntax transferSyntax, DcmJpegParameters defaultParameters = null)
+        {
+            _transferSyntax = transferSyntax;
+            _defaultParameters = defaultParameters ?? new DcmJpegParameters();
+        }
+
+        #endregion
+
         #region Implementation of IDcmCodec
 
         public string GetName()
         {
-            return GetTransferSyntax().UID.Description;
+            return _transferSyntax.UID.Description;
         }
 
         public DicomTransferSyntax GetTransferSyntax()
         {
-            return DicomTransferSyntax.JPEGProcess2_4;
+            return _transferSyntax;
         }
 
         public DcmCodecParameters GetDefaultParameters()
         {
-            return new DcmJpegParameters();
+            return _defaultParameters;
         }
 
         public void Encode(DcmDataset dataset, DcmPixelData oldPixelData, DcmPixelData newPixelData, DcmCodecParameters parameters)
         {
-            var jpegParams = parameters as DcmJpegParameters ?? GetDefaultParameters() as DcmJpegParameters;
-
-            for (int i = 0; i < oldPixelData.NumberOfFrames; i++)
-            {
-                // Init buffer in FluxJpeg format
-                int w = oldPixelData.ImageWidth;
-                int h = oldPixelData.ImageHeight;
-                byte[][,] pixelsForJpeg = new byte[3][,]; // RGB colors
-                pixelsForJpeg[0] = new byte[w, h];
-                pixelsForJpeg[1] = new byte[w, h];
-                pixelsForJpeg[2] = new byte[w, h];
-
-                // Copy data into buffer for FluxJpeg
-                byte[] p = oldPixelData.GetFrameDataU8(i);
-                int j = 0;
-                for (int y = 0; y < h; y++)
-                {
-                    for (int x = 0; x < w; x++)
-                    {
-                        byte color = p[j++];
-                        pixelsForJpeg[0][x, y] = color; // R
-                        pixelsForJpeg[1][x, y] = color; // G
-                        pixelsForJpeg[2][x, y] = color; // B
-                    }
-                }
-
-                // Encode Image as JPEG using the FluxJpeg library
-                // and write to destination stream
-                ColorModel cm = new ColorModel { colorspace = ColorSpace.RGB };
-                Image jpegImage = new Image(cm, pixelsForJpeg);
-                using (MemoryStream destinationStream = new MemoryStream())
-                {
-                    JpegEncoder encoder = new JpegEncoder(jpegImage, jpegParams.Quality, destinationStream);
-                    encoder.Encode();
-                    newPixelData.AddFrame(destinationStream.GetBuffer());
-                }
-            }
+            throw new NotSupportedException("JPEG encoding currently not supported");
         }
 
         public void Decode(DcmDataset dataset, DcmPixelData oldPixelData, DcmPixelData newPixelData, DcmCodecParameters parameters)
         {
-            var frameData = new byte[newPixelData.UncompressedFrameSize];
+            if (oldPixelData.NumberOfFrames == 0) return;
+
+            // Determine JPEG image precision and assert that the implemented codec supports this precision
+            int precision;
+            try
+            {
+                precision = JpegHelper.ScanHeaderForBitDepth(oldPixelData);
+            }
+            catch (DicomCodecException)
+            {
+                precision = oldPixelData.BitsStored;
+            }
+            AssertImagePrecision(precision);
+
+            // Ensure consistency in the new pixel data header
+            if (precision > 8)
+                newPixelData.BitsAllocated = 16;
+            else if (newPixelData.BitsStored <= 8)
+                newPixelData.BitsAllocated = 8;
+
+            // Set up new pixel data specifics
+            newPixelData.PhotometricInterpretation = newPixelData.PhotometricInterpretation.Equals("YBR_FULL_422") ||
+                                                     newPixelData.PhotometricInterpretation.Equals("YBR_PARTIAL_422")
+                                                         ? "YBR_FULL"
+                                                         : oldPixelData.PhotometricInterpretation;
+            if (newPixelData.PhotometricInterpretation.Equals("YBR_FULL")) newPixelData.PlanarConfiguration = 1;
 
             try
             {
                 for (int j = 0; j < oldPixelData.NumberOfFrames; ++j)
                 {
+                    var frameData = new byte[newPixelData.UncompressedFrameSize];
                     var jpegStream = new MemoryStream(oldPixelData.GetFrameDataU8(j));
 
                     // Decode JPEG from stream
                     var decoder = new JpegDecoder(jpegStream);
                     var jpegDecoded = decoder.Decode();
                     var img = jpegDecoded.Image;
-                    img.ChangeColorSpace(ColorSpace.RGB);
 
                     // Init Buffer
                     int w = img.Width;
                     int h = img.Height;
                     byte[][,] pixelsFromJpeg = img.Raster;
 
-                    // Copy FluxJpeg buffer into WriteableBitmap
+                    // Copy FluxJpeg buffer into frame data array
+                    if (pixelsFromJpeg.GetLength(0) > newPixelData.BytesAllocated)
+                        throw new InvalidOperationException(
+                            String.Format("Number of JPEG components: {0} exceeds number of bytes allocated: {1}",
+                                          pixelsFromJpeg.GetLength(0), newPixelData.BytesAllocated));
+
+                    int jpegComps = pixelsFromJpeg.GetLength(0);
+                    int preIncr = newPixelData.BytesAllocated - jpegComps;
+
                     int i = 0;
                     for (int y = 0; y < h; ++y)
                     {
                         for (int x = 0; x < w; ++x)
                         {
-                            frameData[i++] = 0xff;  // A
-                            frameData[i++] = pixelsFromJpeg[0][x, y];   // R
-                            frameData[i++] = pixelsFromJpeg[1][x, y];   // G
-                            frameData[i++] = pixelsFromJpeg[2][x, y];   // B
+                            for (int k = 0; k < preIncr; ++k) frameData[i++] = 0xff;
+                            for (int k = 0; k < jpegComps; ++k) frameData[i++] = pixelsFromJpeg[k][x, y];
                         }
                     }
 
+                    oldPixelData.Unload();
+
+                    if (newPixelData.IsPlanar)
+                        DcmCodecHelper.ChangePlanarConfiguration(frameData,
+                                                                 frameData.Length / newPixelData.BytesAllocated,
+                                                                 newPixelData.BitsAllocated,
+                                                                 newPixelData.SamplesPerPixel, 0);
                     newPixelData.AddFrame(frameData);
                 }
             }
@@ -119,9 +133,64 @@ namespace Dicom.Codec
 
         #endregion
 
+        #region PROTECTED ABSTRACT METHODS
+
+        protected abstract void AssertImagePrecision(int bits);
+
+        #endregion
+        
+        #region STATIC METHODS
+
         public static void Register()
         {
-            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess2_4, typeof(DcmJpegCodec));
+            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess1, typeof(DcmJpegProcess1Codec));
+            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess2_4, typeof(DcmJpegProcess4Codec));
         }
+
+        #endregion
+    }
+
+    [DicomCodec]
+    public class DcmJpegProcess1Codec : DcmJpegCodec
+    {
+        #region CONSTRUCTORS
+
+        public DcmJpegProcess1Codec()
+            : base(DicomTransferSyntax.JPEGProcess1)
+        {
+        }
+
+        #endregion
+
+        #region Implementation of DcmJpegCodec
+
+        protected override void AssertImagePrecision(int bits)
+        {
+            if (bits != 8) throw new DicomCodecException(String.Format("Unable to create JPEG Process 1 codec for bits stored == {0}", bits));
+        }
+
+        #endregion
+    }
+
+    [DicomCodec]
+    public class DcmJpegProcess4Codec : DcmJpegCodec
+    {
+        #region CONSTRUCTORS
+
+        public DcmJpegProcess4Codec()
+            : base(DicomTransferSyntax.JPEGProcess2_4)
+        {
+        }
+
+        #endregion
+
+        #region Implementation of DcmJpegCodec
+
+        protected override void AssertImagePrecision(int bits)
+        {
+            if (bits != 12) throw new DicomCodecException(String.Format("Unable to create JPEG Process 2 & 4 codec for bits stored == {0}", bits));
+        }
+
+        #endregion
     }
 }

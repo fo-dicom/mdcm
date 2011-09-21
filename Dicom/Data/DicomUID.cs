@@ -81,13 +81,13 @@ namespace Dicom.Data {
 			return UID.GetHashCode();
 		}
 
-		private static DicomUID _instanceRootUid = null;
+		private static volatile DicomUID _instanceRootUid = null;
 		private static DicomUID InstanceRootUID {
 			get {
 				if (_instanceRootUid == null) {
 					lock (GenerateUidLock) {
-#if !SILVERLIGHT
 						if (_instanceRootUid == null) {
+#if !SILVERLIGHT
 							NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
 							for (int i = 0; i < interfaces.Length; i++) {
 								if (NetworkInterface.LoopbackInterfaceIndex != i && interfaces[i].OperationalStatus == OperationalStatus.Up) {
@@ -101,9 +101,9 @@ namespace Dicom.Data {
 									}
 								}
 							}
+#endif
 							_instanceRootUid = Generate(Implementation.ClassUID, Environment.TickCount);
 						}
-#endif
                     }
 				}
 				return _instanceRootUid;

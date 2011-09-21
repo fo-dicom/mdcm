@@ -374,6 +374,7 @@
     </Compile>
     <Compile Include="Codec\DcmJpegCodec.cs" />
     <Compile Include="Codec\DcmJpegParameters.cs" />
+    <Compile Include="Codec\JpegHelper.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="IsolatedStorageTarget.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

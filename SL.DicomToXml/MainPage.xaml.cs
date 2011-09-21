@@ -80,7 +80,9 @@ namespace SL.DicomToXml
 
             DcmRleCodec.Register();
             DcmJpegCodec.Register();
+
             Debug.InitializeIsolatedStorageDebugLogger();
+            Debug.Log.Info(String.Empty);
         }
 
         private void fileNameButton_Click(object sender, RoutedEventArgs e)
@@ -111,15 +113,6 @@ namespace SL.DicomToXml
                         DicomImage = ff.Dataset.Contains(DicomTags.PixelData)
                                          ? GetImageSource(ff.Dataset)
                                          : null;
-/*
-                            string tempDicomFile = "temp.dcm";
-                            ff.Save(tempDicomFile, DicomWriteOptions.ExplicitLengthSequenceItem);
-                            SendDataToStoreScp(tempDicomFile);
-
-                            using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-                            {
-                                if (store.FileExists(tempDicomFile)) store.DeleteFile(tempDicomFile);
-                            }   */
                     }
                     else
                     {
@@ -135,37 +128,13 @@ namespace SL.DicomToXml
         {
             try
             {
+                Debug.Log.Info("Image transfer syntax: {0}", iDataset.InternalTransferSyntax);
                 return new DicomImage(iDataset).Render();
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        private void SendDataToStoreScp(string iFileName)
-        {
-            try
-            {
-                CStoreClient scu = new CStoreClient
-                                       {
-                                           DisableFileStreaming = true,
-                                           CallingAE = dicomHostDialog.CallingApplicationEntityTitle,
-                                           CalledAE = dicomHostDialog.CalledApplicationEntityTitle,
-                                           MaxPduSize = 16384,
-                                           ConnectTimeout = 0,
-                                           SocketTimeout = 30,
-                                           DimseTimeout = 30,
-                                           SerializedPresentationContexts = true,
-                                           PreferredTransferSyntax = DicomTransferSyntax.ExplicitVRLittleEndian
-                                       };
-                scu.AddFile(iFileName);
-                scu.Connect(dicomHostDialog.DicomHost, dicomHostDialog.ServerPort, DcmSocketType.TCP);
-                if (!scu.Wait()) Debug.Log.Warn(scu.ErrorMessage);
             }
             catch (Exception e)
             {
-                Debug.Log.Error(e.Message);
+                Debug.Log.Error("Image display failed {0}, reason: {1}", e.StackTrace, e.Message);
+                return null;
             }
         }
 
