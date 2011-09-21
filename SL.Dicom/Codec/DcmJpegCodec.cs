@@ -5,13 +5,8 @@
 // http://www.eclipse.org/legal/epl-v10.html
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Windows;
-using System.Windows.Media.Imaging;
-using BitMiracle.LibJpeg.Classic;
 using Dicom.Data;
-using Dicom.IO;
 using FluxJpeg.Core;
 using FluxJpeg.Core.Decoder;
 using FluxJpeg.Core.Encoder;
@@ -81,33 +76,37 @@ namespace Dicom.Codec
 
         public void Decode(DcmDataset dataset, DcmPixelData oldPixelData, DcmPixelData newPixelData, DcmCodecParameters parameters)
         {
-            var jpegParams = parameters as DcmJpegParameters ?? GetDefaultParameters() as DcmJpegParameters;
-
-            byte[] frameData = new byte[newPixelData.UncompressedFrameSize];
+            var frameData = new byte[newPixelData.UncompressedFrameSize];
 
             try
             {
-                for (int i = 0; i < oldPixelData.NumberOfFrames; i++)
+                for (int j = 0; j < oldPixelData.NumberOfFrames; ++j)
                 {
-                    var jpegStream = new MemoryStream(oldPixelData.GetFrameDataU8(i));
+                    var jpegStream = new MemoryStream(oldPixelData.GetFrameDataU8(j));
 
-                    jpeg_error_mgr errorMgr = new jpeg_error_mgr();
-                    jpeg_decompress_struct cinfo = new jpeg_decompress_struct(errorMgr);
-                    cinfo.jpeg_stdio_src(jpegStream);
-                    cinfo.jpeg_read_header(true);
+                    // Decode JPEG from stream
+                    var decoder = new JpegDecoder(jpegStream);
+                    var jpegDecoded = decoder.Decode();
+                    var img = jpegDecoded.Image;
+                    img.ChangeColorSpace(ColorSpace.RGB);
 
-                    int w = cinfo.Image_width;
-                    int h = cinfo.Image_height;
+                    // Init Buffer
+                    int w = img.Width;
+                    int h = img.Height;
+                    byte[][,] pixelsFromJpeg = img.Raster;
 
-                    cinfo.jpeg_start_decompress();
-                    while (cinfo.Output_scanline < cinfo.Output_height)
+                    // Copy FluxJpeg buffer into WriteableBitmap
+                    int i = 0;
+                    for (int y = 0; y < h; ++y)
                     {
-                        byte[][] pixelsFromJpeg = new byte[w][];
-                        cinfo.jpeg_read_scanlines(pixelsFromJpeg, 1);
-                        int j = cinfo.Output_scanline * w;
-                        for (int x = 0; x < w; ++x) frameData[j++] = pixelsFromJpeg[x][0];
+                        for (int x = 0; x < w; ++x)
+                        {
+                            frameData[i++] = 0xff;  // A
+                            frameData[i++] = pixelsFromJpeg[0][x, y];   // R
+                            frameData[i++] = pixelsFromJpeg[1][x, y];   // G
+                            frameData[i++] = pixelsFromJpeg[2][x, y];   // B
+                        }
                     }
-                    cinfo.jpeg_finish_decompress();
 
                     newPixelData.AddFrame(frameData);
                 }

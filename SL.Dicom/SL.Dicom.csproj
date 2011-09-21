@@ -53,9 +53,6 @@
     <AssemblyOriginatorKeyFile>Dicom.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BitMiracle.LibJpeg.Silverlight">
-      <HintPath>..\3rd Party\SL\BitMiracle.LibJpeg.Silverlight.dll</HintPath>
-    </Reference>
     <Reference Include="FJ.Core">
       <HintPath>..\3rd Party\SL\FJ.Core.dll</HintPath>
     </Reference>
