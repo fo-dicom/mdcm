@@ -127,7 +127,7 @@ namespace Dicom.Codec
             }
             catch (Exception e)
             {
-                Debug.Log.Error("Failed to decode JPEG image, reason: {0}", e.Message);
+                Debug.Log.Error("Failed to decode JPEG image: {0}, reason: {1}", e.StackTrace, e.Message);
             }
         }
 
@@ -145,6 +145,8 @@ namespace Dicom.Codec
         {
             DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess1, typeof(DcmJpegProcess1Codec));
             DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess2_4, typeof(DcmJpegProcess4Codec));
+            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess14, typeof(DcmJpegLossless14Codec));
+            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess14SV1, typeof(DcmJpegLossless14SV1Codec));
         }
 
         #endregion
@@ -188,7 +190,53 @@ namespace Dicom.Codec
 
         protected override void AssertImagePrecision(int bits)
         {
-            if (bits != 12) throw new DicomCodecException(String.Format("Unable to create JPEG Process 2 & 4 codec for bits stored == {0}", bits));
+            if (bits != 8 && bits != 12)
+                throw new DicomCodecException(
+                    String.Format("Unable to create JPEG Process 2 & 4 codec for bits stored == {0}", bits));
+        }
+
+        #endregion
+    }
+
+    [DicomCodec]
+    public class DcmJpegLossless14Codec : DcmJpegCodec
+    {
+        #region CONSTRUCTORS
+
+        public DcmJpegLossless14Codec()
+            : base(DicomTransferSyntax.JPEGProcess14)
+        {
+        }
+
+        #endregion
+
+        #region Implementation of DcmJpegCodec
+
+        protected override void AssertImagePrecision(int bits)
+        {
+            if (bits > 16) throw new DicomCodecException(String.Format("Unable to create JPEG Process 14 codec for bits stored == {0}", bits));
+        }
+
+        #endregion
+    }
+
+    [DicomCodec]
+    public class DcmJpegLossless14SV1Codec : DcmJpegCodec
+    {
+        #region CONSTRUCTORS
+
+        public DcmJpegLossless14SV1Codec()
+            : base(DicomTransferSyntax.JPEGProcess14SV1)
+        {
+        }
+
+        #endregion
+
+        #region Implementation of DcmJpegCodec
+
+        protected override void AssertImagePrecision(int bits)
+        {
+            if (bits > 16) throw new DicomCodecException(String.Format("Unable to create JPEG Process 14 [SV1] codec for bits stored == {0}", bits));
         }
 
         #endregion
