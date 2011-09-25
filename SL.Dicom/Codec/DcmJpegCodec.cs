@@ -7,9 +7,7 @@
 using System;
 using System.IO;
 using Dicom.Data;
-using FluxJpeg.Core;
 using FluxJpeg.Core.Decoder;
-using FluxJpeg.Core.Encoder;
 
 namespace Dicom.Codec
 {
@@ -94,24 +92,28 @@ namespace Dicom.Codec
                     // Init Buffer
                     int w = img.Width;
                     int h = img.Height;
-                    byte[][,] pixelsFromJpeg = img.Raster;
+                    var pixelsFromJpeg = img.Raster;
 
                     // Copy FluxJpeg buffer into frame data array
-                    if (pixelsFromJpeg.GetLength(0) > newPixelData.BytesAllocated)
+/*
+                    int comps = pixelsFromJpeg.GetLength(0);
+                    int preIncr = newPixelData.BytesAllocated - comps;
+
+                    if (preIncr < 0)
                         throw new InvalidOperationException(
                             String.Format("Number of JPEG components: {0} exceeds number of bytes allocated: {1}",
-                                          pixelsFromJpeg.GetLength(0), newPixelData.BytesAllocated));
-
-                    int jpegComps = pixelsFromJpeg.GetLength(0);
-                    int preIncr = newPixelData.BytesAllocated - jpegComps;
-
+                                          comps, newPixelData.BytesAllocated));
+*/
                     int i = 0;
                     for (int y = 0; y < h; ++y)
                     {
                         for (int x = 0; x < w; ++x)
                         {
-                            for (int k = 0; k < preIncr; ++k) frameData[i++] = 0xff;
-                            for (int k = 0; k < jpegComps; ++k) frameData[i++] = pixelsFromJpeg[k][x, y];
+                            var pixel = pixelsFromJpeg[0][x, y];
+                            frameData[i++] = (byte)((pixel >> 8) & 0xff);
+                            frameData[i++] = (byte)(pixel & 0xff);
+//                            for (int k = 0; k < preIncr; ++k) frameData[i++] = 0xff;
+//                            for (int k = 0; k < comps; ++k) frameData[i++] = pixelsFromJpeg[k][x, y];
                         }
                     }
 
@@ -145,8 +147,6 @@ namespace Dicom.Codec
         {
             DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess1, typeof(DcmJpegProcess1Codec));
             DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess2_4, typeof(DcmJpegProcess4Codec));
-            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess14, typeof(DcmJpegLossless14Codec));
-            DicomCodec.RegisterCodec(DicomTransferSyntax.JPEGProcess14SV1, typeof(DcmJpegLossless14SV1Codec));
         }
 
         #endregion
@@ -193,50 +193,6 @@ namespace Dicom.Codec
             if (bits != 8 && bits != 12)
                 throw new DicomCodecException(
                     String.Format("Unable to create JPEG Process 2 & 4 codec for bits stored == {0}", bits));
-        }
-
-        #endregion
-    }
-
-    [DicomCodec]
-    public class DcmJpegLossless14Codec : DcmJpegCodec
-    {
-        #region CONSTRUCTORS
-
-        public DcmJpegLossless14Codec()
-            : base(DicomTransferSyntax.JPEGProcess14)
-        {
-        }
-
-        #endregion
-
-        #region Implementation of DcmJpegCodec
-
-        protected override void AssertImagePrecision(int bits)
-        {
-            if (bits > 16) throw new DicomCodecException(String.Format("Unable to create JPEG Process 14 codec for bits stored == {0}", bits));
-        }
-
-        #endregion
-    }
-
-    [DicomCodec]
-    public class DcmJpegLossless14SV1Codec : DcmJpegCodec
-    {
-        #region CONSTRUCTORS
-
-        public DcmJpegLossless14SV1Codec()
-            : base(DicomTransferSyntax.JPEGProcess14SV1)
-        {
-        }
-
-        #endregion
-
-        #region Implementation of DcmJpegCodec
-
-        protected override void AssertImagePrecision(int bits)
-        {
-            if (bits > 16) throw new DicomCodecException(String.Format("Unable to create JPEG Process 14 [SV1] codec for bits stored == {0}", bits));
         }
 
         #endregion
