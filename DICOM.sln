@@ -46,6 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.rdoc = README.rdoc
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dcm2txt", "dcm2txt\dcm2txt.csproj", "{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -197,6 +199,16 @@ Global
 		{8AFD52B6-B4DF-40EB-878E-937481EB9E44}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8AFD52B6-B4DF-40EB-878E-937481EB9E44}.Release|x86.ActiveCfg = Release|x86
 		{8AFD52B6-B4DF-40EB-878E-937481EB9E44}.Release|x86.Build.0 = Release|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Debug|x86.ActiveCfg = Debug|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Debug|x86.Build.0 = Debug|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Release|Any CPU.ActiveCfg = Release|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Release|Mixed Platforms.Build.0 = Release|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Release|x86.ActiveCfg = Release|x86
+		{8CB0BE5B-61EC-4B3C-BDCC-37CF1E755DDA}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

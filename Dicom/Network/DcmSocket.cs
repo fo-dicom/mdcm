@@ -26,7 +26,6 @@ using System.Net;
 using System.Net.Sockets;
 #if SILVERLIGHT
 using System.Threading;
-using System.Windows;
 #endif
 
 namespace Dicom.Network {
