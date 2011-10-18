@@ -285,6 +285,18 @@
     <Compile Include="..\Dicom\Network\Client\DcmClientBase.cs">
       <Link>Network\Client\DcmClientBase.cs</Link>
     </Compile>
+    <Compile Include="..\Dicom\Network\Client\Print\DcmFilmBox.cs">
+      <Link>Network\Client\Print\DcmFilmBox.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Client\Print\DcmFilmSession.cs">
+      <Link>Network\Client\Print\DcmFilmSession.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Client\Print\DcmImageBox.cs">
+      <Link>Network\Client\Print\DcmImageBox.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\Network\Client\Print\PrintClient.cs">
+      <Link>Network\Client\Print\PrintClient.cs</Link>
+    </Compile>
     <Compile Include="..\Dicom\Network\ConnectionStats.cs">
       <Link>Network\ConnectionStats.cs</Link>
     </Compile>

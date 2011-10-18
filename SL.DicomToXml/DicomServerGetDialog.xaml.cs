@@ -105,23 +105,34 @@ namespace SL.DicomToXml
 
                 if (selImage != null)
                 {
-                    var moveImage = new CMoveClient
+                    var cGetImage = new CGetClient
                     {
                         CallingAE = CallingApplicationEntityTitle,
                         CalledAE = CalledApplicationEntityTitle,
-                        DestinationAE = CallingApplicationEntityTitle
                     };
-                    moveImage.AddQuery(new CMoveQuery(selImage.StudyInstanceUid, selImage.SeriesInstanceUid,
+                    cGetImage.OnCStoreRequest +=
+                        delegate(byte presentationId, ushort messageId, DicomUID affectedInstance, DcmPriority priority,
+                                 string moveAe, ushort moveMessageId, DcmDataset dataset, string fileName)
+                            {
+                                if (dataset != null)
+                                {
+                                    dataset.PreloadDeferredBuffers();
+                                    _selectedDataset = dataset;
+                                }
+                                return new DcmStatus("0000", DcmState.Success, "Success");
+
+                            };
+                    cGetImage.AddQuery(new CGetQuery(selImage.StudyInstanceUid, selImage.SeriesInstanceUid,
                                                       selImage.SopInstanceUid));
 
-                    moveImage.Connect(DicomHost, ServerPort, DcmSocketType.TCP);
-                    if (moveImage.Wait())
+                    cGetImage.Connect(DicomHost, ServerPort, DcmSocketType.TCP);
+                    if (cGetImage.Wait())
                     {
                         success = true;
                     }
                     else
                     {
-                        message = moveImage.ErrorMessage;
+                        message = cGetImage.ErrorMessage;
                     }
                 }
             }
@@ -132,7 +143,7 @@ namespace SL.DicomToXml
 
             if (!success)
             {
-                MessageBox.Show(message, "C-MOVE error", MessageBoxButton.OK);
+                MessageBox.Show(message, "C-GET error", MessageBoxButton.OK);
             }
 
             return _selectedDataset;
@@ -196,43 +207,8 @@ namespace SL.DicomToXml
 
             if (!success)
             {
-                MessageBox.Show(message, "C-MOVE error", MessageBoxButton.OK);
+                MessageBox.Show(message, "C-FIND error", MessageBoxButton.OK);
             }
-        }
-
-        private void ChildWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            _selectedDataset = null;
-
-            _storeScp = new DcmServer<CStoreService>();
-            _storeScp.AddPort(ServerPort, DcmSocketType.TCP);
-
-            _storeScp.OnDicomClientCreated +=
-                delegate(DcmServer<CStoreService> server, CStoreService client, DcmSocketType socketType)
-                {
-                    client.OnCStoreRequest +=
-                        delegate(CStoreService client1, byte presentationId, ushort messageId,
-                                 DicomUID affectedInstance, DcmPriority priority, string moveAe,
-                                 ushort moveMessageId, DcmDataset dataset, string fileName)
-                        {
-                            if (dataset != null)
-                            {
-                                dataset.PreloadDeferredBuffers();
-                                _selectedDataset = dataset;
-                            }
-                            return new DcmStatus("0000", DcmState.Success, "Success");
-                        };
-
-                };
-            _storeScp.Start();
- 
-            GetStudies();
-        }
-
-        private void ChildWindow_Unloaded(object sender, RoutedEventArgs e)
-        {
-            if (_storeScp != null) _storeScp.Stop();
-            _storeScp = null;
         }
 
         #endregion

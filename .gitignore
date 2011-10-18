@@ -16,3 +16,6 @@ TestResult.xml
 *.dotCover
 *.pidb
 *.userprefs
+
+/desktop.ini
+/git.ico

@@ -1,6 +1,6 @@
 = mDCM - A DICOM library in C#
 
-Copyright (c) 2006-2010 Colby Dillion, SL.* and WPF.* projects (c) 2011 Anders Gustafsson, Cureos AB, CGetClient and CFindSeries additions (c) 2011 Pantelis Georgiadis, Mobile Solutions  
+Copyright (c) 2006-2010 Colby Dillion, SL.* and WPF.* projects (c) 2011 Anders Gustafsson, Cureos AB, Print SCU, CGetClient and CFindSeries additions (c) 2011 Pantelis Georgiadis, Mobile Solutions  
 
 Licensed and distributable under the terms of the LGPL 2.1 license: http://opensource.org/licenses/lgpl-2.1.php
 
