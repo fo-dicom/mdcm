@@ -92,11 +92,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
-      <HintPath>..\..\3rd Party\NLog.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\CharLS\colortransform.h" />
     <ClInclude Include="..\CharLS\config.h" />
     <ClInclude Include="..\CharLS\context.h" />
@@ -230,6 +225,11 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
+      <HintPath>..\..\3rd Party\NLog.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

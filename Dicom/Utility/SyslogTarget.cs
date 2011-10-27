@@ -120,7 +120,7 @@ namespace Dicom.Utility {
 			else
 				time = logEvent.TimeStamp.ToString("MMM dd HH:mm:ss");
 
-			string message = String.Format("<{0}>{1} {2} {3}", priority, time, _identity, CompiledLayout.GetFormattedMessage(logEvent));
+			string message = String.Format("<{0}>{1} {2} {3}", priority, time, _identity, Layout.Render(logEvent));
 			byte[] buffer = Encoding.ASCII.GetBytes(message);
 
 			try {

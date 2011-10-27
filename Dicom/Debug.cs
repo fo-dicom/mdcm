@@ -20,18 +20,13 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-
-using Dicom.Data;
 using Dicom.Utility;
 
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using NLog.Win32.Targets;
 
 namespace Dicom
 {
