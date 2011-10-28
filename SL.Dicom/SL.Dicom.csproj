@@ -73,6 +73,9 @@
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft SDKs\Silverlight\v5.0\Libraries\Client\System.Xml.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="WriteableBitmapEx">
+      <HintPath>..\3rd Party\SL\WriteableBitmapEx.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Dicom.Linq\Data\XDicom.cs">
@@ -399,9 +402,6 @@
     <Compile Include="SL\SortedList.cs" />
     <Compile Include="SL\StateObject.cs" />
     <Compile Include="SL\TimerIntervals.cs" />
-    <Compile Include="SL\WriteableBitmapBaseExtensions.cs" />
-    <Compile Include="SL\WriteableBitmapBlitExtensions.cs" />
-    <Compile Include="SL\WriteableBitmapTransformationExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Dicom\dicom.dic">
