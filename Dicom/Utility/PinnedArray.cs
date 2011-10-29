@@ -26,10 +26,12 @@ namespace Dicom.Utility {
 	public class PinnedArray<T> : IDisposable {
 		#region Private Members
 		private T[] _data;
-		private int _size;
 		private int _count;
+#if !SILVERLIGHT
+		private int _size;
 		private GCHandle _handle;
 		private IntPtr _pointer;
+#endif
 		#endregion
 
 		#region Public Properties
@@ -41,6 +43,7 @@ namespace Dicom.Utility {
 			get { return _count; }
 		}
 
+#if !SILVERLIGHT
 		public int ByteSize {
 			get { return _size; }
 		}
@@ -48,7 +51,7 @@ namespace Dicom.Utility {
 		public IntPtr Pointer {
 			get { return _pointer; }
 		}
-
+#endif
 		public T this[int index] {
 			get { return _data[index]; }
 			set { _data[index] = value; }
@@ -58,19 +61,23 @@ namespace Dicom.Utility {
 		#region Public Constructor
 		public PinnedArray(int count) {
 			_count = count;
-			_size = Marshal.SizeOf(typeof(T)) * _count;
 			_data = new T[_count];
+#if !SILVERLIGHT
+			_size = Marshal.SizeOf(typeof(T)) * _count;
 			_handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
 			_pointer = _handle.AddrOfPinnedObject();
+#endif
 		}
 
 		public PinnedArray(T[] data) {
 			_count = data.Length;
-			_size = Marshal.SizeOf(typeof(T)) * _count;
 			_data = data;
+#if !SILVERLIGHT
+			_size = Marshal.SizeOf(typeof(T)) * _count;
 			_handle = GCHandle.Alloc(_data, GCHandleType.Pinned);
 			_pointer = _handle.AddrOfPinnedObject();
-		}
+#endif
+        }
 
 		~PinnedArray() {
 			Dispose(false);
@@ -86,11 +93,14 @@ namespace Dicom.Utility {
 
 		#region Private Members
 		private void Dispose(bool disposing) {
-			if (_data != null) {
+            if (_data != null)
+            {
+#if !SILVERLIGHT
 				_handle.Free();
 				_pointer = IntPtr.Zero;
-				_data = null;
-			}
+#endif
+                _data = null;
+            }
 		}
 		#endregion
 	}

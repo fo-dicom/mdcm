@@ -490,7 +490,7 @@ namespace Dicom.Forms {
 					DicomFileFormat ff = new DicomFileFormat();
 					ff.Load(_files[_selected], DicomReadOptions.Default);
 					if (tsForm.SelectedTransferSyntax != null)
-						ff.ChangeTransferSytnax(tsForm.SelectedTransferSyntax, null);
+						ff.ChangeTransferSyntax(tsForm.SelectedTransferSyntax, null);
 					ff.Save(sfd.FileName, DicomWriteOptions.Default);
 				}
 			}
