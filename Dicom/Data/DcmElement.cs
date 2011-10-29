@@ -1588,6 +1588,13 @@ namespace Dicom.Data {
 		public void SetTS(DicomTransferSyntax ts) {
 			SetUID(ts.UID);
 		}
+
+		public override void SetValueObject(object val) {
+			if (val is DicomUID)
+				SetUID(val as DicomUID);
+			else
+				base.SetValueObject(val);
+		}
 		#endregion
 	}
 
