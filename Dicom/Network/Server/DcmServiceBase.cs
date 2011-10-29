@@ -20,12 +20,7 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.Sockets;
 using System.Threading;
-
-using NLog;
 
 namespace Dicom.Network.Server {
 	/// <summary>

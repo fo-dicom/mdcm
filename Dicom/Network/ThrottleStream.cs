@@ -185,10 +185,14 @@ namespace Dicom.Network {
 			}
 
 			if (maximumBytesPerSecond < 0) {
+#if SILVERLIGHT
+                throw new ArgumentOutOfRangeException("maximumBytesPerSecond",
+                    "The maximum number of bytes per second can't be negative.");
+#else
 				throw new ArgumentOutOfRangeException("maximumBytesPerSecond",
 					maximumBytesPerSecond, "The maximum number of bytes per second can't be negatie.");
+#endif
 			}
-
 			_baseStream = baseStream;
 			_maximumBytesPerSecond = maximumBytesPerSecond;
 			_bufferSize = int.MaxValue;

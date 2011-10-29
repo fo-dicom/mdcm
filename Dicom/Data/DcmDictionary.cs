@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -101,8 +102,8 @@ namespace Dicom.Data {
 
 			DisplayTag = group + "," + element;
 			DisplayTag = DisplayTag.ToUpper();
-			Group = ushort.Parse(group.Replace('x', '0'), System.Globalization.NumberStyles.HexNumber);
-			Element = ushort.Parse(element.Replace('x', '0'), System.Globalization.NumberStyles.HexNumber);
+			Group = ushort.Parse(group.Replace('x', '0'), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+			Element = ushort.Parse(element.Replace('x', '0'), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 			Tag = (uint)Group << 16 | (uint)Element;
 
 			StringBuilder msb = new StringBuilder();
@@ -113,7 +114,7 @@ namespace Dicom.Data {
 				.Replace('9', 'F').Replace('a', 'F').Replace('b', 'F')
 				.Replace('c', 'F').Replace('d', 'F').Replace('e', 'F')
 				.Replace('f', 'F').Replace('x', '0');
-			Mask = uint.Parse(msb.ToString(), System.Globalization.NumberStyles.HexNumber);
+			Mask = uint.Parse(msb.ToString(), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
 			Name = name;
 			PrivateCreator = privcreator.Trim();
@@ -129,17 +130,17 @@ namespace Dicom.Data {
 				MultipleVM = 1;
 				if (vm.Contains("-")) {
 					string[] parts = vm.Split('-');
-					MinimumVM = uint.Parse(parts[0]);
+					MinimumVM = uint.Parse(parts[0], CultureInfo.InvariantCulture);
 					if (parts[1].Contains("n")) {
 						MaximumVM = 0xffffffff;
 						if (parts[1] != "n") {
-							MultipleVM = uint.Parse(parts[1].Replace("n", ""));
+						  MultipleVM = uint.Parse(parts[1].Replace("n", ""), CultureInfo.InvariantCulture);
 						}
 					} else {
-						MaximumVM = uint.Parse(parts[1]);
+						MaximumVM = uint.Parse(parts[1], CultureInfo.InvariantCulture);
 					}
 				} else {
-					MinimumVM = MaximumVM = uint.Parse(vm);
+					MinimumVM = MaximumVM = uint.Parse(vm, CultureInfo.InvariantCulture);
 				}
 			}
 
@@ -3026,8 +3027,12 @@ namespace Dicom.Data {
 		/// <param name="filename"></param>
 		public static void ImportDictionary(string filename) {
 			lock (Lock) {
+#if SILVERLIGHT
+			    IEnumerable<string> lines = File.ReadLines(filename);
+#else
 				string[] lines = File.ReadAllLines(filename);
-				foreach (string ln in lines) {
+#endif
+                            foreach (string ln in lines) {
 					try {
 						string line = ln.Trim();
 						if (line == String.Empty || line.StartsWith("#"))
@@ -3076,8 +3081,13 @@ namespace Dicom.Data {
 		/// <param name="filename"></param>
 		public static void ImportDcmtkPrivateDictionary(string filename) {
 			lock (Lock) {
+#if SILVERLIGHT
+                IEnumerable<string> lines = File.ReadLines(filename);
+#else
 				string[] lines = File.ReadAllLines(filename);
-				foreach (string ln in lines) {
+#endif
+                foreach (string ln in lines)
+                {
 					try {
 						string line = ln.Trim();
 						if (line == String.Empty || line.StartsWith("#"))

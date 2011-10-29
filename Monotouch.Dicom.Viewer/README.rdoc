@@ -1,0 +1,4 @@
+= Monotouch.Dicom.Viewer
+
+* References Monotouch.Dialog https://github.com/migueldeicaza/MonoTouch.Dialog
+* Copied MainWindow.xib from Monotouch.Dialog/Sample project (changed namespace in designer class)

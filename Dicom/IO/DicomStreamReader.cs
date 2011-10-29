@@ -174,9 +174,13 @@ namespace Dicom.IO {
 		#endregion
 
 		private ByteBuffer CurrentBuffer(DicomReadOptions options) {
+#if SILVERLIGHT
+            ByteBuffer bb = new ByteBuffer(_endian);
+            bb.CopyFrom(_stream, (int)_len);
+#else
 			ByteBuffer bb = null;
 
-			if (_isFile) {
+            if (_isFile) {
 				bool delayLoad = false;
 				if (_len >= _largeElementSize && _vr != DicomVR.SQ) {
 					if (Flags.IsSet(options, DicomReadOptions.DeferLoadingLargeElements))
@@ -195,11 +199,11 @@ namespace Dicom.IO {
 				}
 			}
 
-			if (bb == null) {
+            if (bb == null) {
 				bb = new ByteBuffer(_endian);
 				bb.CopyFrom(_stream, (int)_len);
 			}
-
+#endif
 			if (_vr.IsEncodedString)
 				bb.Encoding = _encoding;
 
