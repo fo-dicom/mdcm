@@ -19,7 +19,12 @@
 // Author:
 //    Colby Dillion (colby.dillion@gmail.com)
 
+using System;
+using System.Drawing;
+
+using Dicom;
 using Dicom.Data;
+
 using Dicom.Imaging.LUT;
 
 namespace Dicom.Imaging.Process {

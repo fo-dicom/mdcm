@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{240BAD3B-5A3F-4C2C-9E3B-9FC46BAAB45A}</ProjectGuid>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>DicomCodec64</RootNamespace>
   </PropertyGroup>
@@ -55,7 +55,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;CHARLS_STATIC;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -69,7 +68,6 @@
       <PreprocessorDefinitions>WIN32;CHARLS_STATIC;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Full</Optimization>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -78,8 +76,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Wpf.Dicom\Wpf.Dicom.csproj">
-      <Project>{96490b28-7bec-4c75-b31e-0d5f10c2b79d}</Project>
+    <ProjectReference Include="..\..\Dicom\Dicom.csproj">
+      <Project>{1efc91c4-eef8-4ae4-b512-24c00ca46d59}</Project>
     </ProjectReference>
     <ProjectReference Include="libijg12.x64.vcxproj">
       <Project>{1b3557d4-1146-428a-aec9-12cadf994527}</Project>
@@ -90,6 +88,11 @@
     <ProjectReference Include="libijg8.x64.vcxproj">
       <Project>{808528f3-15dc-4cc6-a15a-0f91cbdb54e6}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
+      <HintPath>..\..\3rd Party\NLog.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\CharLS\colortransform.h" />
@@ -225,11 +228,6 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
-      <HintPath>..\..\3rd Party\NLog.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

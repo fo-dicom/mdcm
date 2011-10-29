@@ -27,12 +27,8 @@ using System.Text;
 
 namespace Dicom.Data {
 	/// <summary>DICOM Tag</summary>
-#if SILVERLIGHT
-    public sealed class DicomTag {
-#else
 	[Serializable]
 	public sealed class DicomTag : ISerializable {
-#endif
 		#region Private Members
 		private ushort _g;
 		private ushort _e;
@@ -62,18 +58,17 @@ namespace Dicom.Data {
 			_c = (uint)_g << 16 | (uint)_e;
 			_p = creator ?? String.Empty;
 		}
-#if !SILVERLIGHT
+
 		private DicomTag(SerializationInfo info, StreamingContext context) {
 			_g = info.GetUInt16("Group");
 			_e = info.GetUInt16("Element");
 			_c = (uint)_g << 16 | (uint)_e;
 			_p = String.Empty;
 		}
-#endif
-        #endregion
+		#endregion
 
-        #region Public Properties
-        public ushort Group {
+		#region Public Properties
+		public ushort Group {
 			get { return _g; }
 		}
 		public ushort Element {
@@ -209,8 +204,8 @@ namespace Dicom.Data {
 					parts[1].Length != 4)
 					return null;
 
-				ushort g = ushort.Parse(parts[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
-				ushort e = ushort.Parse(parts[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+				ushort g = ushort.Parse(parts[0], NumberStyles.HexNumber);
+				ushort e = ushort.Parse(parts[1], NumberStyles.HexNumber);
 
 				return new DicomTag(g, e);
 			}
@@ -218,13 +213,12 @@ namespace Dicom.Data {
 				return null;
 			}
 		}
-#if !SILVERLIGHT
+
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context) {
 			info.AddValue("Group", Group);
 			info.AddValue("Element", Element);
 		}
-#endif
-    }
+	}
 
 	/// <summary>Compares two DicomTag objects for sorting.</summary>
 	public class DicomTagComparer : IComparer<DicomTag> {
@@ -15295,7 +15289,7 @@ namespace Dicom.Data {
 
 			StringBuilder sb = new StringBuilder(mask);
 			sb.Replace('x', '0');
-			_c = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+			_c = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber);
 
 			sb = new StringBuilder(mask);
 			sb.Replace('0', 'F').Replace('1', 'F').Replace('2', 'F')
@@ -15304,7 +15298,7 @@ namespace Dicom.Data {
 				.Replace('9', 'F').Replace('a', 'F').Replace('b', 'F')
 				.Replace('c', 'F').Replace('d', 'F').Replace('e', 'F')
 				.Replace('f', 'F').Replace('x', '0');
-			_m = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+			_m = uint.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber);
 		}
 		#endregion
 

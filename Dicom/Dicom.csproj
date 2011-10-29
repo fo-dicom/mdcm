@@ -23,7 +23,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -41,8 +41,6 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Dicom.snk</AssemblyOriginatorKeyFile>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -165,7 +163,6 @@
     <Compile Include="Network\PDataTFStream.cs" />
     <Compile Include="Network\PDU.cs" />
     <Compile Include="Utility\ActiveSchedule.cs" />
-    <Compile Include="Utility\AssemblyDetails.cs" />
     <Compile Include="Utility\Cache.cs" />
     <Compile Include="Utility\PreloadQueue.cs" />
     <Compile Include="Utility\LogWriter.cs" />

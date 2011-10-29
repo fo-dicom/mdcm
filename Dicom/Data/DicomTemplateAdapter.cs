@@ -75,12 +75,10 @@ namespace Dicom.Data {
 						return String.Empty;
 					if (elem != null) {
 						object o = elem.GetValueObject();
-#if !SILVERLIGHT
 						if (_xmlEscape && o is string)
 							return SecurityElement.Escape((string)o);
 						else
-#endif
-                            return o;
+							return o;
 					}
 				}
 

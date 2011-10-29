@@ -24,9 +24,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-#if SILVERLIGHT
-using System.Threading;
-#endif
 
 namespace Dicom.Network {
 	//default ports:
@@ -54,11 +51,7 @@ namespace Dicom.Network {
 		private static int _connections = 0;
 		private static ConnectionStats _globalStats = new ConnectionStats();
 
-		public static DcmSocket Create(DcmSocketType type)
-		{
-#if SILVERLIGHT
-			return type == DcmSocketType.TCP ? new DcmTcpSocket() : null;
-#else
+		public static DcmSocket Create(DcmSocketType type) {
 			if (type == DcmSocketType.TLS)
 				return new DcmTlsSocket();
 			else if (type == DcmSocketType.TCP)
@@ -67,7 +60,6 @@ namespace Dicom.Network {
 				return null;
 			else
 				return null;
-#endif
 		}
 
 		protected static void RegisterSocket(DcmSocket socket) {
@@ -187,9 +179,6 @@ namespace Dicom.Network {
 		}
 
 		public void Connect(string host, int port) {
-#if SILVERLIGHT
-			Connect(new DnsEndPoint(host, port));
-#else
 			IPAddress[] addresses = Dns.GetHostAddresses(host);
 			for (int i = 0; i < addresses.Length; i++) {
 				if (addresses[i].AddressFamily == AddressFamily.InterNetwork) {
@@ -198,7 +187,6 @@ namespace Dicom.Network {
 				}
 			}
 			throw new Exception("Unable to resolve host!");
-#endif
 		}
 		#endregion
 
@@ -216,191 +204,6 @@ namespace Dicom.Network {
 		#endregion
 	}
 
-#if SILVERLIGHT
-	public class DcmTcpSocket : DcmSocket 
-	{
-		#region PRIVATE MEMBERS
-
-		private Socket _socket;
-		private EndPoint _remoteEP;
-		private EndPoint _localEP;
-	    private bool _incoming;
-
-		private static readonly ManualResetEvent _clientDone = new ManualResetEvent(false);
-
-		#endregion
-
-		#region CONSTRUCTORS
-
-		static DcmTcpSocket()
-		{
-			AccessPolicyProtocol = SocketClientAccessPolicyProtocol.Tcp;
-		}
-
-		public DcmTcpSocket()
-		{
-			_socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
-		    _incoming = false;
-		}
-
-		#endregion
-
-		#region AUTO-IMPLEMENTED PROPERTIES
-
-		public static SocketClientAccessPolicyProtocol AccessPolicyProtocol { get; set; }
-
-		#endregion
-
-		#region Overrides of DcmSocket
-
-		public override DcmSocketType Type
-		{
-			get { return DcmSocketType.TCP; }
-		}
-
-		public override bool Blocking
-		{
-			get;
-			set;
-		}
-
-		public override bool NoDelay
-		{
-			get { return _socket.NoDelay; }
-			set { _socket.NoDelay = value; }
-		}
-
-		public override bool Connected
-		{
-			get { return _socket.Connected; }
-		}
-
-		public override int ConnectTimeout
-		{
-			get;
-			set;
-		}
-
-		public override int SendTimeout
-		{
-			get;
-			set;
-		}
-
-		public override int ReceiveTimeout
-		{
-			get;
-			set;
-		}
-
-		public override EndPoint LocalEndPoint
-		{
-			get { return _localEP; }
-		}
-
-		public override EndPoint RemoteEndPoint
-		{
-			get { return _remoteEP; }
-		}
-
-		public override int Available
-		{
-			get { return Connected ? 1 : 0; }
-		}
-
-		public override DcmSocket Accept()
-		{
-			return this;
-		}
-
-		public override void Bind(EndPoint localEP)
-		{
-			_localEP = localEP;
-		}
-
-		public override void Close()
-		{
-			if (_socket != null)
-			{
-				UnregisterSocket(this);
-				_socket.Close();
-				_socket = null;
-			}
-		}
-
-		public override void Connect(EndPoint remoteEP)
-		{
-			SocketAsyncEventArgs args = new SocketAsyncEventArgs
-											{
-												UserToken = _socket,
-												RemoteEndPoint = remoteEP,
-												SocketClientAccessPolicyProtocol = AccessPolicyProtocol
-											};
-			args.Completed += OnSocketAsyncEventCompleted;
-
-			lock (_clientDone)
-			{
-				_clientDone.Reset();
-				if (_socket.ConnectAsync(args)) _clientDone.WaitOne();
-			}
-
-			_remoteEP = remoteEP;
-			RegisterSocket(this);
-		}
-
-		public override void Reconnect()
-		{
-			Close();
-			Connect(_remoteEP);
-		}
-
-        public override void Listen(int backlog)
-        {
-        }
-
-	    public override bool Poll(int microSeconds, SelectMode mode)
-		{
-			return true;
-		}
-
-		public override Stream GetInternalStream()
-		{
-			return new NetworkStream(_socket);
-		}
-
-		protected override bool IsIncomingConnection
-		{
-			get { return _incoming; }
-		}
-
-		#endregion
-
-		private static void OnSocketAsyncEventCompleted(object sender, SocketAsyncEventArgs e)
-		{
-			switch (e.LastOperation)
-			{
-				case SocketAsyncOperation.None:
-					break;
-				case SocketAsyncOperation.Connect:
-					ProcessConnect(e);
-					break;
-				case SocketAsyncOperation.Receive:
-					break;
-				case SocketAsyncOperation.Send:
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
-			}
-			if (e.SocketError != SocketError.Success)
-				throw new SocketException((int)e.SocketError);
-		}
-
-		private static void ProcessConnect(SocketAsyncEventArgs e)
-		{
-				_clientDone.Set();
-        }
-	}
-#else
 	#region TCP
 	public class DcmTcpSocket : DcmSocket {
 		private EndPoint _remoteEP;
@@ -661,5 +464,4 @@ namespace Dicom.Network {
 		}
 	}
 	#endregion
-#endif
 }

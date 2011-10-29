@@ -15,7 +15,6 @@ using Dicom.Data;
 using Dicom.Forms;
 
 using Aga.Controls.Tree;
-using DicomDump;
 
 namespace Dicom.Forms {
 	public partial class DicomDumpForm : Form {
@@ -490,7 +489,7 @@ namespace Dicom.Forms {
 					DicomFileFormat ff = new DicomFileFormat();
 					ff.Load(_files[_selected], DicomReadOptions.Default);
 					if (tsForm.SelectedTransferSyntax != null)
-						ff.ChangeTransferSyntax(tsForm.SelectedTransferSyntax, null);
+						ff.ChangeTransferSytnax(tsForm.SelectedTransferSyntax, null);
 					ff.Save(sfd.FileName, DicomWriteOptions.Default);
 				}
 			}

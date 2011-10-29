@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{55C90D88-88E8-41B5-B5E7-C3B7AF1E1ECD}</ProjectGuid>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>DicomCodec</RootNamespace>
   </PropertyGroup>
@@ -53,7 +53,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;CHARLS_STATIC;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -67,7 +66,6 @@
       <PreprocessorDefinitions>WIN32;CHARLS_STATIC;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Full</Optimization>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -113,7 +111,6 @@
     <ClInclude Include="..\OpenJPEG\mct.h" />
     <ClInclude Include="..\OpenJPEG\mqc.h" />
     <ClInclude Include="..\OpenJPEG\openjpeg.h" />
-    <ClInclude Include="..\OpenJPEG\opj_config.h" />
     <ClInclude Include="..\OpenJPEG\opj_includes.h" />
     <ClInclude Include="..\OpenJPEG\opj_malloc.h" />
     <ClInclude Include="..\OpenJPEG\pi.h" />
@@ -212,8 +209,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Wpf.Dicom\Wpf.Dicom.csproj">
-      <Project>{96490b28-7bec-4c75-b31e-0d5f10c2b79d}</Project>
+    <ProjectReference Include="..\..\Dicom\Dicom.csproj">
+      <Project>{1efc91c4-eef8-4ae4-b512-24c00ca46d59}</Project>
     </ProjectReference>
     <ProjectReference Include="libijg12.x86.vcxproj">
       <Project>{8c2a5942-be6b-4667-9849-a402cd71cd77}</Project>
@@ -226,7 +223,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="NLog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
+    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
       <HintPath>..\..\3rd Party\NLog.dll</HintPath>
     </Reference>
   </ItemGroup>

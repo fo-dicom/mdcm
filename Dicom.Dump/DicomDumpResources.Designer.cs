@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DicomDump {
+namespace Dicom.Forms {
     using System;
     
     

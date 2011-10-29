@@ -27,10 +27,10 @@ using System.Threading;
 namespace Dicom.Utility {
 	public interface IPreloadable<Tstate> {
 		bool IsLoaded { get; }
-		void Load(Tstate state, bool useIsoStore = false);
+		void Load(Tstate state);
 	}
 
-	public class PreloadQueue<Titem, Tstate> : IEnumerable<Titem> where Titem : class, IPreloadable<Tstate> {
+	public class PreloadQueue<Titem, Tstate> : IEnumerable<Titem> where Titem : IPreloadable<Tstate> {
 		#region Private Members
 		private Queue<Titem> _queue;
 		private object _queueLock;

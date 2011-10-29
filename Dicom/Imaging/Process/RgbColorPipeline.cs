@@ -1,4 +1,7 @@
-﻿using Dicom.Imaging.LUT;
+﻿using System;
+using System.Drawing;
+
+using Dicom.Imaging.LUT;
 
 namespace Dicom.Imaging.Process {
 	public class RgbColorPipeline : IPipeline {
