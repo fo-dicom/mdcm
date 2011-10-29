@@ -31,7 +31,7 @@ namespace Dicom.Data {
     public sealed class DicomTag {
 #else
 	[Serializable]
-	public sealed class DicomTag : ISerializable {
+	public sealed class DicomTag : IEquatable<DicomTag>, ISerializable {
 #endif
 		#region Private Members
 		private ushort _g;
@@ -114,7 +114,7 @@ namespace Dicom.Data {
 				return true;
 			if ((object)t1 == null || (object)t2 == null)
 				return false;
-			return t1.Card == t2.Card;
+			return t1.Equals(t2);
 		}
 		public static bool operator !=(DicomTag t1, DicomTag t2) {
 			return !(t1 == t2);
@@ -157,10 +157,24 @@ namespace Dicom.Data {
 		}
 
 		public override bool Equals(object obj) {
-			if (obj is DicomTag) {
-				return ((DicomTag)obj).Card == Card;
-			}
+			if (obj is DicomTag)
+				return Equals(obj as DicomTag);
 			return false;
+		}
+
+		public bool Equals(DicomTag tag) {
+			if (IsPrivate || tag.IsPrivate) {
+				if (!IsPrivate || !tag.IsPrivate)
+					return false;
+				if (PrivateCreator != tag.PrivateCreator)
+					return false;
+				if (Group != tag.Group)
+					return false;
+				if ((Element & 0x00ff) != (tag.Element & 0x00ff))
+					return false;
+				return true;
+			}
+			return Card == tag.Card;
 		}
 
 		public override int GetHashCode() {
@@ -229,15 +243,18 @@ namespace Dicom.Data {
 	/// <summary>Compares two DicomTag objects for sorting.</summary>
 	public class DicomTagComparer : IComparer<DicomTag> {
 		public int Compare(DicomTag x, DicomTag y) {
-			return x.Card.CompareTo(y.Card);
+			if (x.Group != y.Group)
+				return x.Group.CompareTo(y.Group);
 
-			//if (x.Group != y.Group)
-			//	return x.Group.CompareTo(y.Group);
+			if (x.IsPrivate && y.IsPrivate) {
+				if (x.PrivateCreator != y.PrivateCreator)
+					return x.PrivateCreator.CompareTo(y.PrivateCreator);
+				if (x.PrivateGroup != y.PrivateGroup)
+					return x.PrivateGroup.CompareTo(y.PrivateGroup);
+				return (x.Element & 0x00ff).CompareTo(y.Element & 0x00ff);
+			}
 
-			//if (x.IsPrivate && y.IsPrivate)
-			//	return x.PrivateGroup.CompareTo(y.PrivateGroup);
-
-			//return x.Element.CompareTo(y.Element);
+			return x.Element.CompareTo(y.Element);
 		}
 	}
 
