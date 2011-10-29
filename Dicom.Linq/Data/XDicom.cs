@@ -131,7 +131,7 @@ namespace Dicom.Data {
 			foreach (XElement attr in parent.Elements("attr")) {
 				DicomTag tag = DicomTag.Parse(attr.Attribute("tag").Value);
 				DicomVR vr = DicomVR.Lookup(attr.Attribute("vr").Value);
-				int len = int.Parse(attr.Attribute("len").Value, CultureInfo.InvariantCulture);
+				int len = int.Parse(attr.Attribute("len").Value);
 
 				if (vr == DicomVR.SQ) {
 					DcmItemSequence seq = new DcmItemSequence(tag);
@@ -170,7 +170,7 @@ namespace Dicom.Data {
 
 			string[] strs = item.FirstText().Split('\\');
 			foreach (string s in strs) {
-				seq.OffsetTable.Add(uint.Parse(s, NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+				seq.OffsetTable.Add(uint.Parse(s, NumberStyles.HexNumber));
 			}
 		}
 
@@ -179,12 +179,12 @@ namespace Dicom.Data {
 			string[] strs = item.FirstText().Split('\\');
 			if (seq.VR == DicomVR.OW) {
 				foreach (string s in strs) {
-					bb.Writer.Write(ushort.Parse(s, NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+					bb.Writer.Write(ushort.Parse(s, NumberStyles.HexNumber));
 				}
 			}
 			else {
 				foreach (string s in strs) {
-					bb.Writer.Write(byte.Parse(s, NumberStyles.HexNumber, CultureInfo.InvariantCulture));
+					bb.Writer.Write(byte.Parse(s, NumberStyles.HexNumber));
 				}
 			}
 			seq.AddFragment(bb);

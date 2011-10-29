@@ -21,7 +21,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
 namespace Dicom.Network {
@@ -65,7 +64,7 @@ namespace Dicom.Network {
 		/// <param name="status">The status.</param>
 		/// <param name="desc">The desc.</param>
 		public DcmStatus(string code, DcmState status, string desc) {
-			Code = ushort.Parse(code.Replace('x', '0'), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+			Code = ushort.Parse(code.Replace('x', '0'), System.Globalization.NumberStyles.HexNumber);
 
 			StringBuilder msb = new StringBuilder();
 			msb.Append(code.ToLower());
@@ -75,7 +74,7 @@ namespace Dicom.Network {
 				.Replace('9', 'F').Replace('a', 'F').Replace('b', 'F')
 				.Replace('c', 'F').Replace('d', 'F').Replace('e', 'F')
 				.Replace('x', '0');
-			Mask = ushort.Parse(msb.ToString(), System.Globalization.NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+			Mask = ushort.Parse(msb.ToString(), System.Globalization.NumberStyles.HexNumber);
 
 			State = status;
 			Description = desc;

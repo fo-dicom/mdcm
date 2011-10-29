@@ -39,11 +39,7 @@ namespace Dicom.HL7 {
 		}
 
 		public bool Send(string message) {
-#if SILVERLIGHT
-            byte[] bytes = Encoding.UTF8.GetBytes(message);
-#else
 			byte[] bytes = Encoding.ASCII.GetBytes(message);
-#endif
 			_stream.Write(StartBlock, 0, StartBlock.Length);
 			_stream.Write(bytes, 0, bytes.Length);
 			_stream.Write(EndBlock, 0, EndBlock.Length);
@@ -79,11 +75,7 @@ namespace Dicom.HL7 {
 				_stream.Write(ACK, 0, ACK.Length);
 				_stream.Flush();
 			}
-#if SILVERLIGHT
-            return Encoding.UTF8.GetString(ms.ToArray(), 0, (int)ms.Length);
-#else
 			return Encoding.ASCII.GetString(ms.ToArray());
-#endif
 		}
 	}
 }

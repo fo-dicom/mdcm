@@ -22,7 +22,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.IsolatedStorage;
 using System.Threading;
 
 using Dicom;
@@ -57,51 +56,34 @@ namespace Dicom.Network.Client {
 		#endregion
 
 		#region Public Constructors
-		public CStoreRequestInfo(string fileName, bool useIsoStore = false) : this(fileName, null, useIsoStore) {
+		public CStoreRequestInfo(string fileName) : this(fileName, null) {
 		}
 
-		public CStoreRequestInfo(string fileName, object userModel, bool useIsoStore = false)
-		{
-			try
-			{
-				if (useIsoStore)
-				{
-					using (var store = IsolatedStorageFile.GetUserStoreForApplication())
-					{
-						if (!store.FileExists(fileName))
-							throw new FileNotFoundException(String.Format("Unable to load DICOM file {0}!", fileName));
-					}
-				}
-				else
-				{
-					if (!File.Exists(fileName))
-						throw new FileNotFoundException(String.Format("Unable to load DICOM file {0}!", fileName));
-				}
-
+		public CStoreRequestInfo(string fileName, object userModel) {
+			try {
 				_fileName = fileName;
+				if (!File.Exists(fileName))
+					throw new FileNotFoundException("Unable to load DICOM file!", fileName);
 
 				DicomTag stopTag = (userModel != null) ? DicomTags.PixelData : DcmFileMetaInfo.StopTag;
 				DicomFileFormat ff = new DicomFileFormat();
-				ff.Load(fileName, stopTag, DicomReadOptions.Default, useIsoStore);
+				ff.Load(fileName, stopTag, DicomReadOptions.Default);
 				_transferSyntax = ff.FileMetaInfo.TransferSyntax;
 				_originalTransferSyntax = _transferSyntax;
 				_sopClass = ff.FileMetaInfo.MediaStorageSOPClassUID;
 				_sopInst = ff.FileMetaInfo.MediaStorageSOPInstanceUID;
-				if (userModel != null)
-				{
+				if (userModel != null) {
 					ff.Dataset.LoadDicomFields(userModel);
 					_userState = userModel;
 				}
 				_status = DcmStatus.Pending;
 			}
-			catch (Exception e)
-			{
+			catch (Exception e) {
 				_status = DcmStatus.ProcessingFailure;
 				_exception = e;
 				throw;
 			}
 		}
-
 		#endregion
 
 		#region Public Properties
@@ -153,14 +135,11 @@ namespace Dicom.Network.Client {
 		#endregion
 
 		#region Public Methods
-
 		/// <summary>
 		/// Loads the DICOM file and changes the transfer syntax if needed. (Internal)
 		/// </summary>
 		/// <param name="client">C-Store Client</param>
-		/// <param name="useIsoStore">Load from isolated storage</param>
-		public void Load(CStoreClient client, bool useIsoStore = false)
-		{
+		public void Load(CStoreClient client) {
 			if (_loaded)
 				return;
 
@@ -179,7 +158,7 @@ namespace Dicom.Network.Client {
 
 				// Possible to stream from file?
 				if (!client.DisableFileStreaming && tx == TransferSyntax) {
-					using (FileStream fs = DicomFileFormat.GetDatasetStream(_fileName, useIsoStore)) {
+					using (FileStream fs = DicomFileFormat.GetDatasetStream(_fileName)) {
 						_datasetSize = Convert.ToUInt32(fs.Length - fs.Position);
 						fs.Close();
 					}
@@ -191,13 +170,13 @@ namespace Dicom.Network.Client {
 					codecParams = client.PreferredTransferSyntaxParams;
 
 				DicomFileFormat ff = new DicomFileFormat();
-				ff.Load(FileName, DicomReadOptions.DefaultWithoutDeferredLoading, useIsoStore);
+				ff.Load(FileName, DicomReadOptions.DefaultWithoutDeferredLoading);
 
 				if (_originalTransferSyntax != tx) {
 					if (_originalTransferSyntax.IsEncapsulated) {
 						// Dataset is compressed... decompress
 						try {
-							ff.ChangeTransferSyntax(DicomTransferSyntax.ExplicitVRLittleEndian, null);
+							ff.ChangeTransferSytnax(DicomTransferSyntax.ExplicitVRLittleEndian, null);
 						}
 						catch {
 							client.Log.Error("{0} -> Unable to change transfer syntax:\n\tclass: {1}\n\told: {2}\n\tnew: {3}\n\treason: {4}\n\tcodecs: {5} - {6}",
@@ -215,7 +194,7 @@ namespace Dicom.Network.Client {
 					if (tx.IsEncapsulated) {
 						// Dataset needs to be compressed
 						try {
-							ff.ChangeTransferSyntax(tx, codecParams);
+							ff.ChangeTransferSytnax(tx, codecParams);
 						}
 						catch {
 							client.Log.Error("{0} -> Unable to change transfer syntax:\n\tclass: {1}\n\told: {2}\n\tnew: {3}\n\treason: {4}\n\tcodecs: {5} - {6}",

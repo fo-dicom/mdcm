@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -120,7 +119,7 @@ namespace Dicom.Utility {
 			else
 				time = logEvent.TimeStamp.ToString("MMM dd HH:mm:ss");
 
-			string message = String.Format("<{0}>{1} {2} {3}", priority, time, _identity, Layout.Render(logEvent));
+			string message = String.Format("<{0}>{1} {2} {3}", priority, time, _identity, CompiledLayout.GetFormattedMessage(logEvent));
 			byte[] buffer = Encoding.ASCII.GetBytes(message);
 
 			try {
@@ -187,7 +186,7 @@ namespace Dicom.Utility {
 						SyslogLevel level = SyslogLevel.Information;
 
 						if (parts.Length == 2) {
-							int code = int.Parse(parts[0].TrimStart('<'), CultureInfo.InvariantCulture);
+							int code = int.Parse(parts[0].TrimStart('<'));
 							facility = (SyslogFacility)(code / 8);
 							level = (SyslogLevel)(code - ((int)facility * 8));
 							message = parts[1];

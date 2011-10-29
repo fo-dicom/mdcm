@@ -91,9 +91,6 @@ namespace Dicom.Codec {
 		}
 
 		public static void RegisterCodecs() {
-#if SILVERLIGHT
-            RegisterCodecs(null);
-#else
 			Assembly main = Assembly.GetEntryAssembly();
 			AssemblyName[] referenced = main.GetReferencedAssemblies();
 
@@ -103,11 +100,9 @@ namespace Dicom.Codec {
 				Assembly asm = Assembly.Load(an);
 				RegisterCodecs(asm);
 			}
-#endif
-        }
+		}
 
 		public static void RegisterExternalCodecs(string path, string pattern) {
-#if !SILVERLIGHT
 			DirectoryInfo dir = new DirectoryInfo(path);
 			FileInfo[] files = dir.GetFiles(pattern);
 			foreach (FileInfo file in files) {
@@ -125,13 +120,12 @@ namespace Dicom.Codec {
 					Debug.Log.Error("Unable to load codecs from file [{0}]: {1}", file.FullName, e.ToString());
 				}
 			}
-#endif
 		}
 
 		private static void RegisterCodecs(Assembly asm) {
 			if (_codecs == null)
 				_codecs = new Dictionary<DicomTransferSyntax, Type>();
-#if !SILVERLIGHT
+
 			bool x64 = (IntPtr.Size == 8);
 			string m = String.Empty;
 
@@ -153,8 +147,7 @@ namespace Dicom.Codec {
 					Debug.Log.Info("Codec: {0}", codec.GetName() + m);
 				}
 			}
-#endif
-        }
+		}
 	}
 	#endregion
 }

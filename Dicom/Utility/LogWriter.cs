@@ -47,11 +47,9 @@ namespace Dicom.Utility {
 			get { return Console.Out.Encoding; }
 		}
 
-#if !SILVERLIGHT
 		public static void RedirectConsole(Logger log) {
 			Console.SetOut(new LogWriter(LogLevel.Info, log));
 			Console.SetError(new LogWriter(LogLevel.Error, log));
 		}
-#endif
 	}
 }

@@ -28,13 +28,8 @@ using Dicom.Data;
 using Dicom.Utility;
 
 namespace Dicom.Network {
-#if SILVERLIGHT
-    public class DcmAssociateProfile
-    {
-#else
 	[Serializable]
 	public class DcmAssociateProfile : XmlSerializable<DcmAssociateProfile> {
-#endif
 		#region Private Members
 		private string _name;
 		private string _description;
@@ -203,12 +198,10 @@ namespace Dicom.Network {
 			Profiles = new List<DcmAssociateProfile>();
 		}
 
-#if !SILVERLIGHT
 		public static void AddProfile(string filename) {
 			DcmAssociateProfile profile = Load(filename);
 			AddProfile(profile);
 		}
-#endif
 
 		public static void AddProfile(DcmAssociateProfile profile) {
 			if (profile != null)

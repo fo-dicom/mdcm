@@ -11,11 +11,3 @@ ipch/
 Distribute/
 /_ReSharper.DICOM
 TestResult.xml
-*.vs10x
-*.docstates
-*.dotCover
-*.pidb
-*.userprefs
-
-/desktop.ini
-/git.ico

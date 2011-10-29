@@ -225,7 +225,7 @@ namespace Dicom.Utility {
 			}
 			return NormalizeTime(
 				DateTime.ParseExact(time, TimeFormats, 
-				CultureInfo.InvariantCulture, DateTimeStyles.NoCurrentDateDefault));
+				CultureInfo.CurrentCulture, DateTimeStyles.NoCurrentDateDefault));
 		}
 
 		public static DayOfWeekTimeRange[] Parse(string daysOfWeek, string timeRanges, bool active) {
