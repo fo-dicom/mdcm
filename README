@@ -1,9 +1,0 @@
-mDCM - A DICOM library in C#
-Copyright (c) 2006-2010 Colby Dillion
-
-Licensed and distributable under the terms of the LGPL 2.1 license: http://opensource.org/licenses/lgpl-2.1.php
-
-
-For documentation and help, see the Wiki at https://github.com/rcd/mdcm/wiki or visit the project's Google Group page at http://groups.google.com/group/mdcm
-
-Forks, pull requests, and contributor requests for improvements, bug fixes, and documentation are welcomed and encouraged! 

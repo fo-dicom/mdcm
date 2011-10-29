@@ -1,0 +1,3 @@
+= Monotouch mdcm
+
+* Excluded the following classes: Data/DicomTransform, Utility/SyslogTarget.

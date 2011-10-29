@@ -26,13 +26,10 @@
 //     http://aurora.regenstrief.org/xhl7/
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using System.Xml.XPath;
-
 using Dicom.Utility;
 
 namespace Dicom.HL7 {
