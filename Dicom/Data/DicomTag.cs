@@ -28,7 +28,7 @@ using System.Text;
 namespace Dicom.Data {
 	/// <summary>DICOM Tag</summary>
 #if SILVERLIGHT
-    public sealed class DicomTag {
+    public sealed class DicomTag : IEquatable<DicomTag> {
 #else
 	[Serializable]
 	public sealed class DicomTag : IEquatable<DicomTag>, ISerializable {

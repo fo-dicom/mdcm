@@ -129,7 +129,7 @@ namespace SL.DicomToXml
             try
             {
                 Debug.Log.Info("Image transfer syntax: {0}", iDataset.InternalTransferSyntax);
-                return new DicomImage(iDataset).Render();
+                return new DicomImage(iDataset).RenderImageSource();
             }
             catch (Exception e)
             {

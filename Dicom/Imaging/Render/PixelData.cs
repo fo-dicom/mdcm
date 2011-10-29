@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 
 using Dicom;
 using Dicom.Data;
@@ -99,14 +100,14 @@ namespace Dicom.Imaging.Render {
 
 		public void Render(ILUT lut, int[] output) {
 			if (lut == null) {
-				MultiThread.For(0, Height, delegate(int y) {
+				MultiThread.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width; i < e; i++) {
 						output[i] = _data[i];
 					}
 				});
 			}
 			else {
-				MultiThread.For(0, Height, delegate(int y) {
+				MultiThread.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width; i < e; i++) {
 						output[i] = lut[_data[i]];
 					}
@@ -177,14 +178,14 @@ namespace Dicom.Imaging.Render {
 
 		public void Render(ILUT lut, int[] output) {
 			if (lut == null) {
-				MultiThread.For(0, Height, delegate(int y) {
+				MultiThread.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width; i < e; i++) {
 						output[i] = _data[i];
 					}
 				});
 			}
 			else {
-				MultiThread.For(0, Height, delegate(int y) {
+				MultiThread.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width; i < e; i++) {
 						output[i] = lut[_data[i]];
 					}
@@ -233,14 +234,14 @@ namespace Dicom.Imaging.Render {
 
 		public void Render(ILUT lut, int[] output) {
 			if (lut == null) {
-				MultiThread.For(0, Height, delegate(int y) {
+				MultiThread.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width; i < e; i++) {
 						output[i] = _data[i];
 					}
 				});
 			}
 			else {
-				MultiThread.For(0, Height, delegate(int y) {
+				MultiThread.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width; i < e; i++) {
 						output[i] = lut[_data[i]];
 					}
@@ -289,14 +290,14 @@ namespace Dicom.Imaging.Render {
 
 		public void Render(ILUT lut, int[] output) {
 			if (lut == null) {
-				MultiThread.For(0, Height, delegate(int y) {
+				MultiThread.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++) {
 						output[i] = (_data[p++] << 16) | (_data[p++] << 8) | _data[p++];
 					}
 				});
 			}
 			else {
-				MultiThread.For(0, Height, delegate(int y) {
+				MultiThread.For(0, Height, y => {
 					for (int i = Width * y, e = i + Width, p = i * 3; i < e; i++) {
 						output[i] = (lut[_data[p++]] << 16) | (lut[_data[p++]] << 8) | lut[_data[p++]];
 					}

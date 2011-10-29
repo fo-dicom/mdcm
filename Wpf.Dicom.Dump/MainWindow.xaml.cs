@@ -91,7 +91,7 @@ namespace Wpf.Dicom.Dump
         {
             try
             {
-                return new DicomImage(iDataset).Render();
+                return new DicomImage(iDataset).RenderImageSource();
             }
             catch (Exception)
             {

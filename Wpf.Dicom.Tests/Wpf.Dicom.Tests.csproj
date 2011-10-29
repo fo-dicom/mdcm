@@ -53,12 +53,6 @@
     <Compile Include="Data\DcmPixelDataTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Wpf.Dicom\Wpf.Dicom.csproj">
-      <Project>{96490B28-7BEC-4C75-B31E-0D5F10C2B79D}</Project>
-      <Name>Wpf.Dicom</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <None Include="Dicom.snk" />

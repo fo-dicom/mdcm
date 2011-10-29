@@ -30,7 +30,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Bin\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SILVERLIGHT OPENSSL</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -40,7 +40,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release</OutputPath>
-    <DefineConstants>TRACE;SILVERLIGHT OPENSSL</DefineConstants>
+    <DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -78,15 +78,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Dicom.Linq\Data\XDicom.cs">
-      <Link>Data\XDicom.cs</Link>
-    </Compile>
-    <Compile Include="..\Dicom.Linq\HL7\XHL7.cs">
-      <Link>HL7\XHL7.cs</Link>
-    </Compile>
-    <Compile Include="..\Dicom.Linq\Utility\Helper.cs">
-      <Link>Utility\Helper.cs</Link>
-    </Compile>
     <Compile Include="..\Dicom\Codec\DcmCodecHelper.cs">
       <Link>Codec\DcmCodecHelper.cs</Link>
     </Compile>
@@ -162,6 +153,9 @@
     <Compile Include="..\Dicom\Data\DicomVR.cs">
       <Link>Data\DicomVR.cs</Link>
     </Compile>
+    <Compile Include="..\Dicom\Data\XDicom.cs">
+      <Link>Data\XDicom.cs</Link>
+    </Compile>
     <Compile Include="..\Dicom\Flags.cs">
       <Link>Flags.cs</Link>
     </Compile>
@@ -170,6 +164,9 @@
     </Compile>
     <Compile Include="..\Dicom\HL7\MLLP.cs">
       <Link>HL7\MLLP.cs</Link>
+    </Compile>
+    <Compile Include="..\Dicom\HL7\XHL7.cs">
+      <Link>HL7\XHL7.cs</Link>
     </Compile>
     <Compile Include="..\Dicom\Imaging\Algorithms\BilinearInterpolation.cs">
       <Link>Imaging\Algorithms\BilinearInterpolation.cs</Link>

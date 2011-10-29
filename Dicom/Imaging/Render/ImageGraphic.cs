@@ -20,14 +20,14 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
-#if SILVERLIGHT || WPF
+#if !SILVERLIGHT
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
+#endif
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-#else
-using System.Drawing;
-using System.Drawing.Imaging;
-#endif
 using System.Threading;
 using Dicom.Utility;
 
@@ -44,10 +44,9 @@ namespace Dicom.Imaging.Render {
 		protected PinnedIntArray _pixels;
 #if SILVERLIGHT
 		protected WriteableBitmap _bitmap;
-#elif WPF
-	    private const int DPI = 96;
-		protected BitmapSource _bitmap;
 #else
+	    private const int DPI = 96;
+		protected BitmapSource _bitmapSource;
 		protected Bitmap _bitmap;
 #endif
 
@@ -197,7 +196,7 @@ namespace Dicom.Imaging.Render {
 		}
 
 #if SILVERLIGHT
-		public BitmapSource RenderImage(ILUT lut)
+		public BitmapSource RenderImageSource(ILUT lut)
 		{
 			bool render = false;
 			if (_bitmap == null)
@@ -225,8 +224,8 @@ namespace Dicom.Imaging.Render {
 
 			return _bitmap;
 		}
-#elif WPF
-		public BitmapSource RenderImage(ILUT lut)
+#else
+		public BitmapSource RenderImageSource(ILUT lut)
 		{
 			bool render = false;
 			if (_applyLut && lut != null && !lut.IsValid)
@@ -235,11 +234,11 @@ namespace Dicom.Imaging.Render {
 				render = true;
 			}
 
-			if (_bitmap == null || render)
+			if (_bitmapSource == null || render)
 			{
 				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
 				ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
-				_bitmap = RenderBitmapSource(ScaledData.Width, ScaledData.Height, _pixels.Data);
+				_bitmapSource = RenderBitmapSource(ScaledData.Width, ScaledData.Height, _pixels.Data);
 			}
 
 			if (_rotation != 0 || _flipX || _flipY)
@@ -247,10 +246,10 @@ namespace Dicom.Imaging.Render {
 				TransformGroup rotFlipTransform = new TransformGroup();
 				rotFlipTransform.Children.Add(new RotateTransform(_rotation));
 				rotFlipTransform.Children.Add(new ScaleTransform(_flipX ? -1 : 1, _flipY ? -1 : 1));
-				_bitmap = new TransformedBitmap(_bitmap, rotFlipTransform);
+				_bitmapSource = new TransformedBitmap(_bitmapSource, rotFlipTransform);
 			}
 
-			return _bitmap;
+			return _bitmapSource;
 		}
 
 		private static BitmapSource RenderBitmapSource(int iWidth, int iHeight, int[] iPixelData)
@@ -260,29 +259,7 @@ namespace Dicom.Imaging.Render {
 			// Reserve the back buffer for updates.
 			bitmap.Lock();
 
-			unsafe
-			{
-				// Get a pointer to the back buffer.
-				int pBackBuffer = (int)bitmap.BackBuffer;
-
-				// Get a start pointer to the pixel data
-				fixed (int* pPixelData = iPixelData)
-				{
-					// Copy the start pointer to the running pixel pointer
-					int* pPixel = pPixelData;
-
-					// Loop over all pixels in the array
-					foreach (int i in iPixelData)
-					{
-						// Assign the color data to the underlying pixel.
-						*((int*) pBackBuffer) = *pPixel;
-
-						// Increment pBackBuffer and pPixel accordingly
-						pBackBuffer += 4;
-						++pPixel;
-					}
-				}
-			}
+			Marshal.Copy(iPixelData, 0, bitmap.BackBuffer, iPixelData.Length);
 
 			// Specify the area of the bitmap that changed.
 			bitmap.AddDirtyRect(new Int32Rect(0, 0, (int)bitmap.Width, (int)bitmap.Height));
@@ -292,11 +269,13 @@ namespace Dicom.Imaging.Render {
 
 			return bitmap;
 		}
-#else
+
 		public Image RenderImage(ILUT lut) {
 			bool render = false;
 			if (_bitmap == null) {
-				PixelFormat format = Components == 4 ? PixelFormat.Format32bppArgb : PixelFormat.Format32bppRgb;
+				System.Drawing.Imaging.PixelFormat format = Components == 4 
+					? System.Drawing.Imaging.PixelFormat.Format32bppArgb 
+					: System.Drawing.Imaging.PixelFormat.Format32bppRgb;
 				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
 				_bitmap = new Bitmap(ScaledData.Width, ScaledData.Height, ScaledData.Width * 4, format, _pixels.Pointer);
 				render = true;

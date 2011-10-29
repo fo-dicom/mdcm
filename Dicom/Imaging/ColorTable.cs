@@ -20,17 +20,11 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
-#if SILVERLIGHT || WPF
 using System.Windows.Media;
-#else
-using System.Drawing;
-using System.Drawing.Imaging;
-#endif
 using System.IO;
 
 namespace Dicom.Imaging {
 	public static class ColorTable {
-		#region LUT
 		public readonly static Color[] Monochrome1 = InitGrayscaleLUT(true);
 		public readonly static Color[] Monochrome2 = InitGrayscaleLUT(false);
 
@@ -40,19 +34,11 @@ namespace Dicom.Imaging {
 			byte b;
 			if (reverse) {
 				for (i = 0, b = 255; i < 256; i++, b--) {
-#if SILVERLIGHT || WPF
 					LUT[i] = Color.FromArgb(0xff, b, b, b);
-#else
-					LUT[i] = Color.FromArgb(b, b, b);
-#endif
 				}
 			} else {
 				for (i = 0, b = 0; i < 256; i++, b++) {
-#if SILVERLIGHT || WPF
 					LUT[i] = Color.FromArgb(0xff, b, b, b);
-#else
-					LUT[i] = Color.FromArgb(b, b, b);
-#endif
 				}
 			}
 			return LUT;
@@ -73,11 +59,7 @@ namespace Dicom.Imaging {
 
 				Color[] LUT = new Color[256];
 				for (int i = 0; i < 256; i++) {
-#if SILVERLIGHT || WPF
 					LUT[i] = Color.FromArgb(0xff, data[i], data[i + 256], data[i + 512]);
-#else
-					LUT[i] = Color.FromArgb(data[i], data[i + 256], data[i + 512]);
-#endif
 				}
 				return LUT;
 			} catch {
@@ -94,15 +76,14 @@ namespace Dicom.Imaging {
 			fs.Close();
 		}
 
-#if !(SILVERLIGHT || WPF)
-		public static void Apply(Image image, Color[] lut) {
-			ColorPalette palette = image.Palette;
+#if !SILVERLIGHT
+		public static void Apply(System.Drawing.Image image, Color[] lut) {
+			System.Drawing.Imaging.ColorPalette palette = image.Palette;
 			for (int i = 0; i < palette.Entries.Length; i++)
-				palette.Entries[i] = lut[i];
+				palette.Entries[i] = System.Drawing.Color.FromArgb(lut[i].A, lut[i].R, lut[i].G, lut[i].B);
 			image.Palette = palette;
 		}
 #endif
-		#endregion
 	}
 }
 

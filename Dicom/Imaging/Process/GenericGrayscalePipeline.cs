@@ -1,9 +1,5 @@
 ﻿using System;
-#if SILVERLIGHT || WPF
 using System.Windows.Media;
-#else
-using System.Drawing;
-#endif
 
 using Dicom.Imaging.LUT;
 
