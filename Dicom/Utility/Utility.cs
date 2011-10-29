@@ -1,9 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
+
+#if SILVERLIGHT
+using Ionic.Zlib;
+using MD5 = System.Security.Cryptography.MD5Managed;
+using MD5CryptoServiceProvider = System.Security.Cryptography.MD5Managed;
+using SHA1CryptoServiceProvider = System.Security.Cryptography.SHA1Managed;
+#else
+using System.IO.Compression;
+#endif
 
 namespace Dicom.Utility {
 	/// <summary>
@@ -46,7 +54,7 @@ namespace Dicom.Utility {
 		public static void Deflate(Stream src, Stream dst, bool compress) {
 			DeflateStream ds = new DeflateStream(src, compress ? CompressionMode.Compress : CompressionMode.Decompress);
 			Copy(ds, dst);
-		}
+        }
 	}
 
 	/// <summary>
@@ -113,24 +121,37 @@ namespace Dicom.Utility {
 		/// </summary>
 		/// <param name="str">String</param>
 		/// <returns>MD5 hash as string</returns>
-		public static string MD5(string str) {
+        public static string MD5(string str)
+		{
+#if SILVERLIGHT
+		    byte[] bytes = Encoding.UTF8.GetBytes(str);
+#else
 			byte[] bytes = ASCIIEncoding.Default.GetBytes(str);
-			return ByteUtility.MD5(bytes);
+#endif
+		    return ByteUtility.MD5(bytes);
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Gets SHA1 hash of a string
 		/// </summary>
 		/// <param name="str">String</param>
 		/// <returns>SHA1 hash as string</returns>
 		public static string SHA1(string str) {
+#if SILVERLIGHT
+            byte[] bytes = Encoding.UTF8.GetBytes(str);
+#else
 			byte[] bytes = ASCIIEncoding.Default.GetBytes(str);
-			return ByteUtility.SHA1(bytes);
+#endif
+            return ByteUtility.SHA1(bytes);
 		}
 
 		public static string RemoveInvalidPathChars(string path) {
+#if SILVERLIGHT
+            return String.Join("_", path.Split(Path.GetInvalidPathChars()));
+#else
 			return String.Join("_", path.Split(Path.GetInvalidFileNameChars()));
-		}
+#endif
+                                                                 }
 	}
 
 	public static class DateUtility {

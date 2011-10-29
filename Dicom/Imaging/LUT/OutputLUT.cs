@@ -20,8 +20,12 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
+#if SILVERLIGHT || WPF
+using System.Windows.Media;
+#else
 using System.Drawing;
 using System.Drawing.Imaging;
+#endif
 using System.IO;
 
 namespace Dicom.Imaging.LUT {

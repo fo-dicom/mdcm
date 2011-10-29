@@ -54,7 +54,11 @@ namespace Dicom.Network {
 			_bw = EndianBinaryWriter.Create(_ms, _encoding, Endian.Big);
 			_m16 = new Stack<long>();
 			_m32 = new Stack<long>();
+#if SILVERLIGHT
+            _encoding = Encoding.UTF8;
+#else
 			_encoding = Encoding.ASCII;
+#endif
 		}
 
 		/// <summary>

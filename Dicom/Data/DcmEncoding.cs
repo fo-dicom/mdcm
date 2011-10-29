@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
+#if SILVERLIGHT
+using System.Linq;
+#endif
+
 namespace Dicom.Data {
 	public static class DcmEncoding {
 		private static Dictionary<string, int> EncodingCodePageMap;
@@ -42,17 +46,31 @@ namespace Dicom.Data {
 		/// Default charset encoding (ISO 2022 IR 6)
 		/// </summary>
 		public static Encoding Default {
-			get { return Encoding.ASCII; }
+			get
+			{
+#if SILVERLIGHT
+			    return Encoding.UTF8;
+#else
+			    return Encoding.ASCII;
+#endif
+			}
 		}
 
 		public static Encoding GetEncodingForSpecificCharacterSet(string encoding) {
+#if SILVERLIGHT
+		    return Default;
+#else
 			int codePage;
 			if (EncodingCodePageMap.TryGetValue(encoding, out codePage))
 				return Encoding.GetEncoding(codePage);
 			return Default;
+#endif
 		}
 
 		public static string GetSpecificCharacterSetForEncoding(Encoding encoding) {
+#if SILVERLIGHT
+		    return EncodingCodePageMap.Single(kv => kv.Value.Equals(65001)).Key;
+#else
 			if (encoding == null)
 				encoding = Encoding.ASCII;
 
@@ -64,6 +82,7 @@ namespace Dicom.Data {
 			throw new DicomDataException(
 				String.Format("Unable to find specific character set value for encoding: {0} ({1})", 
 					encoding.EncodingName, encoding.CodePage));
+#endif
 		}
 	}
 }

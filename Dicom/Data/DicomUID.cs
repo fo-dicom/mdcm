@@ -81,28 +81,30 @@ namespace Dicom.Data {
 			return UID.GetHashCode();
 		}
 
-		private static DicomUID _instanceRootUid = null;
+		private static volatile DicomUID _instanceRootUid = null;
 		private static DicomUID InstanceRootUID {
 			get {
 				if (_instanceRootUid == null) {
 					lock (GenerateUidLock) {
 						if (_instanceRootUid == null) {
+#if !SILVERLIGHT
 							NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
 							for (int i = 0; i < interfaces.Length; i++) {
 								if (NetworkInterface.LoopbackInterfaceIndex != i && interfaces[i].OperationalStatus == OperationalStatus.Up) {
 									string hex = interfaces[i].GetPhysicalAddress().ToString();
 									if (!String.IsNullOrEmpty(hex)) {
 										try {
-											long mac = long.Parse(hex, NumberStyles.HexNumber);
+											long mac = long.Parse(hex, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 											return Generate(Implementation.ClassUID, mac);
 										} catch {
 										}
 									}
 								}
 							}
+#endif
 							_instanceRootUid = Generate(Implementation.ClassUID, Environment.TickCount);
 						}
-					}
+                    }
 				}
 				return _instanceRootUid;
 			}
@@ -166,8 +168,8 @@ namespace Dicom.Data {
 					if (parts0[i] == parts1[i])
 						continue;
 
-					int i0 = int.Parse(parts0[i]);
-					int i1 = int.Parse(parts1[i]);
+					int i0 = int.Parse(parts0[i], CultureInfo.InvariantCulture);
+					int i1 = int.Parse(parts1[i], CultureInfo.InvariantCulture);
 
 					if (i0 == i1)
 						return 0;
