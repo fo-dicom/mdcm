@@ -12,14 +12,12 @@ using System.Xml.Serialization;
 
 using Dicom.Codec;
 using Dicom.Data;
-using Dicom.Forms;
 using Dicom.Network;
 using Dicom.Network.Client;
 
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using NLog.Win32.Targets;
 
 namespace Dicom.Scu {
 	public delegate void BoolDelegate(bool state);
@@ -99,10 +97,12 @@ namespace Dicom.Scu {
 		public void InitializeLog() {
 			LoggingConfiguration config = new LoggingConfiguration();
 
-			DicomRichTextBoxTarget target = new DicomRichTextBoxTarget();
+			RichTextBoxTarget target = new RichTextBoxTarget();
 			target.UseDefaultRowColoringRules = true;
+			target.AutoScroll = true;
 			target.Layout = "${message}";
-			target.Control = rtbLog;
+			target.ControlName = rtbLog.Name;
+			target.FormName = Name;
 
 			config.AddTarget("DicomRichTextBox", target);
 			config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));

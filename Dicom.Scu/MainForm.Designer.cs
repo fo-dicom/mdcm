@@ -52,10 +52,10 @@
 			this.bttnSendAddImage = new System.Windows.Forms.Button();
 			this.bttnSendRemoveImage = new System.Windows.Forms.Button();
 			this.lvSendImages = new System.Windows.Forms.ListView();
-			this.colSendFile = new System.Windows.Forms.ColumnHeader("(none)");
-			this.colSendSopClass = new System.Windows.Forms.ColumnHeader();
-			this.colSendTransfer = new System.Windows.Forms.ColumnHeader();
-			this.colSendStatus = new System.Windows.Forms.ColumnHeader();
+			this.colSendFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.colSendSopClass = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.colSendTransfer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.colSendStatus = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.statusImageList = new System.Windows.Forms.ImageList(this.components);
 			this.tabPage3 = new System.Windows.Forms.TabPage();
 			this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -389,9 +389,9 @@
 			// 
 			// lvSendImages
 			// 
-			this.lvSendImages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-						| System.Windows.Forms.AnchorStyles.Left)
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.lvSendImages.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.lvSendImages.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.lvSendImages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colSendFile,
@@ -470,7 +470,7 @@
 			// 
 			// rtbLog
 			// 
-			this.rtbLog.BackColor = System.Drawing.Color.Black;
+			this.rtbLog.BackColor = System.Drawing.Color.White;
 			this.rtbLog.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.rtbLog.Font = new System.Drawing.Font("Lucida Console", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.rtbLog.ForeColor = System.Drawing.Color.White;
