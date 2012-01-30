@@ -50,6 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DcmDecimalStringTests.cs" />
+    <Compile Include="Data\DcmIntegerStringTests.cs" />
     <Compile Include="Data\DcmPixelDataTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,10 +61,15 @@
       <Name>Wpf.Dicom</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Testdata\licenses.txt" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="Dicom.snk" />
     <None Include="Testdata\CT-MONO2-16-chest">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Testdata\rtss.dcm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
