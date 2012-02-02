@@ -1017,19 +1017,16 @@ namespace Dicom.Data {
 		}
 
 		public float[] GetFloats() {
-			float[] vals = new float[GetVM()];
-			for (int i = 0; i < vals.Length; i++) {
-				vals[i] = GetFloat(i);
-			}
-			return vals;
-		}
+            string[] strVals = GetValues();
+            float[] vals = new float[strVals.Length];
+            for (int i = 0; i < strVals.Length; i++) {
+                vals[i] = float.Parse(strVals[i], CultureInfo.InvariantCulture);
+            }
+            return vals;
+        }
 
 		public List<float> GetFloatList() {
-			List<float> vals = new List<float>(GetVM());
-			for (int i = 0; i < vals.Count; i++) {
-				vals[i] = GetFloat(i);
-			}
-			return vals;
+			return new List<float>(GetFloats());
 		}
 
 		public void SetFloat(float value) {
@@ -1071,19 +1068,16 @@ namespace Dicom.Data {
 		}
 
 		public double[] GetDoubles() {
-			double[] vals = new double[GetVM()];
-			for (int i = 0; i < vals.Length; i++) {
-				vals[i] = GetDouble(i);
-			}
-			return vals;
-		}
+            string[] strVals = GetValues();
+            double[] vals = new double[strVals.Length];
+            for (int i = 0; i < strVals.Length; i++) {
+                vals[i] = double.Parse(strVals[i], CultureInfo.InvariantCulture);
+            }
+            return vals;
+        }
 
 		public List<double> GetDoubleList() {
-			List<double> vals = new List<double>(GetVM());
-			for(int i = 0; i < vals.Count; i++) {
-				vals[i] = GetDouble(i);
-			}
-			return vals;
+            return new List<double>(GetDoubles());
 		}
 
 		public void SetDouble(double value) {
@@ -1121,23 +1115,20 @@ namespace Dicom.Data {
 
 		public decimal GetDecimal(int index) {
 			string val = GetValue(index);
-			return decimal.Parse(val, CultureInfo.InvariantCulture);
+			return decimal.Parse(val, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
 		}
 
 		public decimal[] GetDecimals() {
-			decimal[] vals = new decimal[GetVM()];
-			for (int i = 0; i < vals.Length; i++) {
-				vals[i] = GetDecimal(i);
-			}
-			return vals;
-		}
+            string[] strVals = GetValues();
+            decimal[] vals = new decimal[strVals.Length];
+            for (int i = 0; i < strVals.Length; i++) {
+                vals[i] = decimal.Parse(strVals[i], NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
+            }
+            return vals;
+        }
 
 		public List<decimal> GetDecimalList() {
-			List<decimal> vals = new List<decimal>(GetVM());
-			for (int i = 0; i < vals.Count; i++) {
-				vals[i] = GetDecimal(i);
-			}
-			return vals;
+			return new List<decimal>(GetDecimals());
 		}
 
 		public void SetDecimal(decimal value) {
@@ -1237,19 +1228,16 @@ namespace Dicom.Data {
 		}
 
 		public int[] GetInt32s() {
-			int[] ints = new int[GetVM()];
-			for (int i = 0; i < ints.Length; i++) {
-				ints[i] = GetInt32(i);
-			}
-			return ints;
-		}
+            string[] strInts = GetValues();
+            int[] ints = new int[strInts.Length];
+            for (int i = 0; i < strInts.Length; i++) {
+                ints[i] = int.Parse(strInts[i], CultureInfo.InvariantCulture);
+            }
+            return ints;
+        }
 
 		public List<int> GetInt32List() {
-			List<int> ints = new List<int>(GetVM());
-			for (int i = 0; i < ints.Count; i++) {
-				ints[i] = GetInt32(i);
-			}
-			return ints;
+			return new List<int>(GetInt32s());
 		}
 
 		public void SetInt32(int value) {
@@ -1589,13 +1577,13 @@ namespace Dicom.Data {
 			SetUID(ts.UID);
 		}
 
-		public override void SetValueObject(object val) {
-			if (val is DicomUID)
-				SetUID(val as DicomUID);
-			else
-				base.SetValueObject(val);
-		}
-		#endregion
+        public override void SetValueObject(object val) {
+            if (val is DicomUID)
+                SetUID(val as DicomUID);
+            else
+                base.SetValueObject(val);
+        }
+        #endregion
 	}
 
 	/// <summary>Unsigned Long (UL)</summary>
