@@ -77,6 +77,12 @@ namespace Dicom.Imaging {
 
 		public ImageSource RenderImageSource() {
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
+
+			foreach (var overlay in _overlays) {
+				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX, overlay.OriginY, OverlayColor);
+				graphic.AddOverlay(og);
+			}
+
 			return graphic.RenderImageSource(_pipeline.LUT);
 		}
 
