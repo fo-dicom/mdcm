@@ -20,6 +20,7 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
+using System.Collections.Generic;
 #if !SILVERLIGHT
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -59,6 +60,8 @@ namespace Dicom.Imaging.Render {
 
 		protected int _zorder;
 		protected bool _applyLut;
+
+		protected List<OverlayGraphic> _overlays;
 		#endregion
 
 		#region Public Properties
@@ -119,17 +122,24 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Constructors
-		public ImageGraphic(IPixelData pixelData) {
+		public ImageGraphic(IPixelData pixelData) : this() {
 			_originalData = pixelData;
-			_zorder = 255;
-			_applyLut = true;
 			Scale(1.0);
 		}
 
-		protected ImageGraphic() { }
+		protected ImageGraphic() {
+			_zorder = 255;
+			_applyLut = true;
+			_overlays = new List<OverlayGraphic>();
+		}
 		#endregion
 
 		#region Public Members
+		public void AddOverlay(OverlayGraphic overlay) {
+			_overlays.Add(overlay);
+			overlay.Scale(_scaleFactor);
+		}
+
 		public void Reset() {
 			Scale(1.0);
 			_rotation = 0;
@@ -147,6 +157,10 @@ namespace Dicom.Imaging.Render {
 				_pixels.Dispose();
 				_pixels = null;
 				_bitmap = null;
+			}
+
+			foreach (var overlay in _overlays) {
+				overlay.Scale(scale);
 			}
 		}
 
@@ -287,6 +301,10 @@ namespace Dicom.Imaging.Render {
 			_bitmap.RotateFlip(RotateFlipType.RotateNoneFlipNone);
 			if (render) {
 				ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
+
+				foreach (var overlay in _overlays) {
+					overlay.Render(_pixels.Data, _bitmap.Width, _bitmap.Height);
+				}
 			}
 			_bitmap.RotateFlip(GetRotateFlipType());
 			return _bitmap;

@@ -59,6 +59,10 @@ namespace Dicom.Imaging.Render {
 				throw new DicomImagingException("Unsupported pixel data photometric interpretation: {0}", pi.Value);
 			}
 		}
+
+		public static SingleBitPixelData Create(DcmOverlayData overlayData) {
+			return new SingleBitPixelData(overlayData.Columns, overlayData.Rows, overlayData.Data);
+		}
 	}
 
 	public class GrayscalePixelDataU8 : IPixelData {
@@ -87,6 +91,10 @@ namespace Dicom.Imaging.Render {
 
 		public int Components {
 			get { return 1; }
+		}
+
+		public byte[] Data {
+			get { return _data; }
 		}
 		#endregion
 
@@ -119,8 +127,7 @@ namespace Dicom.Imaging.Render {
 
 	public class SingleBitPixelData : GrayscalePixelDataU8 {
 		#region Public Constructor
-		public SingleBitPixelData(int width, int height, byte[] data)
-			: base(width, height, ExpandBits(width, height, data)) {
+		public SingleBitPixelData(int width, int height, byte[] data) : base(width, height, ExpandBits(width, height, data)) {
 		}
 		#endregion
 
@@ -165,6 +172,10 @@ namespace Dicom.Imaging.Render {
 
 		public int Components {
 			get { return 1; }
+		}
+
+		public short[] Data {
+			get { return _data; }
 		}
 		#endregion
 
@@ -222,6 +233,10 @@ namespace Dicom.Imaging.Render {
 		public int Components {
 			get { return 1; }
 		}
+
+		public ushort[] Data {
+			get { return _data; }
+		}
 		#endregion
 
 		#region Public Methods
@@ -277,6 +292,10 @@ namespace Dicom.Imaging.Render {
 
 		public int Components {
 			get { return 3; }
+		}
+
+		public byte[] Data {
+			get { return _data; }
 		}
 		#endregion
 
