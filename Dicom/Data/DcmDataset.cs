@@ -858,7 +858,10 @@ namespace Dicom.Data {
 					return (elem as DcmFloatingPointSingle).GetValue();
 				else if (elem.VR == DicomVR.DS)
 					return (elem as DcmDecimalString).GetFloat();
-				else
+				else if (elem.VR == DicomVR.OB || elem.VR == DicomVR.UN) {
+					var bytes = elem.ByteBuffer.ToBytes();
+					return BitConverter.ToSingle(bytes, 0);
+				} else
 					throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
 			}
 			return deflt;
@@ -871,7 +874,10 @@ namespace Dicom.Data {
 					return (elem as DcmFloatingPointDouble).GetValue();
 				else if (elem.VR == DicomVR.DS)
 					return (elem as DcmDecimalString).GetDouble();
-				else
+				else if (elem.VR == DicomVR.OB || elem.VR == DicomVR.UN) {
+					var bytes = elem.ByteBuffer.ToBytes();
+					return BitConverter.ToDouble(bytes, 0);
+				} else
 					throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
 			}
 			return deflt;
