@@ -19,8 +19,12 @@ namespace Dicom.Imaging {
 	/// </summary>
 	public class DicomImage {
 		#region Private Members
+		private const int OverlayColor = unchecked((int)0xffff00ff);
+
 		private IPixelData _pixelData;
 		private IPipeline _pipeline;
+
+		private DcmOverlayData[] _overlays;
 		#endregion
 
 		/// <summary>Creates DICOM image object from dataset</summary>
@@ -61,12 +65,24 @@ namespace Dicom.Imaging {
 		public Image RenderImage()
 		{
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
+
+			foreach (var overlay in _overlays) {
+				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX, overlay.OriginY, OverlayColor);
+				graphic.AddOverlay(og);
+			}
+
 			return graphic.RenderImage(_pipeline.LUT);
 		}
 #endif
 
 		public ImageSource RenderImageSource() {
 			ImageGraphic graphic = new ImageGraphic(_pixelData);
+
+			foreach (var overlay in _overlays) {
+				OverlayGraphic og = new OverlayGraphic(PixelDataFactory.Create(overlay), overlay.OriginX, overlay.OriginY, OverlayColor);
+				graphic.AddOverlay(og);
+			}
+
 			return graphic.RenderImageSource(_pipeline.LUT);
 		}
 
@@ -78,6 +94,8 @@ namespace Dicom.Imaging {
 			_pixelData = PixelDataFactory.Create(pixelData, 0);
 			_pipeline = PipelineFactory.Create(Dataset, pixelData);
 			pixelData.Unload();
+
+			_overlays = DcmOverlayData.FromDataset(Dataset);
 		}
 	}
 }

@@ -715,7 +715,7 @@ namespace Dicom.Data {
 			if (elem is DcmMultiStringElement)
 				return (elem as DcmMultiStringElement).GetValue(index);
 			if (elem != null)
-				throw new DicomDataException("Tried to access element with incorrect VR");
+				throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
 			return deflt;
 		}
 
@@ -730,8 +730,8 @@ namespace Dicom.Data {
 				return;
 			}
 			if (elem != null)
-				throw new DicomDataException("Tried to access element with incorrect VR");
-			throw new DicomDataException("Element does not exist in Dataset");
+				throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
+			throw new DicomDataException("Element " + tag.ToString() + " does not exist in Dataset");
 		}
 
 		public string[] GetStringArray(DicomTag tag, string[] deflt) {
@@ -741,7 +741,7 @@ namespace Dicom.Data {
 			if (elem is DcmStringElement)
 				return new string[] { (elem as DcmStringElement).GetValue() };
 			if (elem != null)
-				throw new DicomDataException("Tried to access element with incorrect VR");
+				throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
 			return deflt;
 		}
 
@@ -752,8 +752,8 @@ namespace Dicom.Data {
 				return;
 			}
 			if (elem != null)
-				throw new DicomDataException("Tried to access element with incorrect VR");
-			throw new DicomDataException("Element does not exist in Dataset");
+				throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
+			throw new DicomDataException("Element " + tag.ToString() + " does not exist in Dataset");
 		}
 
 		public DateTime GetDateTime(DicomTag tag, DateTime deflt) {
@@ -776,7 +776,7 @@ namespace Dicom.Data {
 				}
 			}
 			if (elem != null)
-				throw new DicomDataException("Tried to access element with incorrect VR");
+				throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
 			return deflt;	
 		}
 
@@ -832,7 +832,7 @@ namespace Dicom.Data {
 				else if (elem.VR == DicomVR.SL)
 					return (elem as DcmSignedLong).GetValue();
 				else
-					throw new DicomDataException("Tried to access element with incorrect VR");
+					throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
 			}
 			return deflt;
 		}
@@ -858,8 +858,11 @@ namespace Dicom.Data {
 					return (elem as DcmFloatingPointSingle).GetValue();
 				else if (elem.VR == DicomVR.DS)
 					return (elem as DcmDecimalString).GetFloat();
-				else
-					throw new DicomDataException("Tried to access element with incorrect VR");
+				else if (elem.VR == DicomVR.OB || elem.VR == DicomVR.UN) {
+					var bytes = elem.ByteBuffer.ToBytes();
+					return BitConverter.ToSingle(bytes, 0);
+				} else
+					throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
 			}
 			return deflt;
 		}
@@ -871,8 +874,11 @@ namespace Dicom.Data {
 					return (elem as DcmFloatingPointDouble).GetValue();
 				else if (elem.VR == DicomVR.DS)
 					return (elem as DcmDecimalString).GetDouble();
-				else
-					throw new DicomDataException("Tried to access element with incorrect VR");
+				else if (elem.VR == DicomVR.OB || elem.VR == DicomVR.UN) {
+					var bytes = elem.ByteBuffer.ToBytes();
+					return BitConverter.ToDouble(bytes, 0);
+				} else
+					throw new DicomDataException("Tried to access element " + tag.ToString() + " with incorrect VR");
 			}
 			return deflt;
 		}

@@ -20,6 +20,7 @@
 //    Colby Dillion (colby.dillion@gmail.com)
 
 using System;
+using System.Collections.Generic;
 #if !SILVERLIGHT
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -59,6 +60,8 @@ namespace Dicom.Imaging.Render {
 
 		protected int _zorder;
 		protected bool _applyLut;
+
+		protected List<OverlayGraphic> _overlays;
 		#endregion
 
 		#region Public Properties
@@ -119,17 +122,24 @@ namespace Dicom.Imaging.Render {
 		#endregion
 
 		#region Public Constructors
-		public ImageGraphic(IPixelData pixelData) {
+		public ImageGraphic(IPixelData pixelData) : this() {
 			_originalData = pixelData;
-			_zorder = 255;
-			_applyLut = true;
 			Scale(1.0);
 		}
 
-		protected ImageGraphic() { }
+		protected ImageGraphic() {
+			_zorder = 255;
+			_applyLut = true;
+			_overlays = new List<OverlayGraphic>();
+		}
 		#endregion
 
 		#region Public Members
+		public void AddOverlay(OverlayGraphic overlay) {
+			_overlays.Add(overlay);
+			overlay.Scale(_scaleFactor);
+		}
+
 		public void Reset() {
 			Scale(1.0);
 			_rotation = 0;
@@ -147,6 +157,10 @@ namespace Dicom.Imaging.Render {
 				_pixels.Dispose();
 				_pixels = null;
 				_bitmap = null;
+			}
+
+			foreach (var overlay in _overlays) {
+				overlay.Scale(scale);
 			}
 		}
 
@@ -199,24 +213,30 @@ namespace Dicom.Imaging.Render {
 		public BitmapSource RenderImageSource(ILUT lut)
 		{
 			bool render = false;
-			if (_bitmap == null)
-			{
+
+			if (_bitmap == null) {
 				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
 				_bitmap = new WriteableBitmap(ScaledData.Width, ScaledData.Height);
 				render = true;
 			}
-			if (_applyLut && lut != null && !lut.IsValid)
-			{
+
+			if (_applyLut && lut != null && !lut.IsValid) {
 				lut.Recalculate();
 				render = true;
 			}
-			if (render)
-			{
+
+			if (render) {
 				ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
+
+				foreach (var overlay in _overlays) {
+					overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
+				}
 			}
 
 			MultiThread.For(0, _pixels.Count, delegate(int i) { _bitmap.Pixels[i] = _pixels.Data[i]; });
+
 			_bitmap.Rotate(_rotation);
+
 			if (_flipX) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Horizontal);
 			if (_flipY) _bitmap.Flip(WriteableBitmapExtensions.FlipMode.Vertical);
 
@@ -225,24 +245,27 @@ namespace Dicom.Imaging.Render {
 			return _bitmap;
 		}
 #else
-		public BitmapSource RenderImageSource(ILUT lut)
-		{
+		public BitmapSource RenderImageSource(ILUT lut) {
 			bool render = false;
-			if (_applyLut && lut != null && !lut.IsValid)
-			{
+
+			if (_applyLut && lut != null && !lut.IsValid) {
 				lut.Recalculate();
 				render = true;
 			}
 
-			if (_bitmapSource == null || render)
-			{
+			if (_bitmapSource == null || render) {
 				_pixels = new PinnedIntArray(ScaledData.Width * ScaledData.Height);
+
 				ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
+
+				foreach (var overlay in _overlays) {
+					overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
+				}
+
 				_bitmapSource = RenderBitmapSource(ScaledData.Width, ScaledData.Height, _pixels.Data);
 			}
 
-			if (_rotation != 0 || _flipX || _flipY)
-			{
+			if (_rotation != 0 || _flipX || _flipY) {
 				TransformGroup rotFlipTransform = new TransformGroup();
 				rotFlipTransform.Children.Add(new RotateTransform(_rotation));
 				rotFlipTransform.Children.Add(new ScaleTransform(_flipX ? -1 : 1, _flipY ? -1 : 1));
@@ -252,8 +275,7 @@ namespace Dicom.Imaging.Render {
 			return _bitmapSource;
 		}
 
-		private static BitmapSource RenderBitmapSource(int iWidth, int iHeight, int[] iPixelData)
-		{
+		private static BitmapSource RenderBitmapSource(int iWidth, int iHeight, int[] iPixelData) {
 			var bitmap = new WriteableBitmap(iWidth, iHeight, DPI, DPI, PixelFormats.Bgr32, null);
 
 			// Reserve the back buffer for updates.
@@ -272,6 +294,7 @@ namespace Dicom.Imaging.Render {
 
 		public Image RenderImage(ILUT lut) {
 			bool render = false;
+
 			if (_bitmap == null) {
 				System.Drawing.Imaging.PixelFormat format = Components == 4 
 					? System.Drawing.Imaging.PixelFormat.Format32bppArgb 
@@ -280,15 +303,24 @@ namespace Dicom.Imaging.Render {
 				_bitmap = new Bitmap(ScaledData.Width, ScaledData.Height, ScaledData.Width * 4, format, _pixels.Pointer);
 				render = true;
 			}
+
 			if (_applyLut && lut != null && !lut.IsValid) {
 				lut.Recalculate();
 				render = true;
 			}
+
 			_bitmap.RotateFlip(RotateFlipType.RotateNoneFlipNone);
+
 			if (render) {
 				ScaledData.Render((_applyLut ? lut : null), _pixels.Data);
+
+				foreach (var overlay in _overlays) {
+					overlay.Render(_pixels.Data, ScaledData.Width, ScaledData.Height);
+				}
 			}
+
 			_bitmap.RotateFlip(GetRotateFlipType());
+
 			return _bitmap;
 		}
 
