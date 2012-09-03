@@ -38,7 +38,7 @@ namespace Dicom.Imaging.Algorithms {
 			int yMax = inputHeight - 1;
 
 			unchecked {
-				MultiThread.For(0, outputHeight, 1, delegate(int y) {
+				MultiThread.For(0, outputHeight, y => {
 					double oy0 = y * yF;
 					int oy1 = (int)oy0; // rounds down
 					int oy2 = (oy1 == yMax) ? oy1 : oy1 + 1;
@@ -81,7 +81,7 @@ namespace Dicom.Imaging.Algorithms {
 			int yMax = inputHeight - 1;
 
 			unchecked {
-				MultiThread.For(0, outputHeight, 1, delegate(int y) {
+				MultiThread.For(0, outputHeight, y => {
 					double oy0 = y * yF;
 					int oy1 = (int)oy0; // rounds down
 					int oy2 = (oy1 == yMax) ? oy1 : oy1 + 1;
@@ -124,7 +124,7 @@ namespace Dicom.Imaging.Algorithms {
 			int yMax = inputHeight - 1;
 
 			unchecked {
-				MultiThread.For(0, outputHeight, 1, delegate(int y) {
+				MultiThread.For(0, outputHeight, y => {
 					double oy0 = y * yF;
 					int oy1 = (int)oy0; // rounds down
 					int oy2 = (oy1 == yMax) ? oy1 : oy1 + 1;
@@ -167,7 +167,7 @@ namespace Dicom.Imaging.Algorithms {
 			int yMax = inputHeight - 1;
 
 			unchecked {
-				MultiThread.For(0, outputHeight, 1, delegate(int y) {
+				MultiThread.For(0, outputHeight, y => {
 					double oy0 = y * yF;
 					int oy1 = (int)oy0; // rounds down
 					int oy2 = (oy1 == yMax) ? oy1 : oy1 + 1;
@@ -210,7 +210,7 @@ namespace Dicom.Imaging.Algorithms {
 			int yMax = inputHeight - 1;
 
 			unchecked {
-				MultiThread.For(0, outputHeight, 1, delegate(int y) {
+				MultiThread.For(0, outputHeight, y => {
 					double oy0 = y * yF;
 					int oy1 = (int)oy0; // rounds down
 					int oy2 = (oy1 == yMax) ? oy1 : oy1 + 1;
@@ -264,7 +264,7 @@ namespace Dicom.Imaging.Algorithms {
 			int yMax = inputHeight - 1;
 
 			unchecked {
-				MultiThread.For(0, outputHeight, 1, delegate(int y) {
+				MultiThread.For(0, outputHeight, y => {
 					double oy0 = y * yF;
 					int oy1 = (int)oy0; // rounds down
 					int oy2 = (oy1 == yMax) ? oy1 : oy1 + 1;

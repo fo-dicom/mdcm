@@ -21,13 +21,12 @@
 
 using System;
 using System.Collections.Generic;
-#if SILVERLIGHT || WPF
+#if !SILVERLIGHT
+using System.Drawing;
+#endif
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-#else
-using System.Drawing;
-#endif
 using System.Text;
 using Dicom.Imaging.LUT;
 
@@ -137,15 +136,15 @@ namespace Dicom.Imaging.Render {
 				graphic.Transform(scale, rotation, flipx, flipy);
 		}
 #if SILVERLIGHT
-		public BitmapSource RenderImage(ILUT lut)
+		public BitmapSource RenderImageSource(ILUT lut)
 		{
-			WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
+			WriteableBitmap img = BackgroundLayer.RenderImageSource(lut) as WriteableBitmap;
 			if (img != null && _layers.Count > 1)
 			{
 				for (int i = 1; i < _layers.Count; ++i)
 				{
 					var g = _layers[i];
-					var layer = _layers[i].RenderImage(null) as WriteableBitmap;
+					var layer = _layers[i].RenderImageSource(null) as WriteableBitmap;
 
 					if (layer != null)
 					{
@@ -156,16 +155,16 @@ namespace Dicom.Imaging.Render {
 			}
 			return img;
 		}
-#elif WPF
-		public BitmapSource RenderImage(ILUT lut)
+#else
+		public BitmapSource RenderImageSource(ILUT lut)
 		{
-			WriteableBitmap img = BackgroundLayer.RenderImage(lut) as WriteableBitmap;
+			WriteableBitmap img = BackgroundLayer.RenderImageSource(lut) as WriteableBitmap;
 			if (img != null && _layers.Count > 1)
 			{
 				for (int i = 1; i < _layers.Count; ++i)
 				{
 					var g = _layers[i];
-					var layer = _layers[i].RenderImage(null) as WriteableBitmap;
+					var layer = _layers[i].RenderImageSource(null) as WriteableBitmap;
 
 					if (layer != null)
 					{
@@ -178,7 +177,7 @@ namespace Dicom.Imaging.Render {
 			}
 			return img;
 		}
-#else
+
 		public Image RenderImage(ILUT lut) {
 			Image img = BackgroundLayer.RenderImage(lut);
 			if (_layers.Count > 1) {

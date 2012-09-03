@@ -486,7 +486,7 @@
 0019	xxf2	SS	1	Number Of Phases		GE_GENESIS_REV3.0
 0043	xx1e	DS	1	Delta Start Time		GE_GENESIS_REV3.0
 0043	xx27	SH	1	Scan Pitch Ratio		GE_GENESIS_REV3.0
-0009	xx10	SQ	1	Unknown		GEIIS 
+#0009	xx10	SQ	1	Unknown		GEIIS 
 0905	xx30	LO	1	Unknown		GEIIS 
 7fd1	xx10	UL	1	Unknown		GEIIS 
 0047	xxe9	FL	3	Unknown		GEMS_3DSTATE_001
@@ -4225,31 +4225,49 @@
 7ff1	xx0b	US	1-n	Unknown		TOSHIBA_MEC_CT_1.0
 7ff1	xx0c	US	1-n	Unknown		TOSHIBA_MEC_CT_1.0
 7ff1	xx0d	US	1-n	Unknown		TOSHIBA_MEC_CT_1.0
-7005	xx07	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx08	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx09	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx0a	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx0b	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx0d	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx0e	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx0f	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx11	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx12	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx13	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx16	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx17	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx18	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx19	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx1a	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx1b	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx1d	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx1e	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx1f	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx20	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx22	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx23	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx24	UN	1	Unknown		TOSHIBA_MEC_CT3 
-7005	xx30	UN	1	Unknown		TOSHIBA_MEC_CT3 
+7005	xx00	OB	1	CT Private Data 1	TOSHIBA_MEC_CT3
+7005	xx03	SH	1	Cardiac R-R Mean Time		TOSHIBA_MEC_CT3
+7005	xx04	SH	1	Cardiac Reconstruction Getting Phase in Percent		TOSHIBA_MEC_CT3
+7005	xx05	SH	1	Cardiac Reconstruction Getting Phase in ms		TOSHIBA_MEC_CT3
+7005	xx06	SH	1	Cardiac Reconstruction Mode		TOSHIBA_MEC_CT3
+7005	xx07	DS	1	Reconstruction Center		TOSHIBA_MEC_CT3
+7005	xx08	DS	1	Detector Slice Thickness in mm		TOSHIBA_MEC_CT3
+7005	xx09	LO	1	Number of Detector rows to Reconstruct		TOSHIBA_MEC_CT3
+7005	xx0a	DS	1	Table Speed in mm/rot		TOSHIBA_MEC_CT3
+7005	xx0b	SH	1	Filter		TOSHIBA_MEC_CT3
+7005	xx0c	SH	1	Reconstruction Correction Type		TOSHIBA_MEC_CT3
+7005	xx0d	CS	1	Organ		TOSHIBA_MEC_CT3
+7005	xx0e	SH	1	File Type Remarks		TOSHIBA_MEC_CT3
+7005	xx0f	SH	1	Direction		TOSHIBA_MEC_CT3
+7005	xx10	OB	1	CT Private Data 2		TOSHIBA_MEC_CT3
+7005	xx11	LT	1	Series Comment		TOSHIBA_MEC_CT3
+7005	xx12	SH	1	Position		TOSHIBA_MEC_CT3
+7005	xx13	US	1	Expert Plan No.		TOSHIBA_MEC_CT3
+7005	xx14	US	1	Reconstruction ROI No.		TOSHIBA_MEC_CT3
+7005	xx15	US	1	Special Helical ACQ No.		TOSHIBA_MEC_CT3
+7005	xx16	UI	1	Volume UID		TOSHIBA_MEC_CT3
+7005	xx17	US	1	Total Frame Count in the Volume		TOSHIBA_MEC_CT3
+7005	xx18	US	1	Frame No.		TOSHIBA_MEC_CT3
+7005	xx19	UL	1	Frame Sort Key		TOSHIBA_MEC_CT3
+7005	xx1a	US	1	Frame Sort Order		TOSHIBA_MEC_CT3
+7005	xx1b	SH	1	Convolution Kernel for Series Record		TOSHIBA_MEC_CT3
+7005	xx1c	LO	1	Contrast/Bolus Agent for Series Record		TOSHIBA_MEC_CT3
+7005	xx1d	UL	1	Reconstruction Number		TOSHIBA_MEC_CT3
+7005	xx1e	UL	1	Raw Data Number		TOSHIBA_MEC_CT3
+7005	xx1f	LO	1	Volume Number		TOSHIBA_MEC_CT3
+7005	xx20	UL	1	Local Series Number		TOSHIBA_MEC_CT3
+7005	xx21	LO	1	Decrease in Artifact Filter		TOSHIBA_MEC_CT3
+7005	xx22	DS	1	Reconstruction Interval		TOSHIBA_MEC_CT3
+7005	xx23	DS	1	Pitch Factor		TOSHIBA_MEC_CT3
+7005	xx24	DA	1	The Acquisition Date of NRA		TOSHIBA_MEC_CT3
+7005	xx25	UL	1	Large Data File Attribute		TOSHIBA_MEC_CT3
+7005	xx26	CS	1	Large Data File Name	TOSHIBA_MEC_CT3
+7005	xx30	CS	1	Main Modality in Study		TOSHIBA_MEC_CT3
+7005	xx36	OB	1	CT Private Data 3	TOSHIBA_MEC_CT3
+7005	xx37	IS	1	Total Frames	TOSHIBA_MEC_CT3
+7005	xx38	IS	1	Start Frame		TOSHIBA_MEC_CT3
+7005	xx39	IS	1	End Frame		TOSHIBA_MEC_CT3
+7005	xx40	FD	1	DLP (Dose Length Product)		TOSHIBA_MEC_CT3
 7079	xx21	SH	1	Unknown		TOSHIBA_MEC_XA3 
 7079	xx22	IS	2	Unknown		TOSHIBA_MEC_XA3 
 7079	xx25	SH	1	Unknown		TOSHIBA_MEC_XA3 

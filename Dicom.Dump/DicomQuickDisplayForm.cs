@@ -18,7 +18,7 @@ namespace Dicom.Forms {
 			// execute on ThreadPool to avoid STA WaitHandle.WaitAll exception
 			ThreadPool.QueueUserWorkItem(delegate(object s) {
 					DicomImage image = new DicomImage(_fileName);
-			        Invoke(new WaitCallback(DisplayImage), image.Render());
+			        Invoke(new WaitCallback(DisplayImage), image.RenderImage());
 			                             });
 			
 		}

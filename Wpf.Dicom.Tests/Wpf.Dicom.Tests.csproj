@@ -64,6 +64,7 @@
   <ItemGroup>
     <Content Include="Testdata\licenses.txt" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Dicom.snk" />
     <None Include="Testdata\CT-MONO2-16-chest">

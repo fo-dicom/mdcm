@@ -51,9 +51,9 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wpf.Dicom\Wpf.Dicom.csproj">
-      <Project>{96490B28-7BEC-4C75-B31E-0D5F10C2B79D}</Project>
-      <Name>Wpf.Dicom</Name>
+    <ProjectReference Include="..\Dicom\Dicom.csproj">
+      <Project>{1EFC91C4-EEF8-4AE4-B512-24C00CA46D59}</Project>
+      <Name>Dicom</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

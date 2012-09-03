@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml.Linq;
 
 #if SILVERLIGHT
 using Ionic.Zlib;
@@ -234,6 +235,18 @@ namespace Dicom.Utility {
 			int it = i1;
 			i1 = i2;
 			i2 = it;
+		}
+	}
+
+	public static class XmlUtility {
+		public static string FirstText(this XElement element) {
+			foreach (XNode node in element.Nodes()) {
+				if (node is XText) {
+					XText text = (XText)node;
+					return text.Value;
+				}
+			}
+			return String.Empty;
 		}
 	}
 }

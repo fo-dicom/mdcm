@@ -1019,8 +1019,7 @@ namespace Dicom.Data {
 		public float[] GetFloats() {
             string[] strVals = GetValues();
             float[] vals = new float[strVals.Length];
-            for (int i = 0; i < strVals.Length; i++)
-            {
+            for (int i = 0; i < strVals.Length; i++) {
                 vals[i] = float.Parse(strVals[i], CultureInfo.InvariantCulture);
             }
             return vals;
@@ -1122,8 +1121,7 @@ namespace Dicom.Data {
 		public decimal[] GetDecimals() {
             string[] strVals = GetValues();
             decimal[] vals = new decimal[strVals.Length];
-            for (int i = 0; i < strVals.Length; i++)
-            {
+            for (int i = 0; i < strVals.Length; i++) {
                 vals[i] = decimal.Parse(strVals[i], NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture);
             }
             return vals;
@@ -1229,7 +1227,14 @@ namespace Dicom.Data {
 			return int.Parse(val, CultureInfo.InvariantCulture);
 		}
 
-		public int[] GetInt32s() {
+		public int[] GetInt32s() {            string[] strInts = GetValues();
+            int[] ints = new int[strInts.Length];
+            for (int i = 0; i < strInts.Length; i++) {
+                ints[i] = int.Parse(strInts[i], CultureInfo.InvariantCulture);
+            }
+            return ints;
+        }
+
         string[] strInts = GetValues();
         int[] ints = new int[strInts.Length];
         for (int i = 0; i < strInts.Length; i++)
@@ -1579,7 +1584,14 @@ namespace Dicom.Data {
 		public void SetTS(DicomTransferSyntax ts) {
 			SetUID(ts.UID);
 		}
-		#endregion
+
+        public override void SetValueObject(object val) {
+            if (val is DicomUID)
+                SetUID(val as DicomUID);
+            else
+                base.SetValueObject(val);
+        }
+        #endregion
 	}
 
 	/// <summary>Unsigned Long (UL)</summary>

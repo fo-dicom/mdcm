@@ -647,6 +647,53 @@ namespace Dicom.Data {
 				}
 			}
 		}
+
+		/// <summary>
+		/// Recursively enumerates all value elements.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<DcmElement> Recurse() {
+			foreach (DcmItem item in _items.Values) {
+				if (item is DcmElement)
+					yield return item as DcmElement;
+				else if (item is DcmItemSequence) {
+					DcmItemSequence sq = item as DcmItemSequence;
+					foreach (DcmItemSequenceItem sqi in sq.SequenceItems) {
+						foreach (DcmElement elem in sqi.Dataset.Recurse())
+							yield return elem;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Recursively replaces tags with the specified value.
+		/// </summary>
+		/// <param name="tag">DICOM Tag</param>
+		/// <param name="value">Value</param>
+		public void ReplaceAll(DicomTag tag, object value) {
+			foreach (var elem in Search(tag))
+				elem.SetValueObject(value);
+		}
+
+		/// <summary>
+		/// Replaces UID for specified tag and all instances of UID in UI elements.
+		/// </summary>
+		/// <param name="tag"></param>
+		/// <param name="uid"></param>
+		public void ReplaceUID(DicomTag tag, DicomUID uid) {
+			DicomUID old = GetUID(tag);
+			AddElementWithValue(tag, uid);
+
+			if (old != null) {
+				foreach (var elem in Recurse()) {
+					if (elem.VR == DicomVR.UI) {
+						if (old.Equals((elem as DcmUniqueIdentifier).GetUID()))
+							elem.SetValueObject(uid);
+					}
+				}
+			}
+		}
 		#endregion
 
 		#region Data Access Methods
