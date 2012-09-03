@@ -1227,22 +1227,14 @@ namespace Dicom.Data {
 			return int.Parse(val, CultureInfo.InvariantCulture);
 		}
 
-		public int[] GetInt32s() {            string[] strInts = GetValues();
+		public int[] GetInt32s() {
+            string[] strInts = GetValues();
             int[] ints = new int[strInts.Length];
             for (int i = 0; i < strInts.Length; i++) {
                 ints[i] = int.Parse(strInts[i], CultureInfo.InvariantCulture);
             }
             return ints;
         }
-
-        string[] strInts = GetValues();
-        int[] ints = new int[strInts.Length];
-        for (int i = 0; i < strInts.Length; i++)
-        {
-            ints[i] = int.Parse(strInts[i], CultureInfo.InvariantCulture);
-        }
-        return ints;
-    }
 
 		public List<int> GetInt32List() {
 			return new List<int>(GetInt32s());

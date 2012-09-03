@@ -16,6 +16,8 @@ TestResult.xml
 *.dotCover
 *.pidb
 *.userprefs
-
 /desktop.ini
 /git.ico
+_UpgradeReport_Files/
+UpgradeLog.*
+Backup/
