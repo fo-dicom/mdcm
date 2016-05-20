@@ -1,4 +1,2 @@
-= Work on this project is being discontinued in favor of fo-dicom. Bug fixes and other pull requests will still be accepted.
-
-https://github.com/rcd/fo-dicom
+= Work on this project is being discontinued in favor of [fo-dicom](https://github.com/fo-dicom/fo-dicom).
 
