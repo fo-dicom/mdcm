@@ -1,2 +1,2 @@
-= Work on this project is being discontinued in favor of [fo-dicom](https://github.com/fo-dicom/fo-dicom).
+= Work on this project is being discontinued in favor of fo-dicom: https://github.com/fo-dicom/fo-dicom.
 
